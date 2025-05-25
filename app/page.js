@@ -67,16 +67,17 @@ export default function VivumPlatform() {
 
   // Update loading message when topic is ready
   useEffect(() => {
-    if (topicStatus === 'ready' && chatMessages.some(msg => msg.isLoading)) {
+    if (topicStatus === 'ready' && articles.length > 0) {
       setChatMessages(prev => prev.map(msg => 
-        msg.isLoading ? {
+        msg.isLoading && msg.isInitialLoad ? {
           ...msg,
           text: `I found ${articles.length} relevant articles from ${selectedSource}. You can now ask me questions about this research topic.`,
-          isLoading: false
+          isLoading: false,
+          isInitialLoad: false
         } : msg
       ));
     }
-  }, [topicStatus, articles.length, selectedSource, chatMessages]);
+  }, [topicStatus, articles.length, selectedSource]);
 
   const checkAPIStatus = async () => {
     try {
@@ -136,7 +137,8 @@ export default function VivumPlatform() {
         setChatMessages(prev => [...prev, {
           type: 'assistant',
           text: `I'm searching for articles about "${searchQuery}" in ${selectedSource}. This may take a moment...`,
-          isLoading: true
+          isLoading: true,
+          isInitialLoad: true
         }]);
 
         // Add to conversation history
