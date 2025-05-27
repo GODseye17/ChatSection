@@ -224,58 +224,72 @@ export default function VivumPlatform() {
   };
 
   return (
-    <div className="min-h-screen dark">
-      <div className="bg-gray-950 text-gray-100 min-h-screen transition-colors duration-300">
-        <ApiStatusBar apiStatus={apiStatus} />
-        
-        <Sidebar
-          sidebarOpen={sidebarOpen}
-          conversationHistory={conversationHistory}
-          onSelectConversation={handleSelectConversation}
-        />
+    <div className="min-h-screen bg-gray-950 text-gray-100">
+      <div className="min-h-screen relative">
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-black opacity-95"></div>
+          <div className="absolute inset-0">
+            <div className="grid-pattern"></div>
+            <div className="particles"></div>
+            <div className="network-dots"></div>
+            <div className="network-lines"></div>
+            <div className="gradient-layer"></div>
+          </div>
+        </div>
 
-        <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
-          <Header
+        <div className="relative z-10">
+          <ApiStatusBar apiStatus={apiStatus} />
+          
+          <Sidebar
             sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-            darkMode={darkMode}
-            toggleDarkMode={toggleDarkMode}
-            isSearchView={isSearchView}
-            setIsSearchView={setIsSearchView}
+            conversationHistory={conversationHistory}
+            onSelectConversation={handleSelectConversation}
+          />
+
+          <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
+            <Header
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              darkMode={darkMode}
+              toggleDarkMode={toggleDarkMode}
+              isSearchView={isSearchView}
+              setIsSearchView={setIsSearchView}
+              showSources={showSources}
+              setShowSources={setShowSources}
+              articles={articles}
+            />
+
+            {isSearchView ? (
+              <SearchView
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                selectedSource={selectedSource}
+                setSelectedSource={setSelectedSource}
+                handleFetchArticles={handleFetchArticles}
+                loading={loading}
+                showFilters={showFilters}
+                setShowFilters={setShowFilters}
+              />
+            ) : (
+              <ChatView
+                chatMessages={chatMessages}
+                chatInput={chatInput}
+                setChatInput={setChatInput}
+                handleSendMessage={handleSendMessage}
+                topicStatus={topicStatus}
+                setIsSearchView={setIsSearchView}
+                setShowSources={setShowSources}
+                sidebarOpen={sidebarOpen}
+              />
+            )}
+          </div>
+
+          <SourcesOverlay
             showSources={showSources}
             setShowSources={setShowSources}
             articles={articles}
           />
-
-          {isSearchView ? (
-            <SearchView
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              selectedSource={selectedSource}
-              setSelectedSource={setSelectedSource}
-              handleFetchArticles={handleFetchArticles}
-              loading={loading}
-              showFilters={showFilters}
-              setShowFilters={setShowFilters}
-            />
-          ) : (
-            <ChatView
-              chatMessages={chatMessages}
-              chatInput={chatInput}
-              setChatInput={setChatInput}
-              handleSendMessage={handleSendMessage}
-              topicStatus={topicStatus}
-              setIsSearchView={setIsSearchView}
-              sidebarOpen={sidebarOpen}
-            />
-          )}
         </div>
-
-        <SourcesOverlay
-          showSources={showSources}
-          setShowSources={setShowSources}
-          articles={articles}
-        />
       </div>
     </div>
   );
