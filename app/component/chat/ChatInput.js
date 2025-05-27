@@ -7,10 +7,16 @@ export default function ChatInput({
   setChatInput, 
   handleSendMessage, 
   topicStatus,
-  setIsSearchView 
+  setIsSearchView,
+  onTyping 
 }) {
+  const handleInputChange = (e) => {
+    setChatInput(e.target.value);
+    onTyping?.(!!e.target.value);
+  };
+
   return (
-    <div className="border-t border-gray-800 bg-gradient-to-b from-gray-900 to-black py-4 px-4 md:px-8 sticky bottom-0">
+    <div className="border-t border-gray-800 bg-gradient-to-b from-gray-900 to-black py-6 px-4 md:px-8 sticky bottom-0">
       <div className="max-w-3xl mx-auto space-y-4">
         {topicStatus === 'processing' && (
           <div className="mb-2 text-sm text-amber-400 flex items-center gap-2 justify-center">
@@ -24,11 +30,11 @@ export default function ChatInput({
             Ready! You can now ask questions about the research.
           </div>
         )}
-        <div className="flex gap-2 bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 border border-gray-700/50 shadow-lg">
+        <div className="flex gap-2 bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 border border-gray-700/50 shadow-lg chat-input">
           <input
             type="text"
             value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
+            onChange={handleInputChange}
             placeholder={topicStatus === 'ready' ? "Message AI..." : "Waiting for articles to be processed..."}
             className="flex-1 px-4 py-3 bg-transparent outline-none text-gray-100 placeholder-gray-500"
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
