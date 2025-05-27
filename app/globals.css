@@ -24,8 +24,68 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
-/* Add these animations to your globals.css file */
 
+/* Animated background */
+.animated-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.animated-bg::before,
+.animated-bg::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+  animation: float 20s infinite ease-in-out;
+}
+
+.animated-bg::before {
+  background: #9333ea;
+  top: -100px;
+  left: -100px;
+  animation-delay: -5s;
+}
+
+.animated-bg::after {
+  background: #6366f1;
+  bottom: -100px;
+  right: -100px;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(100px, 50px) scale(1.2);
+  }
+  50% {
+    transform: translate(50px, 100px) scale(0.9);
+  }
+  75% {
+    transform: translate(-50px, 50px) scale(1.1);
+  }
+}
+
+/* Dark mode transitions */
+.dark .animated-bg::before {
+  background: #9333ea;
+  opacity: 0.1;
+}
+
+.dark .animated-bg::after {
+  background: #6366f1;
+  opacity: 0.1;
+}
+
+/* Add these animations to your globals.css file */
 @keyframes fade-in {
   from {
     opacity: 0;
