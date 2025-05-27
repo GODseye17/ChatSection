@@ -4,18 +4,26 @@ import { Loader2, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+// Function to convert PubMed IDs to links
 const processPubMedLinks = (text) => {
+  // Multiple patterns to match PubMed IDs in different contexts
   const patterns = [
+    // Match "PubMed ID: 12345678" or "PMID: 12345678"
     /(?:PubMed ID|PMID):\s*(\d{7,8})/gi,
+    // Match standalone 7-8 digit numbers in specific contexts
+    /\|\s*(\d{7,8})\s*\|/g,
+    // Match "12345678 |" pattern
     /\|\s*(\d{7,8})\s*\|/g,
   ];
   
   let processedText = text;
   
+  // First pass: Replace clear PubMed ID references
   processedText = processedText.replace(/(?:PubMed ID|PMID):\s*(\d{7,8})/gi, (match, id) => {
     return `[PubMed ID: ${id}](https://pubmed.ncbi.nlm.nih.gov/${id}/)`;
   });
   
+  // Second pass: Replace IDs in table cells (between pipes)
   processedText = processedText.replace(/\|\s*(\d{7,8})\s*\|/g, (match, id) => {
     return `| [${id}](https://pubmed.ncbi.nlm.nih.gov/${id}/) |`;
   });
@@ -51,21 +59,23 @@ export default function ChatMessage({ message }) {
     }
   }, [message.text, message.type, message.isLoading]);
 
+  // Don't render the initial loading message once articles are ready
   if (message.isInitialLoad && !message.isLoading) {
     return null;
   }
 
+  // Show loading state with animation
   if (message.isLoading) {
     return (
-      <div className="flex gap-3 animate-in fade-in slide-in-from-left duration-300">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-medium flex-shrink-0">
+      <div className="flex gap-4 animate-in fade-in slide-in-from-left duration-300">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 animate-pulse">
           V
         </div>
-        <div className="flex-1 max-w-3xl">
-          <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+        <div className="max-w-2xl">
+          <div className="p-4 rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700 shadow-xl">
             <div className="flex items-center gap-3">
-              <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
-              <p className="text-base text-gray-300">
+              <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
+              <p className="text-sm md:text-base text-gray-400">
                 {message.text}
               </p>
             </div>
@@ -75,70 +85,65 @@ export default function ChatMessage({ message }) {
     );
   }
 
+  // Regular message rendering with animations
   return (
-    <div 
-      className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : ''} animate-in fade-in ${
-        message.type === 'user' ? 'slide-in-from-right' : 'slide-in-from-left'
-      } duration-300 group`}
-    >
+    <div className={`flex gap-4 ${message.type === 'user' ? 'justify-end' : ''} animate-in fade-in ${message.type === 'user' ? 'slide-in-from-right' : 'slide-in-from-left'} duration-300`}>
       {message.type === 'assistant' && (
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-medium flex-shrink-0">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
           V
         </div>
       )}
       
-      <div className={`flex-1 max-w-3xl ${message.type === 'user' ? 'order-1' : ''}`}>
-        <div 
-          className={`p-4 rounded-2xl transition-all duration-300 ${
-            message.type === 'user' 
-              ? 'bg-blue-600 text-white' 
-              : message.isError
-              ? 'bg-red-500/10 border border-red-500/20'
-              : 'bg-white/5 border border-white/10'
-          }`}
-        >
+      <div className={`max-w-2xl ${message.type === 'user' ? 'order-1' : ''}`}>
+        <div className={`p-4 rounded-2xl shadow-xl backdrop-blur-sm ${
+          message.type === 'user' 
+            ? 'bg-purple-600/90 text-white' 
+            : message.isError
+            ? 'bg-red-900/20 border border-red-800'
+            : 'bg-gray-800/50 border border-gray-700'
+        }`}>
           {message.type === 'assistant' ? (
-            <div className="prose prose-invert max-w-none">
+            <div className="w-full overflow-hidden">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  h1: ({children}) => <h1 className="text-2xl font-bold mb-4 mt-6 text-gray-100">{children}</h1>,
-                  h2: ({children}) => <h2 className="text-xl font-bold mb-3 mt-5 text-gray-100">{children}</h2>,
-                  h3: ({children}) => <h3 className="text-lg font-bold mb-3 mt-4 text-gray-100">{children}</h3>,
-                  p: ({children}) => <p className="mb-4 leading-relaxed text-gray-300">{children}</p>,
-                  ul: ({children}) => <ul className="list-disc list-inside mb-4 space-y-2 text-gray-300">{children}</ul>,
-                  ol: ({children}) => <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-300">{children}</ol>,
-                  li: ({children}) => <li className="text-gray-300 ml-4">{children}</li>,
+                  h1: ({children}) => <h1 className="text-2xl font-bold mb-3 mt-4">{children}</h1>,
+                  h2: ({children}) => <h2 className="text-xl font-bold mb-2 mt-3">{children}</h2>,
+                  h3: ({children}) => <h3 className="text-lg font-bold mb-2 mt-3">{children}</h3>,
+                  p: ({children}) => <p className="mb-3 leading-7 text-gray-300">{children}</p>,
+                  ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1 ml-4">{children}</ul>,
+                  ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1 ml-4">{children}</ol>,
+                  li: ({children}) => <li className="text-gray-300">{children}</li>,
                   code: ({inline, children}) => 
                     inline ? 
-                      <code className="bg-white/5 px-1.5 py-0.5 rounded text-sm font-mono text-blue-400">{children}</code> :
-                      <pre className="bg-white/5 p-4 rounded-lg my-4 overflow-x-auto">
-                        <code className="text-sm font-mono text-gray-300">{children}</code>
+                      <code className="bg-gray-700/50 px-1.5 py-0.5 rounded text-sm font-mono text-purple-400">{children}</code> :
+                      <pre className="bg-gray-700/50 p-4 rounded-lg my-3 overflow-x-auto">
+                        <code className="text-sm font-mono">{children}</code>
                       </pre>,
                   table: ({children}) => (
-                    <div className="my-4 w-full overflow-x-auto rounded-lg border border-white/10">
-                      <table className="w-full divide-y divide-white/10">
+                    <div className="my-4 w-full overflow-x-auto rounded-lg border border-gray-700">
+                      <table className="w-full divide-y divide-gray-700">
                         {children}
                       </table>
                     </div>
                   ),
                   thead: ({children}) => (
-                    <thead className="bg-white/5">
+                    <thead className="bg-gray-800">
                       {children}
                     </thead>
                   ),
                   tbody: ({children}) => (
-                    <tbody className="divide-y divide-white/10">
+                    <tbody className="bg-gray-900/50 divide-y divide-gray-700">
                       {children}
                     </tbody>
                   ),
                   tr: ({children}) => (
-                    <tr className="hover:bg-white/5 transition-colors">
+                    <tr className="hover:bg-gray-800/50 transition-colors">
                       {children}
                     </tr>
                   ),
                   th: ({children}) => (
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider whitespace-nowrap">
                       {children}
                     </th>
                   ),
@@ -148,7 +153,7 @@ export default function ChatMessage({ message }) {
                     </td>
                   ),
                   blockquote: ({children}) => (
-                    <blockquote className="border-l-4 border-blue-500/50 pl-4 my-4 italic text-gray-300">
+                    <blockquote className="border-l-4 border-purple-500 pl-4 my-3 italic text-gray-300">
                       {children}
                     </blockquote>
                   ),
@@ -159,49 +164,45 @@ export default function ChatMessage({ message }) {
                         href={href} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-blue-400 hover:text-blue-300 hover:underline inline-flex items-center gap-1"
+                        className="text-purple-400 hover:underline inline-flex items-center gap-1"
                       >
                         {children}
                         {isPubMedLink && <ExternalLink className="w-3 h-3" />}
                       </a>
                     );
-                  }
+                  },
+                  strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                  em: ({children}) => <em className="italic">{children}</em>,
+                  hr: () => <hr className="my-4 border-gray-700" />,
                 }}
               >
                 {isTyping ? displayText : processPubMedLinks(message.text)}
               </ReactMarkdown>
             </div>
           ) : (
-            <p className="text-base">
+            <p className="text-sm md:text-base">
               {message.text}
             </p>
           )}
           {message.citations && message.citations.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <div className="text-xs text-gray-400 mb-2 font-medium">Citations:</div>
-              <div className="grid gap-2">
-                {message.citations.map((citation, cidx) => (
-                  <div key={cidx} className="bg-white/5 p-3 rounded-lg group/citation">
-                    <a 
-                      href={`https://doi.org/${citation.doi}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="text-sm text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1"
-                    >
-                      {citation.title}
-                      <ExternalLink className="w-3 h-3 opacity-0 group-hover/citation:opacity-100 transition-opacity" />
-                    </a>
-                    <div className="text-xs text-gray-500 mt-1">{citation.source}</div>
-                  </div>
-                ))}
-              </div>
+            <div className="mt-3 pt-3 border-t border-gray-700">
+              <div className="text-xs text-gray-400 mb-2">Citations:</div>
+              {message.citations.map((citation, cidx) => (
+                <div key={cidx} className="text-sm mb-2">
+                  <a href={`https://doi.org/${citation.doi}`} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline flex items-center gap-1">
+                    {citation.title}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                  <span className="text-xs text-gray-400"> - {citation.source}</span>
+                </div>
+              ))}
             </div>
           )}
         </div>
       </div>
       
       {message.type === 'user' && (
-        <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center text-gray-400 font-medium flex-shrink-0">
+        <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 font-semibold flex-shrink-0">
           U
         </div>
       )}
