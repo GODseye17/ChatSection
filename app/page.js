@@ -224,55 +224,57 @@ export default function VivumPlatform() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      <ApiStatusBar apiStatus={apiStatus} />
-      
-      <Sidebar
-        sidebarOpen={sidebarOpen}
-        conversationHistory={conversationHistory}
-        onSelectConversation={handleSelectConversation}
-      />
-
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
-        <Header
+    <div className="min-h-screen dark">
+      <div className="bg-gray-950 text-gray-100 min-h-screen transition-colors duration-300">
+        <ApiStatusBar apiStatus={apiStatus} />
+        
+        <Sidebar
           sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-          darkMode={darkMode}
-          toggleDarkMode={toggleDarkMode}
-          isSearchView={isSearchView}
-          setIsSearchView={setIsSearchView}
+          conversationHistory={conversationHistory}
+          onSelectConversation={handleSelectConversation}
+        />
+
+        <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
+          <Header
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+            isSearchView={isSearchView}
+            setIsSearchView={setIsSearchView}
+            showSources={showSources}
+            setShowSources={setShowSources}
+            articles={articles}
+          />
+
+          {isSearchView ? (
+            <SearchView
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedSource={selectedSource}
+              setSelectedSource={setSelectedSource}
+              handleFetchArticles={handleFetchArticles}
+              loading={loading}
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+            />
+          ) : (
+            <ChatView
+              chatMessages={chatMessages}
+              chatInput={chatInput}
+              setChatInput={setChatInput}
+              handleSendMessage={handleSendMessage}
+              topicStatus={topicStatus}
+            />
+          )}
+        </div>
+
+        <SourcesOverlay
           showSources={showSources}
           setShowSources={setShowSources}
           articles={articles}
         />
-
-        {isSearchView ? (
-          <SearchView
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedSource={selectedSource}
-            setSelectedSource={setSelectedSource}
-            handleFetchArticles={handleFetchArticles}
-            loading={loading}
-            showFilters={showFilters}
-            setShowFilters={setShowFilters}
-          />
-        ) : (
-          <ChatView
-            chatMessages={chatMessages}
-            chatInput={chatInput}
-            setChatInput={setChatInput}
-            handleSendMessage={handleSendMessage}
-            topicStatus={topicStatus}
-          />
-        )}
       </div>
-
-      <SourcesOverlay
-        showSources={showSources}
-        setShowSources={setShowSources}
-        articles={articles}
-      />
     </div>
   );
 }
