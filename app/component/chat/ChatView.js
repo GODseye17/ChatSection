@@ -23,7 +23,7 @@ export default function ChatView({
       particlesContainer.innerHTML = '';
 
       // Create new particles
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 50; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.style.left = `${Math.random() * 100}%`;
@@ -50,12 +50,15 @@ export default function ChatView({
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] relative bg-gray-900">
-      <div className="animated-bg opacity-50">
+      <div className="animated-bg">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
+        <div className="matrix-rain"></div>
         <div className="neural-lines"></div>
-        <div className="binary-rain"></div>
+        <div className="energy-waves"></div>
+        <div className="holographic"></div>
         <div className="circuit-pattern"></div>
+        <div className="dna-helix"></div>
         <div className="gradient-layer"></div>
       </div>
       <div className="flex-1 relative z-10 flex flex-col max-w-5xl mx-auto w-full">
