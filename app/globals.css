@@ -145,6 +145,27 @@ body {
   opacity: 0.2;
 }
 
+/* Connecting dots network */
+.network-dots {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(147, 197, 253, 0.2) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(167, 243, 208, 0.2) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: network-pulse 10s infinite linear;
+}
+
+.network-lines {
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(45deg, transparent 45%, rgba(147, 197, 253, 0.1) 50%, transparent 55%),
+    linear-gradient(-45deg, transparent 45%, rgba(167, 243, 208, 0.1) 50%, transparent 55%);
+  background-size: 30px 30px;
+  animation: network-flow 15s infinite linear;
+}
+
 /* Chat-specific styles */
 .chat-particles .particle {
   opacity: 0.3;
@@ -270,6 +291,16 @@ body {
 @keyframes dna-rotate {
   0% { background-position: 0 0; }
   100% { background-position: 100px 100px; }
+}
+
+@keyframes network-pulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes network-flow {
+  0% { background-position: 0 0; }
+  100% { background-position: 30px 30px; }
 }
 
 @keyframes message-glow {
