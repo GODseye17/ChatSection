@@ -68,14 +68,14 @@ export default function ChatMessage({ message }) {
   if (message.isLoading) {
     return (
       <div className="flex gap-4 animate-in fade-in slide-in-from-left duration-300">
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 animate-pulse">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 animate-pulse shadow-lg shadow-purple-500/10">
           V
         </div>
-        <div className="max-w-2xl">
-          <div className="p-4 rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700 shadow-xl">
+        <div className="max-w-3xl w-full">
+          <div className="p-6 rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 shadow-xl">
             <div className="flex items-center gap-3">
               <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
-              <p className="text-sm md:text-base text-gray-400">
+              <p className="text-base text-gray-300">
                 {message.text}
               </p>
             </div>
@@ -87,58 +87,64 @@ export default function ChatMessage({ message }) {
 
   // Regular message rendering with animations
   return (
-    <div className={`flex gap-4 ${message.type === 'user' ? 'justify-end' : ''} animate-in fade-in ${message.type === 'user' ? 'slide-in-from-right' : 'slide-in-from-left'} duration-300`}>
+    <div 
+      className={`flex gap-4 ${message.type === 'user' ? 'justify-end' : ''} animate-in fade-in ${
+        message.type === 'user' ? 'slide-in-from-right' : 'slide-in-from-left'
+      } duration-300 group`}
+    >
       {message.type === 'assistant' && (
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-lg shadow-purple-500/10">
           V
         </div>
       )}
       
-      <div className={`max-w-2xl ${message.type === 'user' ? 'order-1' : ''}`}>
-        <div className={`p-4 rounded-2xl shadow-xl backdrop-blur-sm ${
-          message.type === 'user' 
-            ? 'bg-purple-600/90 text-white' 
-            : message.isError
-            ? 'bg-red-900/20 border border-red-800'
-            : 'bg-gray-800/50 border border-gray-700'
-        }`}>
+      <div className={`max-w-3xl w-full ${message.type === 'user' ? 'order-1' : ''}`}>
+        <div 
+          className={`p-6 rounded-2xl shadow-xl backdrop-blur-sm transition-all duration-300 ${
+            message.type === 'user' 
+              ? 'bg-purple-600 text-white shadow-purple-500/10' 
+              : message.isError
+              ? 'bg-red-900/20 border border-red-800/50'
+              : 'bg-gray-800/50 border border-gray-700/50 group-hover:bg-gray-800/70'
+          }`}
+        >
           {message.type === 'assistant' ? (
             <div className="w-full overflow-hidden">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  h1: ({children}) => <h1 className="text-2xl font-bold mb-3 mt-4">{children}</h1>,
-                  h2: ({children}) => <h2 className="text-xl font-bold mb-2 mt-3">{children}</h2>,
-                  h3: ({children}) => <h3 className="text-lg font-bold mb-2 mt-3">{children}</h3>,
-                  p: ({children}) => <p className="mb-3 leading-7 text-gray-300">{children}</p>,
-                  ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1 ml-4">{children}</ul>,
-                  ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1 ml-4">{children}</ol>,
-                  li: ({children}) => <li className="text-gray-300">{children}</li>,
+                  h1: ({children}) => <h1 className="text-2xl font-bold mb-4 mt-6">{children}</h1>,
+                  h2: ({children}) => <h2 className="text-xl font-bold mb-3 mt-5">{children}</h2>,
+                  h3: ({children}) => <h3 className="text-lg font-bold mb-3 mt-4">{children}</h3>,
+                  p: ({children}) => <p className="mb-4 leading-relaxed text-gray-300">{children}</p>,
+                  ul: ({children}) => <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>,
+                  ol: ({children}) => <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>,
+                  li: ({children}) => <li className="text-gray-300 ml-4">{children}</li>,
                   code: ({inline, children}) => 
                     inline ? 
                       <code className="bg-gray-700/50 px-1.5 py-0.5 rounded text-sm font-mono text-purple-400">{children}</code> :
-                      <pre className="bg-gray-700/50 p-4 rounded-lg my-3 overflow-x-auto">
+                      <pre className="bg-gray-700/50 p-4 rounded-lg my-4 overflow-x-auto">
                         <code className="text-sm font-mono">{children}</code>
                       </pre>,
                   table: ({children}) => (
-                    <div className="my-4 w-full overflow-x-auto rounded-lg border border-gray-700">
-                      <table className="w-full divide-y divide-gray-700">
+                    <div className="my-4 w-full overflow-x-auto rounded-lg border border-gray-700/50">
+                      <table className="w-full divide-y divide-gray-700/50">
                         {children}
                       </table>
                     </div>
                   ),
                   thead: ({children}) => (
-                    <thead className="bg-gray-800">
+                    <thead className="bg-gray-800/50">
                       {children}
                     </thead>
                   ),
                   tbody: ({children}) => (
-                    <tbody className="bg-gray-900/50 divide-y divide-gray-700">
+                    <tbody className="bg-gray-900/30 divide-y divide-gray-700/50">
                       {children}
                     </tbody>
                   ),
                   tr: ({children}) => (
-                    <tr className="hover:bg-gray-800/50 transition-colors">
+                    <tr className="hover:bg-gray-800/30 transition-colors">
                       {children}
                     </tr>
                   ),
@@ -153,7 +159,7 @@ export default function ChatMessage({ message }) {
                     </td>
                   ),
                   blockquote: ({children}) => (
-                    <blockquote className="border-l-4 border-purple-500 pl-4 my-3 italic text-gray-300">
+                    <blockquote className="border-l-4 border-purple-500/50 pl-4 my-4 italic text-gray-300">
                       {children}
                     </blockquote>
                   ),
@@ -164,7 +170,7 @@ export default function ChatMessage({ message }) {
                         href={href} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-purple-400 hover:underline inline-flex items-center gap-1"
+                        className="text-purple-400 hover:text-purple-300 hover:underline inline-flex items-center gap-1 transition-colors"
                       >
                         {children}
                         {isPubMedLink && <ExternalLink className="w-3 h-3" />}
@@ -173,27 +179,32 @@ export default function ChatMessage({ message }) {
                   },
                   strong: ({children}) => <strong className="font-semibold">{children}</strong>,
                   em: ({children}) => <em className="italic">{children}</em>,
-                  hr: () => <hr className="my-4 border-gray-700" />,
+                  hr: () => <hr className="my-6 border-gray-700/50" />,
                 }}
               >
                 {isTyping ? displayText : processPubMedLinks(message.text)}
               </ReactMarkdown>
             </div>
           ) : (
-            <p className="text-sm md:text-base">
+            <p className="text-base">
               {message.text}
             </p>
           )}
           {message.citations && message.citations.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-gray-700">
-              <div className="text-xs text-gray-400 mb-2">Citations:</div>
+            <div className="mt-4 pt-4 border-t border-gray-700/50">
+              <div className="text-xs text-gray-400 mb-2 font-medium">Citations:</div>
               {message.citations.map((citation, cidx) => (
-                <div key={cidx} className="text-sm mb-2">
-                  <a href={`https://doi.org/${citation.doi}`} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline flex items-center gap-1">
+                <div key={cidx} className="text-sm mb-2 group/citation">
+                  <a 
+                    href={`https://doi.org/${citation.doi}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1 transition-colors"
+                  >
                     {citation.title}
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="w-3 h-3 opacity-0 group-hover/citation:opacity-100 transition-opacity" />
                   </a>
-                  <span className="text-xs text-gray-400"> - {citation.source}</span>
+                  <span className="text-xs text-gray-500"> - {citation.source}</span>
                 </div>
               ))}
             </div>
@@ -202,7 +213,7 @@ export default function ChatMessage({ message }) {
       </div>
       
       {message.type === 'user' && (
-        <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 font-semibold flex-shrink-0">
+        <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 font-semibold flex-shrink-0 shadow-lg">
           U
         </div>
       )}

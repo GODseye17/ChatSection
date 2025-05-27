@@ -9,16 +9,16 @@ export default function ChatInput({
   topicStatus 
 }) {
   return (
-    <div className="border-t border-gray-800 p-4 bg-gray-900/80 backdrop-blur-sm relative z-10">
-      <div className="max-w-4xl mx-auto">
+    <div className="border-t border-gray-800/50 p-6 bg-gray-900/80 backdrop-blur-sm relative z-10">
+      <div className="max-w-3xl mx-auto">
         {topicStatus === 'processing' && (
-          <div className="mb-3 text-sm text-amber-400 flex items-center gap-2">
+          <div className="mb-4 text-sm text-amber-400 flex items-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin" />
             Processing articles... This may take a few moments.
           </div>
         )}
         {topicStatus === 'ready' && (
-          <div className="mb-3 text-sm text-green-400 flex items-center gap-2">
+          <div className="mb-4 text-sm text-green-400 flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
             Ready! You can now ask questions about the research.
           </div>
