@@ -32,7 +32,7 @@ export default function ChatView({
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] relative">
-      <div className="animated-bg fixed inset-0 opacity-30 pointer-events-none">
+      <div className="animated-bg fixed inset-0 opacity-20 pointer-events-none">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
         <div className="gradient-layer"></div>
@@ -44,6 +44,7 @@ export default function ChatView({
         setChatInput={setChatInput}
         handleSendMessage={handleSendMessage}
         topicStatus={topicStatus}
+        messages={chatMessages}
       />
     </div>
   );
