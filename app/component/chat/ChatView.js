@@ -9,7 +9,8 @@ export default function ChatView({
   setChatInput, 
   handleSendMessage, 
   topicStatus,
-  setIsSearchView 
+  setIsSearchView,
+  sidebarOpen 
 }) {
   const [isTyping, setIsTyping] = useState(false);
 
@@ -49,7 +50,9 @@ export default function ChatView({
   }, [isTyping]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] relative bg-gray-900">
+    <div className={`flex flex-col h-[calc(100vh-4rem)] relative bg-gray-900 transition-all duration-300 ${
+      sidebarOpen ? 'ml-80' : 'ml-0'
+    }`}>
       <div className="animated-bg">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
@@ -61,8 +64,14 @@ export default function ChatView({
         <div className="dna-helix"></div>
         <div className="gradient-layer"></div>
       </div>
-      <div className="flex-1 relative z-10 flex flex-col max-w-5xl mx-auto w-full">
-        <ChatMessageList messages={chatMessages} />
+      
+      <div className="flex-1 relative z-10 flex flex-col">
+        <div className="flex-1 flex">
+          <div className="flex-1 max-w-[85rem] mx-auto w-full px-4 md:px-8">
+            <ChatMessageList messages={chatMessages} />
+          </div>
+        </div>
+        
         <ChatInput
           chatInput={chatInput}
           setChatInput={setChatInput}

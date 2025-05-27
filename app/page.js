@@ -265,6 +265,8 @@ export default function VivumPlatform() {
               setChatInput={setChatInput}
               handleSendMessage={handleSendMessage}
               topicStatus={topicStatus}
+              setIsSearchView={setIsSearchView}
+              sidebarOpen={sidebarOpen}
             />
           )}
         </div>
