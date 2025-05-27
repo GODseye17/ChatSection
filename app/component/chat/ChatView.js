@@ -56,12 +56,6 @@ export default function ChatView({
       <div className="animated-bg">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
-        <div className="matrix-rain"></div>
-        <div className="neural-lines"></div>
-        <div className="energy-waves"></div>
-        <div className="holographic"></div>
-        <div className="circuit-pattern"></div>
-        <div className="dna-helix"></div>
         <div className="gradient-layer"></div>
       </div>
       
