@@ -2,13 +2,13 @@
 import React from 'react';
 import { Send, Loader2, CheckCircle, PlusCircle } from 'lucide-react';
 
-export default function ChatInput({ 
-  chatInput, 
-  setChatInput, 
-  handleSendMessage, 
+export default function ChatInput({
+  chatInput,
+  setChatInput,
+  handleSendMessage,
   topicStatus,
   setIsSearchView,
-  onTyping 
+  onTyping
 }) {
   const handleInputChange = (e) => {
     setChatInput(e.target.value);
@@ -16,8 +16,8 @@ export default function ChatInput({
   };
 
   return (
-    <div className="border-t border-gray-800 bg-gradient-to-b from-gray-900 to-black py-6 px-4 md:px-8 sticky bottom-0">
-      <div className="max-w-3xl mx-auto space-y-4">
+    <div className="border-t border-gray-800 bg-gradient-to-b from-gray-900 to-black py-6 sticky bottom-0 w-full">
+      <div className="w-full space-y-4 px-4 md:px-8">
         {topicStatus === 'processing' && (
           <div className="mb-2 text-sm text-amber-400 flex items-center gap-2 justify-center">
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -30,7 +30,7 @@ export default function ChatInput({
             Ready! You can now ask questions about the research.
           </div>
         )}
-        <div className="flex gap-2 bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 border border-gray-700/50 shadow-lg chat-input">
+        <div className="flex gap-2 bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 border border-gray-700/50 shadow-lg chat-input w-full">
           <input
             type="text"
             value={chatInput}

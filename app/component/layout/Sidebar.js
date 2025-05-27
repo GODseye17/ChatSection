@@ -3,10 +3,10 @@ import React from 'react';
 import { Clock } from 'lucide-react';
 import { formatTimestamp } from '../../utils/formatters';
 
-export default function Sidebar({ 
-  sidebarOpen, 
-  conversationHistory, 
-  onSelectConversation 
+export default function Sidebar({
+  sidebarOpen,
+  conversationHistory,
+  onSelectConversation
 }) {
   return (
     <div className={`fixed inset-y-0 left-0 z-50 w-80 transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
@@ -23,22 +23,15 @@ export default function Sidebar({
         <div className="flex-1 overflow-y-auto p-4">
           <div className="space-y-2">
             {conversationHistory.map((item, idx) => (
-              <div 
-                key={idx} 
-                className="p-4 rounded-xl hover:bg-gray-800 cursor-pointer transition-colors group relative overflow-hidden"
+              <div
+                key={idx}
+                className="p-4 rounded-xl hover:bg-gray-800 cursor-pointer transition-colors group"
                 onClick={() => onSelectConversation(item)}
               >
-                <div className="animated-bg opacity-10">
-                  <div className="grid-pattern"></div>
-                  <div className="particles"></div>
-                  <div className="gradient-layer"></div>
-                </div>
-                <div className="relative z-10">
-                  <div className="font-medium text-sm mb-1 group-hover:text-purple-400 transition-colors">{item.topic}</div>
-                  <div className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {formatTimestamp(item.timestamp)}
-                  </div>
+                <div className="font-medium text-sm mb-1 group-hover:text-purple-400 transition-colors">{item.topic}</div>
+                <div className="text-xs text-gray-500 flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {formatTimestamp(item.timestamp)}
                 </div>
               </div>
             ))}

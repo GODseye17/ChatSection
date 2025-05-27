@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import ChatMessageList from './ChatMessageList';
 import ChatInput from './ChatInput';
 
-export default function ChatView({ 
-  chatMessages, 
-  chatInput, 
-  setChatInput, 
-  handleSendMessage, 
+export default function ChatView({
+  chatMessages,
+  chatInput,
+  setChatInput,
+  handleSendMessage,
   topicStatus,
   setIsSearchView,
-  sidebarOpen 
+  sidebarOpen
 }) {
   const [isTyping, setIsTyping] = useState(false);
 
@@ -23,8 +23,8 @@ export default function ChatView({
       // Clear existing particles
       particlesContainer.innerHTML = '';
 
-      // Create new particles
-      for (let i = 0; i < 50; i++) {
+      // Create new particles - more particles for full coverage
+      for (let i = 0; i < 80; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.style.left = `${Math.random() * 100}%`;
@@ -50,24 +50,27 @@ export default function ChatView({
   }, [isTyping]);
 
   return (
-    <div className={`flex flex-col h-[calc(100vh-4rem)] relative bg-gray-900 transition-all duration-300 ${
-      sidebarOpen ? 'ml-80' : 'ml-0'
-    }`}>
-      <div className="animated-bg">
+    <>
+      {/* Full-screen animated background that covers entire viewport */}
+      <div className="fixed inset-0 z-0 animated-bg">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
         <div className="energy-waves"></div>
         <div className="holographic"></div>
         <div className="gradient-layer"></div>
       </div>
-      
-      <div className="flex-1 relative z-10 flex flex-col">
+
+      {/* Chat content area */}
+      <div className={`flex flex-col h-[calc(100vh-4rem)] relative z-10 bg-transparent transition-all duration-300 ${
+        sidebarOpen ? 'ml-80' : 'ml-0'
+      }`}>
         <div className="flex-1 flex">
           <div className="flex-1 max-w-[85rem] mx-auto w-full px-4 md:px-8">
             <ChatMessageList messages={chatMessages} />
           </div>
         </div>
         
+        {/* ChatInput now spans full width of the chat view */}
         <ChatInput
           chatInput={chatInput}
           setChatInput={setChatInput}
@@ -77,6 +80,6 @@ export default function ChatView({
           onTyping={setIsTyping}
         />
       </div>
-    </div>
+    </>
   );
 }
