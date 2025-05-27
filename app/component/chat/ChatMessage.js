@@ -61,7 +61,7 @@ export default function ChatMessage({ message }) {
         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-medium flex-shrink-0">
           V
         </div>
-        <div className="max-w-3xl w-full">
+        <div className="flex-1 max-w-3xl">
           <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
             <div className="flex items-center gap-3">
               <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
@@ -87,7 +87,7 @@ export default function ChatMessage({ message }) {
         </div>
       )}
       
-      <div className={`max-w-3xl w-full ${message.type === 'user' ? 'order-1' : ''}`}>
+      <div className={`flex-1 max-w-3xl ${message.type === 'user' ? 'order-1' : ''}`}>
         <div 
           className={`p-4 rounded-2xl transition-all duration-300 ${
             message.type === 'user' 
@@ -179,20 +179,22 @@ export default function ChatMessage({ message }) {
           {message.citations && message.citations.length > 0 && (
             <div className="mt-4 pt-4 border-t border-white/10">
               <div className="text-xs text-gray-400 mb-2 font-medium">Citations:</div>
-              {message.citations.map((citation, cidx) => (
-                <div key={cidx} className="text-sm mb-2 group/citation">
-                  <a 
-                    href={`https://doi.org/${citation.doi}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1"
-                  >
-                    {citation.title}
-                    <ExternalLink className="w-3 h-3 opacity-0 group-hover/citation:opacity-100 transition-opacity" />
-                  </a>
-                  <span className="text-xs text-gray-500"> - {citation.source}</span>
-                </div>
-              ))}
+              <div className="grid gap-2">
+                {message.citations.map((citation, cidx) => (
+                  <div key={cidx} className="bg-white/5 p-3 rounded-lg group/citation">
+                    <a 
+                      href={`https://doi.org/${citation.doi}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-sm text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1"
+                    >
+                      {citation.title}
+                      <ExternalLink className="w-3 h-3 opacity-0 group-hover/citation:opacity-100 transition-opacity" />
+                    </a>
+                    <div className="text-xs text-gray-500 mt-1">{citation.source}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
