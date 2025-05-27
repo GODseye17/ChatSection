@@ -35,18 +35,20 @@ export default function ChatView({
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] relative">
-      <div className="animated-bg opacity-30">
+      <div className="animated-bg fixed inset-0 opacity-30">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
         <div className="gradient-layer"></div>
       </div>
-      <ChatMessageList messages={chatMessages} />
-      <ChatInput
-        chatInput={chatInput}
-        setChatInput={setChatInput}
-        handleSendMessage={handleSendMessage}
-        topicStatus={topicStatus}
-      />
+      <div className="flex-1 relative z-10 flex flex-col">
+        <ChatMessageList messages={chatMessages} />
+        <ChatInput
+          chatInput={chatInput}
+          setChatInput={setChatInput}
+          handleSendMessage={handleSendMessage}
+          topicStatus={topicStatus}
+        />
+      </div>
     </div>
   );
 }
