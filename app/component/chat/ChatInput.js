@@ -6,7 +6,8 @@ export default function ChatInput({
   chatInput, 
   setChatInput, 
   handleSendMessage, 
-  topicStatus 
+  topicStatus,
+  messages = [] 
 }) {
   return (
     <div className="border-t border-gray-200/10 bg-gray-900/80 backdrop-blur-sm relative z-10">
@@ -42,7 +43,7 @@ export default function ChatInput({
           </button>
         </div>
         
-        {messages?.length === 0 && (
+        {messages.length === 0 && (
           <div className="mt-6 grid grid-cols-2 gap-3">
             <button className="p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 text-left transition-colors">
               <div className="font-medium mb-1 text-gray-200">Explain a complex topic</div>
