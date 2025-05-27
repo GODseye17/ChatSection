@@ -24,34 +24,33 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
-  overflow: hidden;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.4;
   background-attachment: fixed;
 }
 
 .grid-pattern {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
   mask-image: radial-gradient(circle at center, black, transparent 80%);
   background-attachment: fixed;
 }
 
 .particles {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background-attachment: fixed;
 }
 
 .particle {
   position: fixed;
-  width: 3px;
-  height: 3px;
+  width: 2px;
+  height: 2px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
   animation: float 20s infinite linear;
 }
 
@@ -61,9 +60,9 @@ body {
   animation: shift 30s infinite linear;
   background: linear-gradient(
     45deg,
-    rgba(147, 197, 253, 0.1) 0%,
-    rgba(167, 243, 208, 0.1) 50%,
-    rgba(147, 197, 253, 0.1) 100%
+    rgba(147, 197, 253, 0.05) 0%,
+    rgba(167, 243, 208, 0.05) 50%,
+    rgba(147, 197, 253, 0.05) 100%
   );
   background-attachment: fixed;
 }
@@ -74,11 +73,11 @@ body {
   inset: 0;
   background: linear-gradient(180deg,
     transparent 0%,
-    rgba(0, 255, 170, 0.05) 50%,
+    rgba(0, 255, 170, 0.02) 50%,
     transparent 100%
   );
   animation: matrix-fall 20s linear infinite;
-  opacity: 0.3;
+  opacity: 0.2;
   background-attachment: fixed;
 }
 
@@ -88,11 +87,11 @@ body {
   inset: 0;
   background-size: 200% 200%;
   animation: neural-shift 15s infinite linear;
-  opacity: 0.15;
+  opacity: 0.08;
   mix-blend-mode: screen;
   background-image: 
-    linear-gradient(45deg, rgba(147, 197, 253, 0.2) 1px, transparent 1px),
-    linear-gradient(-45deg, rgba(167, 243, 208, 0.2) 1px, transparent 1px);
+    linear-gradient(45deg, rgba(147, 197, 253, 0.1) 1px, transparent 1px),
+    linear-gradient(-45deg, rgba(167, 243, 208, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
   background-attachment: fixed;
 }
@@ -102,11 +101,11 @@ body {
   position: fixed;
   inset: 0;
   background: radial-gradient(circle at 50% 50%,
-    rgba(147, 197, 253, 0.1) 0%,
+    rgba(147, 197, 253, 0.05) 0%,
     transparent 70%
   );
   animation: pulse 4s ease-in-out infinite;
-  opacity: 0.2;
+  opacity: 0.15;
   background-attachment: fixed;
 }
 
@@ -117,13 +116,13 @@ body {
   background: linear-gradient(
     120deg,
     transparent 0%,
-    rgba(147, 197, 253, 0.1) 25%,
-    rgba(167, 243, 208, 0.1) 50%,
-    rgba(147, 197, 253, 0.1) 75%,
+    rgba(147, 197, 253, 0.05) 25%,
+    rgba(167, 243, 208, 0.05) 50%,
+    rgba(147, 197, 253, 0.05) 75%,
     transparent 100%
   );
   animation: holo-shift 8s linear infinite;
-  opacity: 0.2;
+  opacity: 0.15;
   background-attachment: fixed;
 }
 
@@ -132,11 +131,11 @@ body {
   position: fixed;
   inset: 0;
   background-image: 
-    radial-gradient(circle at 50% 50%, rgba(147, 197, 253, 0.2) 1px, transparent 1px),
-    radial-gradient(circle at 0% 0%, rgba(167, 243, 208, 0.2) 1px, transparent 1px);
+    radial-gradient(circle at 50% 50%, rgba(147, 197, 253, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 0% 0%, rgba(167, 243, 208, 0.1) 1px, transparent 1px);
   background-size: 30px 30px;
   animation: circuit 30s linear infinite;
-  opacity: 0.15;
+  opacity: 0.1;
   background-attachment: fixed;
 }
 
@@ -147,36 +146,38 @@ body {
   background: repeating-linear-gradient(
     45deg,
     transparent 0%,
-    rgba(147, 197, 253, 0.1) 25%,
+    rgba(147, 197, 253, 0.05) 25%,
     transparent 50%
   );
   background-size: 100px 100px;
   animation: dna-rotate 20s linear infinite;
-  opacity: 0.2;
+  opacity: 0.15;
   background-attachment: fixed;
 }
 
-/* Connecting dots network */
+/* Network dots */
 .network-dots {
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(circle at 25% 25%, rgba(147, 197, 253, 0.2) 1px, transparent 1px),
-    radial-gradient(circle at 75% 75%, rgba(167, 243, 208, 0.2) 1px, transparent 1px);
+    radial-gradient(circle at 25% 25%, rgba(147, 197, 253, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(167, 243, 208, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: network-pulse 10s infinite linear;
   background-attachment: fixed;
+  opacity: 0.1;
 }
 
 .network-lines {
   position: fixed;
   inset: 0;
   background: 
-    linear-gradient(45deg, transparent 45%, rgba(147, 197, 253, 0.1) 50%, transparent 55%),
-    linear-gradient(-45deg, transparent 45%, rgba(167, 243, 208, 0.1) 50%, transparent 55%);
+    linear-gradient(45deg, transparent 45%, rgba(147, 197, 253, 0.05) 50%, transparent 55%),
+    linear-gradient(-45deg, transparent 45%, rgba(167, 243, 208, 0.05) 50%, transparent 55%);
   background-size: 30px 30px;
   animation: network-flow 15s infinite linear;
   background-attachment: fixed;
+  opacity: 0.1;
 }
 
 /* Chat-specific styles */
@@ -308,7 +309,7 @@ body {
 
 @keyframes network-pulse {
   0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.3; }
+  50% { opacity: 0.2; }
 }
 
 @keyframes network-flow {
