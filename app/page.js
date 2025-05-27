@@ -45,6 +45,15 @@ export default function VivumPlatform() {
   const [apiStatus, setApiStatus] = useState({ model: false, supabase: false });
   const [conversationHistory, setConversationHistory] = useState([]);
 
+  // Apply dark mode class to html element
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
   // Check API status on mount
   useEffect(() => {
     console.log('🎯 Vivum Platform initialized');
@@ -224,9 +233,8 @@ export default function VivumPlatform() {
   };
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
+    <div className={darkMode ? 'dark' : ''}>
       <div className="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
-        
         <ApiStatusBar apiStatus={apiStatus} />
         
         <Sidebar
