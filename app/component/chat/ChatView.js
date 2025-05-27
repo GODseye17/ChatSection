@@ -11,15 +11,12 @@ export default function ChatView({
   topicStatus 
 }) {
   useEffect(() => {
-    // Create particles for chat background
     const createParticles = () => {
       const particlesContainer = document.querySelector('.chat-particles');
       if (!particlesContainer) return;
 
-      // Clear existing particles
       particlesContainer.innerHTML = '';
 
-      // Create new particles
       for (let i = 0; i < 30; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
@@ -35,11 +32,12 @@ export default function ChatView({
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] relative">
-      <div className="animated-bg opacity-30">
+      <div className="animated-bg fixed inset-0 opacity-30 pointer-events-none">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
         <div className="gradient-layer"></div>
       </div>
+      
       <ChatMessageList messages={chatMessages} />
       <ChatInput
         chatInput={chatInput}

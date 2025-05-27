@@ -4,26 +4,18 @@ import { Loader2, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-// Function to convert PubMed IDs to links
 const processPubMedLinks = (text) => {
-  // Multiple patterns to match PubMed IDs in different contexts
   const patterns = [
-    // Match "PubMed ID: 12345678" or "PMID: 12345678"
     /(?:PubMed ID|PMID):\s*(\d{7,8})/gi,
-    // Match standalone 7-8 digit numbers in specific contexts
-    /\|\s*(\d{7,8})\s*\|/g,
-    // Match "12345678 |" pattern
     /\|\s*(\d{7,8})\s*\|/g,
   ];
   
   let processedText = text;
   
-  // First pass: Replace clear PubMed ID references
   processedText = processedText.replace(/(?:PubMed ID|PMID):\s*(\d{7,8})/gi, (match, id) => {
     return `[PubMed ID: ${id}](https://pubmed.ncbi.nlm.nih.gov/${id}/)`;
   });
   
-  // Second pass: Replace IDs in table cells (between pipes)
   processedText = processedText.replace(/\|\s*(\d{7,8})\s*\|/g, (match, id) => {
     return `| [${id}](https://pubmed.ncbi.nlm.nih.gov/${id}/) |`;
   });
@@ -59,16 +51,14 @@ export default function ChatMessage({ message }) {
     }
   }, [message.text, message.type, message.isLoading]);
 
-  // Don't render the initial loading message once articles are ready
   if (message.isInitialLoad && !message.isLoading) {
     return null;
   }
 
-  // Show loading state with animation
   if (message.isLoading) {
     return (
       <div className="flex gap-4 animate-in fade-in slide-in-from-left duration-300">
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 animate-pulse shadow-lg shadow-purple-500/10">
+        <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-lg shadow-purple-500/20">
           V
         </div>
         <div className="max-w-3xl w-full">
@@ -85,7 +75,6 @@ export default function ChatMessage({ message }) {
     );
   }
 
-  // Regular message rendering with animations
   return (
     <div 
       className={`flex gap-4 ${message.type === 'user' ? 'justify-end' : ''} animate-in fade-in ${
@@ -93,7 +82,7 @@ export default function ChatMessage({ message }) {
       } duration-300 group`}
     >
       {message.type === 'assistant' && (
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-lg shadow-purple-500/10">
+        <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-lg shadow-purple-500/20">
           V
         </div>
       )}
@@ -102,14 +91,14 @@ export default function ChatMessage({ message }) {
         <div 
           className={`p-6 rounded-2xl shadow-xl backdrop-blur-sm transition-all duration-300 ${
             message.type === 'user' 
-              ? 'bg-purple-600 text-white shadow-purple-500/10' 
+              ? 'bg-purple-600 text-white shadow-purple-500/20' 
               : message.isError
               ? 'bg-red-900/20 border border-red-800/50'
-              : 'bg-gray-800/50 border border-gray-700/50 group-hover:bg-gray-800/70'
+              : 'bg-gray-800/50 border border-gray-700/50 hover:bg-gray-800/70'
           }`}
         >
           {message.type === 'assistant' ? (
-            <div className="w-full overflow-hidden">
+            <div className="prose prose-invert max-w-none">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -149,7 +138,7 @@ export default function ChatMessage({ message }) {
                     </tr>
                   ),
                   th: ({children}) => (
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       {children}
                     </th>
                   ),
@@ -170,16 +159,13 @@ export default function ChatMessage({ message }) {
                         href={href} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-purple-400 hover:text-purple-300 hover:underline inline-flex items-center gap-1 transition-colors"
+                        className="text-purple-400 hover:text-purple-300 hover:underline inline-flex items-center gap-1"
                       >
                         {children}
                         {isPubMedLink && <ExternalLink className="w-3 h-3" />}
                       </a>
                     );
-                  },
-                  strong: ({children}) => <strong className="font-semibold">{children}</strong>,
-                  em: ({children}) => <em className="italic">{children}</em>,
-                  hr: () => <hr className="my-6 border-gray-700/50" />,
+                  }
                 }}
               >
                 {isTyping ? displayText : processPubMedLinks(message.text)}
@@ -199,7 +185,7 @@ export default function ChatMessage({ message }) {
                     href={`https://doi.org/${citation.doi}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1 transition-colors"
+                    className="text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1"
                   >
                     {citation.title}
                     <ExternalLink className="w-3 h-3 opacity-0 group-hover/citation:opacity-100 transition-opacity" />
@@ -213,7 +199,7 @@ export default function ChatMessage({ message }) {
       </div>
       
       {message.type === 'user' && (
-        <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 font-semibold flex-shrink-0 shadow-lg">
+        <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 font-semibold flex-shrink-0">
           U
         </div>
       )}
