@@ -15,10 +15,16 @@ export default function ChatMessageList({ messages }) {
   }, [messages]);
 
   return (
-    <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-6">
-      <div className="max-w-4xl mx-auto space-y-4">
+    <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-8 chat-scrollbar">
+      <div className="max-w-4xl mx-auto space-y-6">
         {messages.map((message, idx) => (
-          <ChatMessage key={idx} message={message} />
+          <div
+            key={idx}
+            className="animate-in fade-in slide-in-from-bottom-3 duration-500"
+            style={{ animationDelay: `${idx * 50}ms` }}
+          >
+            <ChatMessage message={message} />
+          </div>
         ))}
         <div ref={messagesEndRef} />
       </div>

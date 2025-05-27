@@ -265,9 +265,6 @@ export default function VivumPlatform() {
               setChatInput={setChatInput}
               handleSendMessage={handleSendMessage}
               topicStatus={topicStatus}
-              showSources={showSources}
-              setShowSources={setShowSources}
-              articles={articles}
             />
           )}
         </div>
