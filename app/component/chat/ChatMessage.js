@@ -67,15 +67,15 @@ export default function ChatMessage({ message }) {
   // Show loading state with animation
   if (message.isLoading) {
     return (
-      <div className="flex gap-4 animate-in fade-in slide-in-from-left duration-300">
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 animate-pulse">
-          V
+      <div className="flex gap-3 animate-in fade-in slide-in-from-left duration-300">
+        <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white font-semibold flex-shrink-0 animate-pulse">
+          AI
         </div>
-        <div className="max-w-2xl">
-          <div className="p-4 rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700 shadow-xl">
-            <div className="flex items-center gap-3">
-              <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
-              <p className="text-sm md:text-base text-gray-400">
+        <div className="max-w-[85%]">
+          <div className="p-3 rounded-2xl bg-gray-800 border border-gray-700">
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+              <p className="text-sm text-gray-300">
                 {message.text}
               </p>
             </div>
@@ -87,41 +87,41 @@ export default function ChatMessage({ message }) {
 
   // Regular message rendering with animations
   return (
-    <div className={`flex gap-4 ${message.type === 'user' ? 'justify-end' : ''} animate-in fade-in ${message.type === 'user' ? 'slide-in-from-right' : 'slide-in-from-left'} duration-300`}>
+    <div className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : ''} animate-in fade-in ${message.type === 'user' ? 'slide-in-from-right' : 'slide-in-from-left'} duration-300`}>
       {message.type === 'assistant' && (
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
-          V
+        <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white font-semibold flex-shrink-0">
+          AI
         </div>
       )}
       
-      <div className={`max-w-2xl ${message.type === 'user' ? 'order-1' : ''}`}>
-        <div className={`p-4 rounded-2xl shadow-xl backdrop-blur-sm ${
+      <div className={`max-w-[85%] ${message.type === 'user' ? 'order-1' : ''}`}>
+        <div className={`p-3 rounded-2xl ${
           message.type === 'user' 
-            ? 'bg-purple-600/90 text-white' 
+            ? 'bg-purple-600 text-white' 
             : message.isError
-            ? 'bg-red-900/20 border border-red-800'
-            : 'bg-gray-800/50 border border-gray-700'
+            ? 'bg-red-500/10 border border-red-500/20'
+            : 'bg-gray-800 border border-gray-700'
         }`}>
           {message.type === 'assistant' ? (
             <div className="w-full overflow-hidden">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  h1: ({children}) => <h1 className="text-2xl font-bold mb-3 mt-4">{children}</h1>,
-                  h2: ({children}) => <h2 className="text-xl font-bold mb-2 mt-3">{children}</h2>,
-                  h3: ({children}) => <h3 className="text-lg font-bold mb-2 mt-3">{children}</h3>,
-                  p: ({children}) => <p className="mb-3 leading-7 text-gray-300">{children}</p>,
-                  ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1 ml-4">{children}</ul>,
-                  ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1 ml-4">{children}</ol>,
+                  h1: ({children}) => <h1 className="text-xl font-bold mb-2 mt-3">{children}</h1>,
+                  h2: ({children}) => <h2 className="text-lg font-bold mb-2 mt-3">{children}</h2>,
+                  h3: ({children}) => <h3 className="text-base font-bold mb-2 mt-3">{children}</h3>,
+                  p: ({children}) => <p className="mb-2 leading-relaxed text-gray-300">{children}</p>,
+                  ul: ({children}) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                  ol: ({children}) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
                   li: ({children}) => <li className="text-gray-300">{children}</li>,
                   code: ({inline, children}) => 
                     inline ? 
-                      <code className="bg-gray-700/50 px-1.5 py-0.5 rounded text-sm font-mono text-purple-400">{children}</code> :
-                      <pre className="bg-gray-700/50 p-4 rounded-lg my-3 overflow-x-auto">
-                        <code className="text-sm font-mono">{children}</code>
+                      <code className="bg-gray-700 px-1.5 py-0.5 rounded text-sm font-mono text-purple-400">{children}</code> :
+                      <pre className="bg-gray-700 p-3 rounded-lg my-2 overflow-x-auto">
+                        <code className="text-sm font-mono text-gray-300">{children}</code>
                       </pre>,
                   table: ({children}) => (
-                    <div className="my-4 w-full overflow-x-auto rounded-lg border border-gray-700">
+                    <div className="my-3 w-full overflow-x-auto rounded-lg border border-gray-700">
                       <table className="w-full divide-y divide-gray-700">
                         {children}
                       </table>
@@ -133,27 +133,27 @@ export default function ChatMessage({ message }) {
                     </thead>
                   ),
                   tbody: ({children}) => (
-                    <tbody className="bg-gray-900/50 divide-y divide-gray-700">
+                    <tbody className="divide-y divide-gray-700">
                       {children}
                     </tbody>
                   ),
                   tr: ({children}) => (
-                    <tr className="hover:bg-gray-800/50 transition-colors">
+                    <tr className="hover:bg-gray-700/50 transition-colors">
                       {children}
                     </tr>
                   ),
                   th: ({children}) => (
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       {children}
                     </th>
                   ),
                   td: ({children}) => (
-                    <td className="px-4 py-3 text-sm text-gray-400">
+                    <td className="px-3 py-2 text-sm text-gray-300">
                       {children}
                     </td>
                   ),
                   blockquote: ({children}) => (
-                    <blockquote className="border-l-4 border-purple-500 pl-4 my-3 italic text-gray-300">
+                    <blockquote className="border-l-4 border-purple-500 pl-3 my-2 italic text-gray-300">
                       {children}
                     </blockquote>
                   ),
@@ -173,23 +173,28 @@ export default function ChatMessage({ message }) {
                   },
                   strong: ({children}) => <strong className="font-semibold">{children}</strong>,
                   em: ({children}) => <em className="italic">{children}</em>,
-                  hr: () => <hr className="my-4 border-gray-700" />,
+                  hr: () => <hr className="my-3 border-gray-700" />,
                 }}
               >
                 {isTyping ? displayText : processPubMedLinks(message.text)}
               </ReactMarkdown>
             </div>
           ) : (
-            <p className="text-sm md:text-base">
+            <p className="text-sm">
               {message.text}
             </p>
           )}
           {message.citations && message.citations.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-gray-700">
-              <div className="text-xs text-gray-400 mb-2">Citations:</div>
+            <div className="mt-2 pt-2 border-t border-gray-700">
+              <div className="text-xs text-gray-400 mb-1">Citations:</div>
               {message.citations.map((citation, cidx) => (
-                <div key={cidx} className="text-sm mb-2">
-                  <a href={`https://doi.org/${citation.doi}`} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline flex items-center gap-1">
+                <div key={cidx} className="text-sm mb-1">
+                  <a 
+                    href={`https://doi.org/${citation.doi}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-purple-400 hover:underline flex items-center gap-1"
+                  >
                     {citation.title}
                     <ExternalLink className="w-3 h-3" />
                   </a>
@@ -202,7 +207,7 @@ export default function ChatMessage({ message }) {
       </div>
       
       {message.type === 'user' && (
-        <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 font-semibold flex-shrink-0">
+        <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 font-semibold flex-shrink-0">
           U
         </div>
       )}

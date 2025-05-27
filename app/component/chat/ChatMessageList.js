@@ -15,8 +15,8 @@ export default function ChatMessageList({ messages }) {
   }, [messages]);
 
   return (
-    <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-8 chat-scrollbar">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 chat-scrollbar">
+      <div className="max-w-3xl mx-auto space-y-6">
         {messages.map((message, idx) => (
           <div
             key={idx}

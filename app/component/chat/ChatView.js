@@ -34,13 +34,13 @@ export default function ChatView({
   }, []);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] relative">
+    <div className="flex flex-col h-[calc(100vh-4rem)] relative bg-gray-900">
       <div className="animated-bg opacity-30">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
         <div className="gradient-layer"></div>
       </div>
-      <div className="flex-1 relative z-10 flex flex-col">
+      <div className="flex-1 relative z-10 flex flex-col max-w-5xl mx-auto w-full">
         <ChatMessageList messages={chatMessages} />
         <ChatInput
           chatInput={chatInput}
