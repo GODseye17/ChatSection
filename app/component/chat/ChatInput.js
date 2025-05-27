@@ -18,7 +18,7 @@ export default function ChatInput({
           </div>
         )}
         {topicStatus === 'ready' && (
-          <div className="mb-4 text-sm text-green-400 flex items-center gap-2">
+          <div className="mb-4 text-sm text-emerald-400 flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
             Ready! You can now ask questions about the research.
           </div>
@@ -29,14 +29,14 @@ export default function ChatInput({
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
             placeholder={topicStatus === 'ready' ? "Ask about the research..." : "Waiting for articles to be processed..."}
-            className="flex-1 px-4 py-3 bg-gray-800/50 rounded-xl border border-gray-700/50 outline-none text-gray-100 placeholder-gray-500 focus:border-purple-500/50 transition-colors"
+            className="flex-1 px-4 py-3 bg-gray-800/50 rounded-xl border border-gray-700/50 outline-none text-gray-100 placeholder-gray-500 focus:border-indigo-500/50 transition-colors"
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             disabled={topicStatus !== 'ready'}
           />
           <button
             onClick={handleSendMessage}
             disabled={!chatInput.trim() || topicStatus !== 'ready'}
-            className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition-all transform hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg shadow-purple-500/20"
+            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all transform hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg shadow-indigo-500/20"
           >
             <Send className="w-4 h-4" />
           </button>

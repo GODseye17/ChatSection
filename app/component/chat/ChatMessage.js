@@ -58,13 +58,13 @@ export default function ChatMessage({ message }) {
   if (message.isLoading) {
     return (
       <div className="flex gap-4 animate-in fade-in slide-in-from-left duration-300">
-        <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-lg shadow-purple-500/20">
+        <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-lg shadow-indigo-500/20">
           V
         </div>
         <div className="max-w-3xl w-full">
           <div className="p-6 rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 shadow-xl">
             <div className="flex items-center gap-3">
-              <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
+              <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
               <p className="text-base text-gray-300">
                 {message.text}
               </p>
@@ -82,7 +82,7 @@ export default function ChatMessage({ message }) {
       } duration-300 group`}
     >
       {message.type === 'assistant' && (
-        <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-lg shadow-purple-500/20">
+        <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-lg shadow-indigo-500/20">
           V
         </div>
       )}
@@ -91,7 +91,7 @@ export default function ChatMessage({ message }) {
         <div 
           className={`p-6 rounded-2xl shadow-xl backdrop-blur-sm transition-all duration-300 ${
             message.type === 'user' 
-              ? 'bg-purple-600 text-white shadow-purple-500/20' 
+              ? 'bg-indigo-600 text-white shadow-indigo-500/20' 
               : message.isError
               ? 'bg-red-900/20 border border-red-800/50'
               : 'bg-gray-800/50 border border-gray-700/50 hover:bg-gray-800/70'
@@ -102,18 +102,18 @@ export default function ChatMessage({ message }) {
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  h1: ({children}) => <h1 className="text-2xl font-bold mb-4 mt-6">{children}</h1>,
-                  h2: ({children}) => <h2 className="text-xl font-bold mb-3 mt-5">{children}</h2>,
-                  h3: ({children}) => <h3 className="text-lg font-bold mb-3 mt-4">{children}</h3>,
+                  h1: ({children}) => <h1 className="text-2xl font-bold mb-4 mt-6 text-gray-100">{children}</h1>,
+                  h2: ({children}) => <h2 className="text-xl font-bold mb-3 mt-5 text-gray-100">{children}</h2>,
+                  h3: ({children}) => <h3 className="text-lg font-bold mb-3 mt-4 text-gray-100">{children}</h3>,
                   p: ({children}) => <p className="mb-4 leading-relaxed text-gray-300">{children}</p>,
-                  ul: ({children}) => <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>,
-                  ol: ({children}) => <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>,
+                  ul: ({children}) => <ul className="list-disc list-inside mb-4 space-y-2 text-gray-300">{children}</ul>,
+                  ol: ({children}) => <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-300">{children}</ol>,
                   li: ({children}) => <li className="text-gray-300 ml-4">{children}</li>,
                   code: ({inline, children}) => 
                     inline ? 
-                      <code className="bg-gray-700/50 px-1.5 py-0.5 rounded text-sm font-mono text-purple-400">{children}</code> :
+                      <code className="bg-gray-700/50 px-1.5 py-0.5 rounded text-sm font-mono text-indigo-400">{children}</code> :
                       <pre className="bg-gray-700/50 p-4 rounded-lg my-4 overflow-x-auto">
-                        <code className="text-sm font-mono">{children}</code>
+                        <code className="text-sm font-mono text-gray-300">{children}</code>
                       </pre>,
                   table: ({children}) => (
                     <div className="my-4 w-full overflow-x-auto rounded-lg border border-gray-700/50">
@@ -148,7 +148,7 @@ export default function ChatMessage({ message }) {
                     </td>
                   ),
                   blockquote: ({children}) => (
-                    <blockquote className="border-l-4 border-purple-500/50 pl-4 my-4 italic text-gray-300">
+                    <blockquote className="border-l-4 border-indigo-500/50 pl-4 my-4 italic text-gray-300">
                       {children}
                     </blockquote>
                   ),
@@ -159,7 +159,7 @@ export default function ChatMessage({ message }) {
                         href={href} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-purple-400 hover:text-purple-300 hover:underline inline-flex items-center gap-1"
+                        className="text-indigo-400 hover:text-indigo-300 hover:underline inline-flex items-center gap-1"
                       >
                         {children}
                         {isPubMedLink && <ExternalLink className="w-3 h-3" />}
@@ -185,7 +185,7 @@ export default function ChatMessage({ message }) {
                     href={`https://doi.org/${citation.doi}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1"
+                    className="text-indigo-400 hover:text-indigo-300 hover:underline flex items-center gap-1"
                   >
                     {citation.title}
                     <ExternalLink className="w-3 h-3 opacity-0 group-hover/citation:opacity-100 transition-opacity" />
