@@ -10,52 +10,25 @@ export default function ChatView({
   handleSendMessage, 
   topicStatus,
   setIsSearchView,
+  setShowSources,
   sidebarOpen 
 }) {
   const [isTyping, setIsTyping] = useState(false);
 
-  useEffect(() => {
-    // Create particles for chat background
-    const createParticles = () => {
-      const particlesContainer = document.querySelector('.chat-particles');
-      if (!particlesContainer) return;
-
-      // Clear existing particles
-      particlesContainer.innerHTML = '';
-
-      // Create new particles
-      for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.animationDelay = `${Math.random() * 20}s`;
-        particlesContainer.appendChild(particle);
-      }
-    };
-
-    createParticles();
-  }, []);
-
-  // Update particle animation when typing
-  useEffect(() => {
-    const particlesContainer = document.querySelector('.chat-particles');
-    if (particlesContainer) {
-      if (isTyping) {
-        particlesContainer.classList.add('active');
-      } else {
-        particlesContainer.classList.remove('active');
-      }
-    }
-  }, [isTyping]);
-
   return (
-    <div className={`flex flex-col h-[calc(100vh-4rem)] relative bg-gray-900 transition-all duration-300 ${
-      sidebarOpen ? 'ml-80' : 'ml-0'
-    }`}>
-      <div className="animated-bg">
+    <div 
+      className={`flex flex-col h-[calc(100vh-4rem)] relative transition-all duration-300 ${
+        sidebarOpen ? 'ml-80' : 'ml-0'
+      }`}
+      style={{
+        background: 'linear-gradient(to bottom, rgba(17, 24, 39, 0.95), rgba(0, 0, 0, 0.95))',
+        backgroundAttachment: 'fixed',
+        backgroundSize: 'cover'
+      }}
+    >
+      <div className="animated-bg fixed inset-0 pointer-events-none">
         <div className="grid-pattern"></div>
-        <div className="particles chat-particles"></div>
+        <div className="particles"></div>
         <div className="matrix-rain"></div>
         <div className="neural-lines"></div>
         <div className="energy-waves"></div>
@@ -63,6 +36,8 @@ export default function ChatView({
         <div className="circuit-pattern"></div>
         <div className="dna-helix"></div>
         <div className="gradient-layer"></div>
+        <div className="network-dots"></div>
+        <div className="network-lines"></div>
       </div>
       
       <div className="flex-1 relative z-10 flex flex-col">
@@ -78,6 +53,7 @@ export default function ChatView({
           handleSendMessage={handleSendMessage}
           topicStatus={topicStatus}
           setIsSearchView={setIsSearchView}
+          setShowSources={setShowSources}
           onTyping={setIsTyping}
         />
       </div>
