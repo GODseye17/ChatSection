@@ -16,7 +16,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  min-height: 100vh;
 }
 
 /* Modern animated background */
@@ -27,7 +26,6 @@ body {
   overflow: hidden;
   pointer-events: none;
   opacity: 0.6;
-  background-attachment: fixed;
 }
 
 .grid-pattern {
@@ -37,17 +35,15 @@ body {
     linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
   mask-image: radial-gradient(circle at center, black, transparent 80%);
-  background-attachment: fixed;
 }
 
 .particles {
   position: absolute;
   inset: 0;
-  background-attachment: fixed;
 }
 
 .particle {
-  position: fixed;
+  position: absolute;
   width: 3px;
   height: 3px;
   border-radius: 50%;
@@ -56,7 +52,7 @@ body {
 }
 
 .gradient-layer {
-  position: fixed;
+  position: absolute;
   inset: 0;
   animation: shift 30s infinite linear;
   background: linear-gradient(
@@ -65,12 +61,11 @@ body {
     rgba(167, 243, 208, 0.1) 50%,
     rgba(147, 197, 253, 0.1) 100%
   );
-  background-attachment: fixed;
 }
 
 /* Matrix digital rain effect */
 .matrix-rain {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: linear-gradient(180deg,
     transparent 0%,
@@ -79,12 +74,11 @@ body {
   );
   animation: matrix-fall 20s linear infinite;
   opacity: 0.3;
-  background-attachment: fixed;
 }
 
 /* Neural network effect */
 .neural-lines {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background-size: 200% 200%;
   animation: neural-shift 15s infinite linear;
@@ -94,12 +88,11 @@ body {
     linear-gradient(45deg, rgba(147, 197, 253, 0.2) 1px, transparent 1px),
     linear-gradient(-45deg, rgba(167, 243, 208, 0.2) 1px, transparent 1px);
   background-size: 50px 50px;
-  background-attachment: fixed;
 }
 
 /* Energy waves */
 .energy-waves {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: radial-gradient(circle at 50% 50%,
     rgba(147, 197, 253, 0.1) 0%,
@@ -107,12 +100,11 @@ body {
   );
   animation: pulse 4s ease-in-out infinite;
   opacity: 0.2;
-  background-attachment: fixed;
 }
 
 /* Holographic effect */
 .holographic {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: linear-gradient(
     120deg,
@@ -124,12 +116,11 @@ body {
   );
   animation: holo-shift 8s linear infinite;
   opacity: 0.2;
-  background-attachment: fixed;
 }
 
 /* Circuit board pattern */
 .circuit-pattern {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background-image: 
     radial-gradient(circle at 50% 50%, rgba(147, 197, 253, 0.2) 1px, transparent 1px),
@@ -137,12 +128,11 @@ body {
   background-size: 30px 30px;
   animation: circuit 30s linear infinite;
   opacity: 0.15;
-  background-attachment: fixed;
 }
 
 /* DNA helix */
 .dna-helix {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
     45deg,
@@ -153,30 +143,6 @@ body {
   background-size: 100px 100px;
   animation: dna-rotate 20s linear infinite;
   opacity: 0.2;
-  background-attachment: fixed;
-}
-
-/* Connecting dots network */
-.network-dots {
-  position: fixed;
-  inset: 0;
-  background: 
-    radial-gradient(circle at 25% 25%, rgba(147, 197, 253, 0.2) 1px, transparent 1px),
-    radial-gradient(circle at 75% 75%, rgba(167, 243, 208, 0.2) 1px, transparent 1px);
-  background-size: 50px 50px;
-  animation: network-pulse 10s infinite linear;
-  background-attachment: fixed;
-}
-
-.network-lines {
-  position: fixed;
-  inset: 0;
-  background: 
-    linear-gradient(45deg, transparent 45%, rgba(147, 197, 253, 0.1) 50%, transparent 55%),
-    linear-gradient(-45deg, transparent 45%, rgba(167, 243, 208, 0.1) 50%, transparent 55%);
-  background-size: 30px 30px;
-  animation: network-flow 15s infinite linear;
-  background-attachment: fixed;
 }
 
 /* Chat-specific styles */
@@ -304,16 +270,6 @@ body {
 @keyframes dna-rotate {
   0% { background-position: 0 0; }
   100% { background-position: 100px 100px; }
-}
-
-@keyframes network-pulse {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.3; }
-}
-
-@keyframes network-flow {
-  0% { background-position: 0 0; }
-  100% { background-position: 30px 30px; }
 }
 
 @keyframes message-glow {
