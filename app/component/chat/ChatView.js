@@ -1,5 +1,5 @@
 // app/components/chat/ChatView.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ChatMessageList from './ChatMessageList';
 import ChatInput from './ChatInput';
 
@@ -11,6 +11,8 @@ export default function ChatView({
   topicStatus,
   setIsSearchView 
 }) {
+  const [isTyping, setIsTyping] = useState(false);
+
   useEffect(() => {
     // Create particles for chat background
     const createParticles = () => {
@@ -34,11 +36,26 @@ export default function ChatView({
     createParticles();
   }, []);
 
+  // Update particle animation when typing
+  useEffect(() => {
+    const particlesContainer = document.querySelector('.chat-particles');
+    if (particlesContainer) {
+      if (isTyping) {
+        particlesContainer.classList.add('active');
+      } else {
+        particlesContainer.classList.remove('active');
+      }
+    }
+  }, [isTyping]);
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] relative bg-gray-900">
       <div className="animated-bg opacity-50">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
+        <div className="neural-lines"></div>
+        <div className="binary-rain"></div>
+        <div className="circuit-pattern"></div>
         <div className="gradient-layer"></div>
       </div>
       <div className="flex-1 relative z-10 flex flex-col max-w-5xl mx-auto w-full">
@@ -49,6 +66,7 @@ export default function ChatView({
           handleSendMessage={handleSendMessage}
           topicStatus={topicStatus}
           setIsSearchView={setIsSearchView}
+          onTyping={setIsTyping}
         />
       </div>
     </div>
