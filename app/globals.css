@@ -35,7 +35,6 @@ body {
     linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
   mask-image: radial-gradient(circle at center, black, transparent 80%);
-  animation: grid-float 20s infinite linear;
 }
 
 .particles {
@@ -235,11 +234,6 @@ body {
   50% { transform: translate(200px, 0); }
   75% { transform: translate(100px, -100px); }
   100% { transform: translate(0, 0); }
-}
-
-@keyframes grid-float {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(50px); }
 }
 
 @keyframes shift {
