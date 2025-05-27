@@ -25,75 +25,108 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Animated background */
+/* Modern animated background */
 .animated-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  position: fixed;
+  inset: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
 }
 
-.animated-bg::before,
-.animated-bg::after {
-  content: '';
+.grid-pattern {
   position: absolute;
-  width: 300px;
-  height: 300px;
+  inset: 0;
+  background-image: linear-gradient(rgba(125, 125, 125, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 125, 125, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(circle at center, black, transparent 80%);
+}
+
+.particles {
+  position: absolute;
+  inset: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.15;
-  animation: float 20s infinite ease-in-out;
+  background: rgba(125, 125, 125, 0.15);
+  animation: float 20s infinite linear;
 }
 
-.animated-bg::before {
-  background: #9333ea;
-  top: -100px;
-  left: -100px;
-  animation-delay: -5s;
+.gradient-layer {
+  position: absolute;
+  inset: 0;
+  animation: shift 30s infinite linear;
 }
 
-.animated-bg::after {
-  background: #6366f1;
-  bottom: -100px;
-  right: -100px;
+/* Light mode */
+.gradient-layer {
+  background: linear-gradient(
+    45deg,
+    rgba(147, 197, 253, 0.05) 0%,
+    rgba(167, 243, 208, 0.05) 50%,
+    rgba(147, 197, 253, 0.05) 100%
+  );
 }
 
+/* Dark mode */
+.dark .grid-pattern {
+  background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+}
+
+.dark .particle {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.dark .gradient-layer {
+  background: linear-gradient(
+    45deg,
+    rgba(30, 64, 175, 0.1) 0%,
+    rgba(56, 189, 248, 0.1) 50%,
+    rgba(30, 64, 175, 0.1) 100%
+  );
+}
+
+/* Animations */
 @keyframes float {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
+  0% {
+    transform: translate(0, 0);
   }
   25% {
-    transform: translate(100px, 50px) scale(1.2);
+    transform: translate(100px, 100px);
   }
   50% {
-    transform: translate(50px, 100px) scale(0.9);
+    transform: translate(200px, 0);
   }
   75% {
-    transform: translate(-50px, 50px) scale(1.1);
+    transform: translate(100px, -100px);
+  }
+  100% {
+    transform: translate(0, 0);
   }
 }
 
-/* Dark mode transitions */
-.dark .animated-bg::before {
-  background: #9333ea;
-  opacity: 0.1;
+@keyframes shift {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.5);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
-.dark .animated-bg::after {
-  background: #6366f1;
-  opacity: 0.1;
-}
-
-/* Add these animations to your globals.css file */
+/* Existing animations */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slide-in-from-left {
@@ -158,12 +191,12 @@ body {
   animation-duration: 500ms;
 }
 
-/* Smooth scrolling for the entire app */
+/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar for chat */
+/* Chat scrollbar */
 .chat-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
