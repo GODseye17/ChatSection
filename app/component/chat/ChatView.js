@@ -8,7 +8,8 @@ export default function ChatView({
   chatInput, 
   setChatInput, 
   handleSendMessage, 
-  topicStatus 
+  topicStatus,
+  setIsSearchView 
 }) {
   useEffect(() => {
     // Create particles for chat background
@@ -35,7 +36,7 @@ export default function ChatView({
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] relative bg-gray-900">
-      <div className="animated-bg opacity-30">
+      <div className="animated-bg opacity-50">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
         <div className="gradient-layer"></div>
@@ -47,6 +48,7 @@ export default function ChatView({
           setChatInput={setChatInput}
           handleSendMessage={handleSendMessage}
           topicStatus={topicStatus}
+          setIsSearchView={setIsSearchView}
         />
       </div>
     </div>
