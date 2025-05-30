@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from './services/api';
 import { useDarkMode } from './hooks/useDarkMode';
+import { Toaster } from '@/components/ui/sonner';
 
 // Layout Components
 import Header from './component/layout/Header';
@@ -267,6 +268,8 @@ export default function VivumPlatform() {
               topicStatus={topicStatus}
               setIsSearchView={setIsSearchView}
               sidebarOpen={sidebarOpen}
+              searchQuery={searchQuery}
+              articles={articles}
             />
           )}
         </div>
@@ -276,6 +279,8 @@ export default function VivumPlatform() {
           setShowSources={setShowSources}
           articles={articles}
         />
+        
+        <Toaster />
       </div>
     </div>
   );
