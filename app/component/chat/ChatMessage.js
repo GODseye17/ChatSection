@@ -38,22 +38,26 @@ export default function ChatMessage({ message }) {
   useEffect(() => {
     if (message.type === 'assistant' && !message.isLoading) {
       setIsTyping(true);
-      let currentText = '';
       const text = message.text;
-      let index = 0;
+      
+      // Split into words for faster, more natural streaming
+      const words = text.split(' ');
+      let currentWordIndex = 0;
+      let displayedWords = [];
 
-      const typeWriter = () => {
-        if (index < text.length) {
-          currentText += text.charAt(index);
-          setDisplayText(currentText);
-          index++;
-          setTimeout(typeWriter, 20);
+      const streamText = () => {
+        if (currentWordIndex < words.length) {
+          displayedWords.push(words[currentWordIndex]);
+          setDisplayText(displayedWords.join(' '));
+          currentWordIndex++;
+          // Fast streaming - 30ms per word (like ChatGPT)
+          setTimeout(streamText, 30);
         } else {
           setIsTyping(false);
         }
       };
 
-      typeWriter();
+      streamText();
     } else {
       setDisplayText(message.text);
     }
