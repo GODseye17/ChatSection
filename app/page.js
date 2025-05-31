@@ -1,9 +1,9 @@
 // app/page.js
 'use client'
-
 import React, { useState, useEffect } from 'react';
 import { apiService } from './services/api';
 import { useDarkMode } from './hooks/useDarkMode';
+import { cn } from './lib/utils';
 
 // Layout Components
 import Header from './component/layout/Header';
@@ -16,8 +16,8 @@ import SearchView from './component/search/SearchView';
 // Chat Components
 import ChatView from './component/chat/ChatView';
 
-// Sources Components
-import SourcesOverlay from './component/sources/SourcesOverlay';
+// Canvas Components
+import SourcesCanvas from './component/canvas/SourcesCanvas';
 
 export default function VivumPlatform() {
   // Core state
@@ -122,8 +122,12 @@ export default function VivumPlatform() {
     setLoading(true);
     setIsSearchView(false);
     
-    // Add initial user message
-    setChatMessages([{ type: 'user', text: searchQuery }]);
+    // Add initial user message with timestamp
+    setChatMessages([{ 
+      type: 'user', 
+      text: searchQuery,
+      timestamp: new Date()
+    }]);
     
     try {
       const data = await apiService.fetchTopicData(searchQuery, selectedSource);
@@ -133,12 +137,13 @@ export default function VivumPlatform() {
         setCurrentTopicId(data.topic_id);
         setTopicStatus(data.status);
         
-        // Add loading message
+        // Add loading message with timestamp
         setChatMessages(prev => [...prev, {
           type: 'assistant',
           text: `I'm searching for articles about "${searchQuery}" in ${selectedSource}. This may take a moment...`,
           isLoading: true,
-          isInitialLoad: true
+          isInitialLoad: true,
+          timestamp: new Date()
         }]);
 
         // Add to conversation history
@@ -158,7 +163,8 @@ export default function VivumPlatform() {
       setChatMessages(prev => [...prev, {
         type: 'assistant',
         text: `Sorry, I encountered an error while fetching articles: ${error.message}. Please check the console for details.`,
-        isError: true
+        isError: true,
+        timestamp: new Date()
       }]);
     } finally {
       setLoading(false);
@@ -180,27 +186,33 @@ export default function VivumPlatform() {
     console.log('💬 Sending user message:', userMessage);
     setChatInput('');
     
-    // Add user message
-    setChatMessages(prev => [...prev, { type: 'user', text: userMessage }]);
+    // Add user message with timestamp
+    setChatMessages(prev => [...prev, { 
+      type: 'user', 
+      text: userMessage,
+      timestamp: new Date()
+    }]);
     
-    // Add loading message
+    // Add loading message with timestamp
     const loadingMessageId = Date.now();
     setChatMessages(prev => [...prev, {
       id: loadingMessageId,
       type: 'assistant',
       text: 'Analyzing research articles...',
-      isLoading: true
+      isLoading: true,
+      timestamp: new Date()
     }]);
 
     try {
       const data = await apiService.sendQuery(userMessage, currentTopicId);
       
-      // Remove loading message and add response
+      // Remove loading message and add response with timestamp
       setChatMessages(prev => prev.filter(msg => msg.id !== loadingMessageId));
       setChatMessages(prev => [...prev, {
         type: 'assistant',
         text: data.response || 'No answer provided',
-        citations: data.citations || []
+        citations: data.citations || [],
+        timestamp: new Date()
       }]);
     } catch (error) {
       console.error('❌ Error in handleSendMessage:', error);
@@ -209,7 +221,8 @@ export default function VivumPlatform() {
       setChatMessages(prev => [...prev, {
         type: 'assistant',
         text: `Sorry, I encountered an error while processing your question: ${error.message}. Please check the console for details.`,
-        isError: true
+        isError: true,
+        timestamp: new Date()
       }]);
     }
   };
@@ -221,62 +234,85 @@ export default function VivumPlatform() {
     setIsSearchView(false);
     setSidebarOpen(false);
     fetchTopicArticles(conversation.id);
+    // Clear existing messages when selecting a conversation
+    setChatMessages([]);
   };
 
   return (
-    <div className="min-h-screen dark">
-      <div className="bg-gray-950 text-gray-100 min-h-screen transition-colors duration-300">
-        <ApiStatusBar apiStatus={apiStatus} />
+    <div className="h-screen overflow-hidden bg-gray-950">
+      {/* Fixed height container with canvas support */}
+      <div className={cn(
+        "h-full flex flex-col transition-all duration-300",
+        showSources && "md:pr-[600px] lg:pr-[700px]" // Make room for the canvas
+      )}>
+        {/* API Status Bar - Fixed at top */}
+        {(!apiStatus.model || !apiStatus.supabase) && (
+          <ApiStatusBar apiStatus={apiStatus} />
+        )}
         
-        <Sidebar
-          sidebarOpen={sidebarOpen}
-          conversationHistory={conversationHistory}
-          onSelectConversation={handleSelectConversation}
-        />
-
-        <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
-          <Header
+        {/* Main content area */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Sidebar - Fixed height */}
+          <Sidebar
             sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-            darkMode={darkMode}
-            toggleDarkMode={toggleDarkMode}
-            isSearchView={isSearchView}
-            setIsSearchView={setIsSearchView}
-            showSources={showSources}
-            setShowSources={setShowSources}
-            articles={articles}
+            conversationHistory={conversationHistory}
+            onSelectConversation={handleSelectConversation}
           />
 
-          {isSearchView ? (
-            <SearchView
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              selectedSource={selectedSource}
-              setSelectedSource={setSelectedSource}
-              handleFetchArticles={handleFetchArticles}
-              loading={loading}
-              showFilters={showFilters}
-              setShowFilters={setShowFilters}
-            />
-          ) : (
-            <ChatView
-              chatMessages={chatMessages}
-              chatInput={chatInput}
-              setChatInput={setChatInput}
-              handleSendMessage={handleSendMessage}
-              topicStatus={topicStatus}
-              setIsSearchView={setIsSearchView}
+          {/* Content area with proper transitions */}
+          <div className={cn(
+            "flex-1 flex flex-col transition-all duration-300",
+            sidebarOpen ? 'ml-80' : 'ml-0'
+          )}>
+            {/* Header - Fixed at top of content */}
+            <Header
               sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              darkMode={darkMode}
+              toggleDarkMode={toggleDarkMode}
+              isSearchView={isSearchView}
+              setIsSearchView={setIsSearchView}
+              showSources={showSources}
+              setShowSources={setShowSources}
+              articles={articles}
             />
-          )}
-        </div>
 
-        <SourcesOverlay
-          showSources={showSources}
-          setShowSources={setShowSources}
-          articles={articles}
-        />
+            {/* Main view area - Scrollable */}
+            <div className="flex-1 overflow-hidden">
+              {isSearchView ? (
+                <SearchView
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  selectedSource={selectedSource}
+                  setSelectedSource={setSelectedSource}
+                  handleFetchArticles={handleFetchArticles}
+                  loading={loading}
+                  showFilters={showFilters}
+                  setShowFilters={setShowFilters}
+                />
+              ) : (
+                <ChatView
+                  chatMessages={chatMessages}
+                  chatInput={chatInput}
+                  setChatInput={setChatInput}
+                  handleSendMessage={handleSendMessage}
+                  topicStatus={topicStatus}
+                  setIsSearchView={setIsSearchView}
+                  sidebarOpen={sidebarOpen}
+                  currentTopic={searchQuery}
+                />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Sources Canvas - Slides in from right */}
+      <SourcesCanvas
+        articles={articles}
+        isOpen={showSources}
+        onClose={() => setShowSources(false)}
+      />
     </div>
   );
 }

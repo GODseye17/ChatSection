@@ -1,6 +1,8 @@
-// app/components/layout/Header.js
+// app/component/layout/Header.js
 import React from 'react';
-import { Menu, X, Sun, Moon, ExternalLink } from 'lucide-react';
+import { Menu, X, Sun, Moon, BookOpen } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 
 export default function Header({ 
   sidebarOpen, 
@@ -14,36 +16,50 @@ export default function Header({
   articles 
 }) {
   return (
-    <header className="h-16 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-40">
-      <button
+    <header className="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-30">
+      <Button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+        variant="ghost"
+        size="icon"
+        className="hover:bg-gray-800"
       >
         {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
+      </Button>
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {!isSearchView && articles.length > 0 && (
-          <button
+          <Button
             onClick={() => setShowSources(true)}
-            className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 text-purple-600 dark:text-purple-400 rounded-lg transition-colors font-medium text-sm flex items-center gap-2"
+            variant="secondary"
+            size="sm"
+            className="gap-2 relative"
           >
-            <ExternalLink className="w-4 h-4" />
-            Sources ({articles.length})
-          </button>
+            <BookOpen className="w-4 h-4" />
+            Sources
+            <Badge 
+              variant="default" 
+              className="ml-1 px-1.5 py-0 text-xs bg-purple-600 hover:bg-purple-600"
+            >
+              {articles.length}
+            </Badge>
+          </Button>
         )}
-        <button
+        <Button
           onClick={() => setIsSearchView(true)}
-          className="text-sm font-medium text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+          variant="ghost"
+          size="sm"
+          className="text-purple-400 hover:text-purple-300"
         >
           New Search
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={toggleDarkMode}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          variant="ghost"
+          size="icon"
+          className="hover:bg-gray-800"
         >
           {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
+        </Button>
       </div>
     </header>
   );

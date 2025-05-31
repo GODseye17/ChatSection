@@ -1,8 +1,29 @@
 @import "tailwindcss";
 
 :root {
+  /* Your existing variables */
   --background: #0a0a0a;
   --foreground: #ededed;
+  
+  /* shadcn variables in HSL format for dark mode */
+  --card: 0 0% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 263 70% 50%; /* Purple to match your theme */
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 263 70% 50%; /* Purple accent */
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 263 70% 50%; /* Purple ring */
+  --radius: 0.5rem;
 }
 
 @theme inline {
@@ -13,8 +34,8 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: #0a0a0a; /* Keep your dark background */
+  color: #ededed; /* Keep your light text */
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -218,7 +239,9 @@ body {
 .fade-in { animation: fade-in 0.5s ease-out; }
 .slide-in-from-left { animation: slide-in-from-left 0.5s ease-out; }
 .slide-in-from-right { animation: slide-in-from-right 0.5s ease-out; }
+.slide-in-from-right-5 { animation: slide-in-from-right 0.5s ease-out; }
 .slide-in-from-bottom-3 { animation: slide-in-from-bottom 0.5s ease-out; }
+.slide-in-from-top-2 { animation: slide-in-from-top 0.3s ease-out; }
 
 @keyframes fade-in {
   from { opacity: 0; }
@@ -240,6 +263,11 @@ body {
   to { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes slide-in-from-top {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 /* Scrollbar styling */
 .chat-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -256,4 +284,87 @@ body {
 
 .chat-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(147, 197, 253, 0.5);
+}
+
+/* Canvas-specific animations */
+@keyframes slide-in-canvas {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-out-canvas {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .animated-bg {
+    opacity: 0.4;
+  }
+  
+  .particles {
+    display: none;
+  }
+}
+
+/* Dark mode scrollbar for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(75 85 99) transparent;
+}
+
+/* Prose styling for markdown content */
+.prose {
+  color: #e5e7eb;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: #f3f4f6;
+}
+
+.prose a {
+  color: #a78bfa;
+}
+
+.prose a:hover {
+  color: #c4b5fd;
+}
+
+.prose code {
+  color: #a78bfa;
+  background-color: rgb(31 41 55);
+}
+
+.prose pre {
+  background-color: rgb(31 41 55);
+}
+
+.prose blockquote {
+  border-left-color: #7c3aed;
+  color: #d1d5db;
+}
+
+/* Loading skeleton animation */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(31 41 55) 0px,
+    rgb(55 65 81) 50%,
+    rgb(31 41 55) 100%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.2s ease-in-out infinite;
 }

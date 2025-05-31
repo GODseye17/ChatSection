@@ -1,7 +1,8 @@
-// app/components/chat/ChatView.js
+// app/component/chat/ChatView.js
 import React, { useEffect, useState } from 'react';
 import ChatMessageList from './ChatMessageList';
 import ChatInput from './ChatInput';
+import { cn } from '@/app/lib/utils';
 
 export default function ChatView({
   chatMessages,
@@ -10,7 +11,8 @@ export default function ChatView({
   handleSendMessage,
   topicStatus,
   setIsSearchView,
-  sidebarOpen
+  sidebarOpen,
+  currentTopic
 }) {
   const [isTyping, setIsTyping] = useState(false);
 
@@ -51,8 +53,8 @@ export default function ChatView({
 
   return (
     <>
-      {/* Full-screen animated background that covers entire viewport */}
-      <div className="fixed inset-0 z-0 animated-bg">
+      {/* Full-screen animated background */}
+      <div className="fixed inset-0 z-0 animated-bg pointer-events-none">
         <div className="grid-pattern"></div>
         <div className="particles chat-particles"></div>
         <div className="energy-waves"></div>
@@ -60,17 +62,14 @@ export default function ChatView({
         <div className="gradient-layer"></div>
       </div>
 
-      {/* Chat content area */}
-      <div className={`flex flex-col h-[calc(100vh-4rem)] relative z-10 bg-transparent transition-all duration-300 ${
-        sidebarOpen ? 'ml-80' : 'ml-0'
-      }`}>
-        <div className="flex-1 flex">
-          <div className="flex-1 max-w-[85rem] mx-auto w-full px-4 md:px-8">
-            <ChatMessageList messages={chatMessages} />
-          </div>
+      {/* Chat content area - Full height with proper flex layout */}
+      <div className="h-full flex flex-col relative z-10">
+        {/* Messages area - Takes up all available space */}
+        <div className="flex-1 overflow-hidden">
+          <ChatMessageList messages={chatMessages} />
         </div>
         
-        {/* ChatInput now spans full width of the chat view */}
+        {/* Input area - Auto height at bottom */}
         <ChatInput
           chatInput={chatInput}
           setChatInput={setChatInput}
