@@ -36,9 +36,10 @@ export const apiService = {
     return { model, supabase };
   },
 
-  // Topic operations
-  async fetchTopicData(topic, source) {
+  // Topic operations with filters
+  async fetchTopicData(topic, source, filters = {}) {
     console.log(`📤 Sending request to ${API_BASE_URL}/fetch-topic-data`);
+    console.log('🔍 Search params:', { topic, source, filters });
     
     const response = await fetch(`${API_BASE_URL}/fetch-topic-data`, {
       method: 'POST',
@@ -47,7 +48,8 @@ export const apiService = {
       },
       body: JSON.stringify({
         topic,
-        source: source.toLowerCase()
+        source: source.toLowerCase(),
+        filters: filters // Pass filters to backend
       }),
     });
 

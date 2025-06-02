@@ -115,10 +115,11 @@ export default function VivumPlatform() {
     }
   };
 
-  const handleFetchArticles = async () => {
+  const handleFetchArticles = async (filters = {}) => {
     if (!searchQuery.trim()) return;
 
     console.log('🚀 Starting article fetch process...');
+    console.log('📋 Filters:', filters);
     setLoading(true);
     setIsSearchView(false);
     
@@ -130,7 +131,8 @@ export default function VivumPlatform() {
     }]);
     
     try {
-      const data = await apiService.fetchTopicData(searchQuery, selectedSource);
+      // Include filters in the API call
+      const data = await apiService.fetchTopicData(searchQuery, selectedSource, filters);
       
       if (data.topic_id) {
         console.log(`🆔 Topic ID assigned: ${data.topic_id}`);
