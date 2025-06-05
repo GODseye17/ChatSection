@@ -7,6 +7,8 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '@/app/lib/utils';
+import Image from 'next/image';
+import logo from '@/app/assets/Vivum.png';
 
 export default function Sidebar({
   sidebarOpen,
@@ -24,13 +26,58 @@ export default function Sidebar({
         <div className="p-6 border-b border-gray-800">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-xl">V</span>
+              {/* 3D Sphere with emerging logo */}
+              <div className="relative w-12 h-12">
+                {/* Black sphere base with gradient and shadow */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-800 via-gray-900 to-black shadow-xl">
+                  {/* Inner shadow for depth */}
+                  <div className="absolute inset-0.5 rounded-full bg-gradient-to-tl from-transparent via-gray-800/20 to-gray-700/40"></div>
+                  {/* Highlight for 3D effect */}
+                  <div className="absolute top-1.5 left-1.5 w-3 h-3 rounded-full bg-gradient-to-br from-gray-600/60 to-transparent blur-sm"></div>
+                </div>
+                
+                {/* Logo emerging from sphere */}
+                <div className="absolute top-0.5 left-0.5 w-11 h-11 rounded-full overflow-hidden border border-gray-700/50 shadow-lg transform hover:scale-105 transition-transform duration-300">
+                  {/* Using Next.js Image component */}
+                  <div className="relative w-full h-full">
+                    <Image 
+                      src={logo} 
+                      alt="Vivum Logo" 
+                      fill
+                      className="object-cover filter brightness-110 contrast-105"
+                      priority
+                    />
+                    {/* Subtle overlay for depth */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-900/20 rounded-full"></div>
+                  </div>
+
+                  {/* Option 2: Using regular img tag (if Image component doesn't work) */}
+                  {/* 
+                  <img 
+                    src="/assets/Vivum.png" 
+                    alt="Vivum Logo" 
+                    className="w-full h-full object-cover filter brightness-110 contrast-105" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-900/20 rounded-full"></div>
+                  */}
+                </div>
+
+                {/* Animated glow ring */}
+                <div className="absolute inset-0 rounded-full border border-purple-500/20 animate-pulse"></div>
+                
+                {/* Status indicator */}
+                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900 animate-pulse shadow-lg">
+                  <div className="absolute inset-0.5 bg-green-400 rounded-full animate-ping opacity-75"></div>
+                </div>
               </div>
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-xl text-gray-100" style={{ 
+                fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                fontWeight: '500',
+                letterSpacing: '-0.025em',
+                lineHeight: '1.2'
+              }}>
                 Vivum
               </h1>
               <p className="text-xs text-gray-500">Research Assistant</p>
