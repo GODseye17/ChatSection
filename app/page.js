@@ -5,6 +5,10 @@ import React, { useState, useEffect } from 'react';
 import { apiService } from './services/api';
 import { useDarkMode } from './hooks/useDarkMode';
 
+// Auth Components
+import BetaActivation from './component/auth/ BetaActivation';
+import SessionWarning from './component/auth/SessionWarning';
+
 // Layout Components
 import Header from './component/layout/Header';
 import Sidebar from './component/layout/Sidebar';
@@ -20,6 +24,10 @@ import ChatView from './component/chat/ChatView';
 import SourcesOverlay from './component/sources/SourcesOverlay';
 
 export default function VivumPlatform() {
+  // Auth state
+  const [isActivated, setIsActivated] = useState(false);
+  const [isCheckingActivation, setIsCheckingActivation] = useState(true);
+
   // Core state
   const { darkMode, toggleDarkMode } = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -31,8 +39,6 @@ export default function VivumPlatform() {
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSource, setSelectedSource] = useState('pubmed');
-  
-  // Remove the filter state and buildCleanFilters function since SearchView manages filters now
   
   // Chat state
   const [chatMessages, setChatMessages] = useState([]);
@@ -47,11 +53,35 @@ export default function VivumPlatform() {
   const [apiStatus, setApiStatus] = useState({ model: false, supabase: false });
   const [conversationHistory, setConversationHistory] = useState([]);
 
-  // Check API status on mount
+  // Check activation status on mount
   useEffect(() => {
-    console.log('🎯 Vivum Platform initialized');
-    checkAPIStatus();
+    const checkActivation = () => {
+      // Check sessionStorage instead of localStorage (expires when tab closes)
+      const activated = sessionStorage.getItem('vivum_beta_activated');
+      setIsActivated(activated === 'true');
+      setIsCheckingActivation(false);
+      
+      // Log session info for debugging
+      if (activated === 'true') {
+        const activationCode = sessionStorage.getItem('vivum_activation_code');
+        const activationDate = sessionStorage.getItem('vivum_activation_date');
+        console.log('✅ Active session found:', { activationCode, activationDate });
+      } else {
+        console.log('🔒 No active session - activation required');
+      }
+    };
+
+    // Small delay to prevent flash
+    setTimeout(checkActivation, 100);
   }, []);
+
+  // Initialize app after activation
+  useEffect(() => {
+    if (isActivated) {
+      console.log('🎯 Vivum Platform initialized');
+      checkAPIStatus();
+    }
+  }, [isActivated]);
 
   // Poll topic status when processing
   useEffect(() => {
@@ -80,6 +110,29 @@ export default function VivumPlatform() {
       ));
     }
   }, [topicStatus, articles.length, selectedSource]);
+
+  const handleActivationSuccess = () => {
+    setIsActivated(true);
+    console.log('✅ Beta activation successful');
+  };
+
+  const handleLogout = () => {
+    // Clear session storage
+    sessionStorage.removeItem('vivum_beta_activated');
+    sessionStorage.removeItem('vivum_activation_code');
+    sessionStorage.removeItem('vivum_activation_date');
+    
+    // Reset app state
+    setIsActivated(false);
+    setIsSearchView(true);
+    setChatMessages([]);
+    setCurrentTopicId(null);
+    setArticles([]);
+    setTopicStatus('idle');
+    setConversationHistory([]);
+    
+    console.log('🔓 Session ended - logged out');
+  };
 
   const checkAPIStatus = async () => {
     try {
@@ -115,64 +168,6 @@ export default function VivumPlatform() {
       console.error('❌ Error fetching articles:', error);
       setArticles([]);
     }
-  };
-
-  // Helper function to clean up filters - only include non-empty values
-  const buildCleanFilters = () => {
-    const cleanFilters = {};
-    
-    // Only add non-empty string fields
-    if (filters.publication_date && filters.publication_date.trim()) {
-      cleanFilters.publication_date = filters.publication_date;
-    }
-    
-    if (filters.custom_start_date && filters.custom_start_date.trim()) {
-      cleanFilters.custom_start_date = filters.custom_start_date;
-    }
-    
-    if (filters.custom_end_date && filters.custom_end_date.trim()) {
-      cleanFilters.custom_end_date = filters.custom_end_date;
-    }
-    
-    if (filters.sort_by && filters.sort_by.trim()) {
-      cleanFilters.sort_by = filters.sort_by;
-    }
-    
-    if (filters.search_field && filters.search_field.trim()) {
-      cleanFilters.search_field = filters.search_field;
-    }
-    
-    // Only add non-empty arrays
-    if (filters.article_types && filters.article_types.length > 0) {
-      cleanFilters.article_types = filters.article_types;
-    }
-    
-    if (filters.languages && filters.languages.length > 0) {
-      cleanFilters.languages = filters.languages;
-    }
-    
-    if (filters.species && filters.species.length > 0) {
-      cleanFilters.species = filters.species;
-    }
-    
-    if (filters.sex && filters.sex.length > 0) {
-      cleanFilters.sex = filters.sex;
-    }
-    
-    if (filters.age_groups && filters.age_groups.length > 0) {
-      cleanFilters.age_groups = filters.age_groups;
-    }
-    
-    if (filters.other_filters && filters.other_filters.length > 0) {
-      cleanFilters.other_filters = filters.other_filters;
-    }
-    
-    // Handle custom filters
-    if (filters.custom_filters && filters.custom_filters.trim()) {
-      cleanFilters.custom_filters = [filters.custom_filters.trim()];
-    }
-    
-    return Object.keys(cleanFilters).length > 0 ? cleanFilters : null;
   };
 
   const handleFetchArticles = async (cleanFilters = null) => {
@@ -284,6 +279,24 @@ export default function VivumPlatform() {
     fetchTopicArticles(conversation.id);
   };
 
+  // Show loading while checking activation
+  if (isCheckingActivation) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-purple-600/30 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading Vivum...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show activation page if not activated
+  if (!isActivated) {
+    return <BetaActivation onActivationSuccess={handleActivationSuccess} />;
+  }
+
+  // Show main app if activated
   return (
     <div className="min-h-screen dark">
       <div className="bg-gray-950 text-gray-100 min-h-screen transition-colors duration-300">
@@ -306,6 +319,7 @@ export default function VivumPlatform() {
             showSources={showSources}
             setShowSources={setShowSources}
             articles={articles}
+            onLogout={handleLogout}
           />
 
           {isSearchView ? (
@@ -337,6 +351,9 @@ export default function VivumPlatform() {
           setShowSources={setShowSources}
           articles={articles}
         />
+
+        {/* Session warning for long sessions */}
+        <SessionWarning />
       </div>
     </div>
   );
