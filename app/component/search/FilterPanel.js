@@ -1,324 +1,315 @@
-// app/component/search/FilterPanel.js
-import React, { useState } from 'react';
-import { Card } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Separator } from '../ui/separator';
-import { Calendar, FileText, Globe, Users, Baby, FlaskConical, SortAsc, X } from 'lucide-react';
-import { cn } from '@/app/lib/utils';
+// app/components/search/FilterPanel.js
+import React from 'react';
+import { X } from 'lucide-react';
 
-const FILTER_CATEGORIES = {
-  publication_date: {
-    label: 'Publication Date',
-    icon: Calendar,
-    options: [
-      { value: '1_year', label: 'Last year' },
-      { value: '5_years', label: 'Last 5 years' },
-      { value: '10_years', label: 'Last 10 years' },
-      { value: 'custom', label: 'Custom range' }
-    ]
-  },
-  text_availability: {
-    label: 'Text Availability',
-    icon: FileText,
-    options: [
-      { value: 'abstract', label: 'Abstract available' },
-      { value: 'full_text', label: 'Full text' },
-      { value: 'free_full_text', label: 'Free full text' }
-    ]
-  },
-  article_types: {
-    label: 'Article Types',
-    icon: FileText,
-    options: [
-      { value: 'clinical_trial', label: 'Clinical Trial' },
-      { value: 'randomized_controlled_trial', label: 'Randomized Controlled Trial' },
-      { value: 'meta_analysis', label: 'Meta-Analysis' },
-      { value: 'systematic_review', label: 'Systematic Review' },
-      { value: 'review', label: 'Review' },
-      { value: 'case_reports', label: 'Case Reports' },
-      { value: 'comparative_study', label: 'Comparative Study' },
-      { value: 'observational_study', label: 'Observational Study' }
-    ]
-  },
-  languages: {
-    label: 'Languages',
-    icon: Globe,
-    options: [
-      { value: 'english', label: 'English' },
-      { value: 'spanish', label: 'Spanish' },
-      { value: 'french', label: 'French' },
-      { value: 'german', label: 'German' },
-      { value: 'chinese', label: 'Chinese' },
-      { value: 'japanese', label: 'Japanese' }
-    ]
-  },
-  species: {
-    label: 'Species',
-    icon: FlaskConical,
-    options: [
-      { value: 'humans', label: 'Humans' },
-      { value: 'other_animals', label: 'Other Animals' },
-      { value: 'mice', label: 'Mice' },
-      { value: 'rats', label: 'Rats' }
-    ]
-  },
-  sex: {
-    label: 'Sex',
-    icon: Users,
-    options: [
-      { value: 'female', label: 'Female' },
-      { value: 'male', label: 'Male' }
-    ]
-  },
-  age_groups: {
-    label: 'Age Groups',
-    icon: Baby,
-    options: [
-      { value: 'infant', label: 'Infant (birth-23 months)' },
-      { value: 'child_preschool', label: 'Preschool (2-5 years)' },
-      { value: 'child', label: 'Child (birth-18 years)' },
-      { value: 'adolescent', label: 'Adolescent (13-18 years)' },
-      { value: 'adult', label: 'Adult (19+ years)' },
-      { value: 'young_adult', label: 'Young Adult (19-24 years)' },
-      { value: 'middle_aged', label: 'Middle Aged (45-64 years)' },
-      { value: 'aged', label: 'Aged (65+ years)' },
-      { value: 'aged_80_and_over', label: 'Aged 80+ years' }
-    ]
-  }
-};
-
-export default function FilterPanel({ filters, setFilters, selectedSource }) {
-  const [expandedSections, setExpandedSections] = useState(['publication_date']);
-
-  const toggleSection = (section) => {
-    setExpandedSections(prev => 
-      prev.includes(section) 
-        ? prev.filter(s => s !== section)
-        : [...prev, section]
-    );
+export default function FilterPanel({ filters, setFilters }) {
+  const updateFilter = (key, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
 
-  const handleFilterChange = (category, value, isMultiple = true) => {
-    setFilters(prev => {
-      if (isMultiple && Array.isArray(prev[category])) {
-        const currentValues = prev[category];
-        const newValues = currentValues.includes(value)
-          ? currentValues.filter(v => v !== value)
-          : [...currentValues, value];
-        return { ...prev, [category]: newValues };
-      } else {
-        return { ...prev, [category]: value };
-      }
-    });
+  const updateArrayFilter = (key, value, checked) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: checked 
+        ? [...prev[key], value]
+        : prev[key].filter(item => item !== value)
+    }));
   };
 
-  const clearAllFilters = () => {
+  const clearFilters = () => {
     setFilters({
       publication_date: '',
       custom_start_date: '',
       custom_end_date: '',
-      text_availability: [],
       article_types: [],
       languages: [],
       species: [],
       sex: [],
       age_groups: [],
       other_filters: [],
-      sort_by: 'relevance',
-      search_field: 'title/abstract'
+      custom_filters: '',
+      sort_by: '',
+      search_field: ''
     });
   };
 
-  const getActiveFiltersCount = () => {
-    return Object.entries(filters).reduce((count, [key, value]) => {
-      if (key === 'sort_by' || key === 'search_field') return count;
-      if (Array.isArray(value) && value.length > 0) return count + value.length;
-      if (typeof value === 'string' && value !== '') return count + 1;
-      return count;
-    }, 0);
-  };
-
   return (
-    <Card className="border-gray-700 bg-gray-900/50 backdrop-blur-sm shadow-xl animate-in slide-in-from-top-2">
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-100">Search Filters</h3>
-          <div className="flex items-center gap-2">
-            {getActiveFiltersCount() > 0 && (
-              <>
-                <Badge variant="secondary">
-                  {getActiveFiltersCount()} active
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearAllFilters}
-                  className="text-xs"
-                >
-                  Clear all
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
+    <div className="mt-4 bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 border border-gray-200 dark:border-gray-800 animate-in slide-in-from-top-2">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">Advanced Filters</h3>
+        <button
+          onClick={clearFilters}
+          className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+        >
+          Clear All
+        </button>
+      </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Sort and Search Field */}
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <SortAsc className="w-4 h-4" />
-                Sort by
-              </label>
-              <select
-                value={filters.sort_by}
-                onChange={(e) => handleFilterChange('sort_by', e.target.value, false)}
-                className="w-full px-3 py-2 bg-gray-800 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none"
-              >
-                <option value="relevance">Relevance</option>
-                <option value="date">Publication date</option>
-                <option value="author">First author</option>
-                <option value="journal">Journal</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-300 mb-2 block">
-                Search in
-              </label>
-              <select
-                value={filters.search_field}
-                onChange={(e) => handleFilterChange('search_field', e.target.value, false)}
-                className="w-full px-3 py-2 bg-gray-800 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none"
-              >
-                <option value="title/abstract">Title/Abstract</option>
-                <option value="title">Title only</option>
-                <option value="author">Author</option>
-                <option value="journal">Journal</option>
-                <option value="doi">DOI</option>
-              </select>
-            </div>
+      <div className="space-y-6">
+        {/* Publication Date */}
+        <div className="grid md:grid-cols-3 gap-4">
+          <div>
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+              Publication Date
+            </label>
+            <select
+              value={filters.publication_date}
+              onChange={(e) => updateFilter('publication_date', e.target.value)}
+              className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="">Any time</option>
+              <option value="1_year">Last year</option>
+              <option value="5_years">Last 5 years</option>
+              <option value="10_years">Last 10 years</option>
+              <option value="custom">Custom range</option>
+            </select>
           </div>
 
-          {/* Filter Categories */}
-          {Object.entries(FILTER_CATEGORIES).map(([key, category]) => {
-            const Icon = category.icon;
-            const isExpanded = expandedSections.includes(key);
-            const isDateFilter = key === 'publication_date';
-            const selectedCount = Array.isArray(filters[key]) ? filters[key].length : (filters[key] ? 1 : 0);
-
-            return (
-              <div key={key} className="space-y-2">
-                <button
-                  onClick={() => toggleSection(key)}
-                  className="w-full flex items-center justify-between text-sm font-medium text-gray-300 hover:text-gray-100 transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <Icon className="w-4 h-4" />
-                    {category.label}
-                    {selectedCount > 0 && (
-                      <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                        {selectedCount}
-                      </Badge>
-                    )}
-                  </span>
-                  <ChevronDown className={cn(
-                    "w-4 h-4 transition-transform",
-                    isExpanded && "rotate-180"
-                  )} />
-                </button>
-
-                {isExpanded && (
-                  <div className="space-y-2 pl-6 animate-in slide-in-from-top-2">
-                    {category.options.map(option => {
-                      const isSelected = isDateFilter 
-                        ? filters[key] === option.value
-                        : filters[key]?.includes(option.value);
-
-                      return (
-                        <label
-                          key={option.value}
-                          className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 cursor-pointer"
-                        >
-                          <input
-                            type={isDateFilter ? "radio" : "checkbox"}
-                            name={isDateFilter ? key : undefined}
-                            checked={isSelected}
-                            onChange={() => handleFilterChange(key, option.value, !isDateFilter)}
-                            className="rounded border-gray-600 bg-gray-800 text-purple-600 focus:ring-purple-500"
-                          />
-                          <span>{option.label}</span>
-                        </label>
-                      );
-                    })}
-
-                    {/* Custom date range */}
-                    {isDateFilter && filters.publication_date === 'custom' && (
-                      <div className="space-y-2 mt-2">
-                        <input
-                          type="date"
-                          value={filters.custom_start_date}
-                          onChange={(e) => handleFilterChange('custom_start_date', e.target.value, false)}
-                          className="w-full px-3 py-1 bg-gray-800 rounded text-sm"
-                          placeholder="Start date"
-                        />
-                        <input
-                          type="date"
-                          value={filters.custom_end_date}
-                          onChange={(e) => handleFilterChange('custom_end_date', e.target.value, false)}
-                          className="w-full px-3 py-1 bg-gray-800 rounded text-sm"
-                          placeholder="End date"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
+          {filters.publication_date === 'custom' && (
+            <>
+              <div>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+                  Start Date (YYYY/MM/DD)
+                </label>
+                <input
+                  type="text"
+                  placeholder="2020/01/01"
+                  value={filters.custom_start_date}
+                  onChange={(e) => updateFilter('custom_start_date', e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+                />
               </div>
-            );
-          })}
-
-          {/* Other filters (PubMed specific) */}
-          {selectedSource === 'pubmed' && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-300">Other Filters</h4>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.other_filters?.includes('exclude_preprints')}
-                    onChange={() => handleFilterChange('other_filters', 'exclude_preprints')}
-                    className="rounded border-gray-600 bg-gray-800 text-purple-600 focus:ring-purple-500"
-                  />
-                  <span>Exclude preprints</span>
+              <div>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+                  End Date (YYYY/MM/DD)
                 </label>
-                <label className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.other_filters?.includes('medline')}
-                    onChange={() => handleFilterChange('other_filters', 'medline')}
-                    className="rounded border-gray-600 bg-gray-800 text-purple-600 focus:ring-purple-500"
-                  />
-                  <span>MEDLINE only</span>
-                </label>
-                <label className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.other_filters?.includes('pmc')}
-                    onChange={() => handleFilterChange('other_filters', 'pmc')}
-                    className="rounded border-gray-600 bg-gray-800 text-purple-600 focus:ring-purple-500"
-                  />
-                  <span>PMC articles</span>
-                </label>
+                <input
+                  type="text"
+                  placeholder="2024/12/31"
+                  value={filters.custom_end_date}
+                  onChange={(e) => updateFilter('custom_end_date', e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+                />
               </div>
-            </div>
+            </>
           )}
         </div>
+
+        {/* Search Options */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+              Sort By
+            </label>
+            <select
+              value={filters.sort_by}
+              onChange={(e) => updateFilter('sort_by', e.target.value)}
+              className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="">Relevance</option>
+              <option value="publication_date">Publication Date</option>
+              <option value="first_author">First Author</option>
+              <option value="last_author">Last Author</option>
+              <option value="journal">Journal</option>
+              <option value="title">Title</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+              Search Field
+            </label>
+            <select
+              value={filters.search_field}
+              onChange={(e) => updateFilter('search_field', e.target.value)}
+              className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="">Title/Abstract</option>
+              <option value="title">Title only</option>
+              <option value="abstract">Abstract only</option>
+              <option value="author">Author</option>
+              <option value="all_fields">All fields</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Article Types */}
+        <div>
+          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3 block">
+            Article Types
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+            {[
+              { value: 'clinical_trial', label: 'Clinical Trial' },
+              { value: 'randomized_controlled_trial', label: 'RCT' },
+              { value: 'meta_analysis', label: 'Meta-Analysis' },
+              { value: 'systematic_review', label: 'Systematic Review' },
+              { value: 'review', label: 'Review' },
+              { value: 'case_reports', label: 'Case Reports' },
+              { value: 'comparative_study', label: 'Comparative Study' },
+              { value: 'observational_study', label: 'Observational Study' }
+            ].map(type => (
+              <label key={type.value} className="flex items-center space-x-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={filters.article_types.includes(type.value)}
+                  onChange={(e) => updateArrayFilter('article_types', type.value, e.target.checked)}
+                  className="rounded text-purple-600 focus:ring-purple-500"
+                />
+                <span>{type.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Languages */}
+        <div>
+          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3 block">
+            Languages
+          </label>
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-24 overflow-y-auto">
+            {[
+              { value: 'english', label: 'English' },
+              { value: 'spanish', label: 'Spanish' },
+              { value: 'french', label: 'French' },
+              { value: 'german', label: 'German' },
+              { value: 'italian', label: 'Italian' },
+              { value: 'japanese', label: 'Japanese' },
+              { value: 'portuguese', label: 'Portuguese' },
+              { value: 'chinese', label: 'Chinese' }
+            ].map(lang => (
+              <label key={lang.value} className="flex items-center space-x-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={filters.languages.includes(lang.value)}
+                  onChange={(e) => updateArrayFilter('languages', lang.value, e.target.checked)}
+                  className="rounded text-purple-600 focus:ring-purple-500"
+                />
+                <span>{lang.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Species */}
+        <div>
+          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3 block">
+            Species
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {[
+              { value: 'humans', label: 'Humans' },
+              { value: 'mice', label: 'Mice' },
+              { value: 'rats', label: 'Rats' },
+              { value: 'other_animals', label: 'Other Animals' }
+            ].map(species => (
+              <label key={species.value} className="flex items-center space-x-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={filters.species.includes(species.value)}
+                  onChange={(e) => updateArrayFilter('species', species.value, e.target.checked)}
+                  className="rounded text-purple-600 focus:ring-purple-500"
+                />
+                <span>{species.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Sex */}
+        <div>
+          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3 block">
+            Sex
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { value: 'female', label: 'Female' },
+              { value: 'male', label: 'Male' }
+            ].map(sex => (
+              <label key={sex.value} className="flex items-center space-x-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={filters.sex.includes(sex.value)}
+                  onChange={(e) => updateArrayFilter('sex', sex.value, e.target.checked)}
+                  className="rounded text-purple-600 focus:ring-purple-500"
+                />
+                <span>{sex.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Age Groups */}
+        <div>
+          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3 block">
+            Age Groups
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-24 overflow-y-auto">
+            {[
+              { value: 'infant', label: 'Infant' },
+              { value: 'child', label: 'Child' },
+              { value: 'adolescent', label: 'Adolescent' },
+              { value: 'adult', label: 'Adult' },
+              { value: 'middle_aged', label: 'Middle Aged' },
+              { value: 'aged', label: 'Aged (65+)' }
+            ].map(age => (
+              <label key={age.value} className="flex items-center space-x-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={filters.age_groups.includes(age.value)}
+                  onChange={(e) => updateArrayFilter('age_groups', age.value, e.target.checked)}
+                  className="rounded text-purple-600 focus:ring-purple-500"
+                />
+                <span>{age.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Other Filters */}
+        <div>
+          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3 block">
+            Other Filters
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            {[
+              { value: 'exclude_preprints', label: 'Exclude Preprints' },
+              { value: 'medline', label: 'MEDLINE only' },
+              { value: 'free_full_text', label: 'Free Full Text' }
+            ].map(other => (
+              <label key={other.value} className="flex items-center space-x-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={filters.other_filters.includes(other.value)}
+                  onChange={(e) => updateArrayFilter('other_filters', other.value, e.target.checked)}
+                  className="rounded text-purple-600 focus:ring-purple-500"
+                />
+                <span>{other.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Custom Filters */}
+        <div>
+          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+            Custom PubMed Query
+          </label>
+          <input
+            type="text"
+            placeholder="e.g., author[au] OR mesh[mh]"
+            value={filters.custom_filters}
+            onChange={(e) => updateFilter('custom_filters', e.target.value)}
+            className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Advanced users: Use PubMed search syntax
+          </p>
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }
-
-// Add missing import
-import { ChevronDown } from 'lucide-react';

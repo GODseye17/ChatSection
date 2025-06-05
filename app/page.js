@@ -1,9 +1,9 @@
 // app/page.js
 'use client'
+
 import React, { useState, useEffect } from 'react';
 import { apiService } from './services/api';
 import { useDarkMode } from './hooks/useDarkMode';
-import { cn } from './lib/utils';
 
 // Layout Components
 import Header from './component/layout/Header';
@@ -16,8 +16,8 @@ import SearchView from './component/search/SearchView';
 // Chat Components
 import ChatView from './component/chat/ChatView';
 
-// Canvas Components
-import SourcesCanvas from './component/canvas/SourcesCanvas';
+// Sources Components
+import SourcesOverlay from './component/sources/SourcesOverlay';
 
 export default function VivumPlatform() {
   // Core state
@@ -31,6 +31,8 @@ export default function VivumPlatform() {
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSource, setSelectedSource] = useState('pubmed');
+  
+  // Remove the filter state and buildCleanFilters function since SearchView manages filters now
   
   // Chat state
   const [chatMessages, setChatMessages] = useState([]);
@@ -115,37 +117,89 @@ export default function VivumPlatform() {
     }
   };
 
-  const handleFetchArticles = async (filters = {}) => {
+  // Helper function to clean up filters - only include non-empty values
+  const buildCleanFilters = () => {
+    const cleanFilters = {};
+    
+    // Only add non-empty string fields
+    if (filters.publication_date && filters.publication_date.trim()) {
+      cleanFilters.publication_date = filters.publication_date;
+    }
+    
+    if (filters.custom_start_date && filters.custom_start_date.trim()) {
+      cleanFilters.custom_start_date = filters.custom_start_date;
+    }
+    
+    if (filters.custom_end_date && filters.custom_end_date.trim()) {
+      cleanFilters.custom_end_date = filters.custom_end_date;
+    }
+    
+    if (filters.sort_by && filters.sort_by.trim()) {
+      cleanFilters.sort_by = filters.sort_by;
+    }
+    
+    if (filters.search_field && filters.search_field.trim()) {
+      cleanFilters.search_field = filters.search_field;
+    }
+    
+    // Only add non-empty arrays
+    if (filters.article_types && filters.article_types.length > 0) {
+      cleanFilters.article_types = filters.article_types;
+    }
+    
+    if (filters.languages && filters.languages.length > 0) {
+      cleanFilters.languages = filters.languages;
+    }
+    
+    if (filters.species && filters.species.length > 0) {
+      cleanFilters.species = filters.species;
+    }
+    
+    if (filters.sex && filters.sex.length > 0) {
+      cleanFilters.sex = filters.sex;
+    }
+    
+    if (filters.age_groups && filters.age_groups.length > 0) {
+      cleanFilters.age_groups = filters.age_groups;
+    }
+    
+    if (filters.other_filters && filters.other_filters.length > 0) {
+      cleanFilters.other_filters = filters.other_filters;
+    }
+    
+    // Handle custom filters
+    if (filters.custom_filters && filters.custom_filters.trim()) {
+      cleanFilters.custom_filters = [filters.custom_filters.trim()];
+    }
+    
+    return Object.keys(cleanFilters).length > 0 ? cleanFilters : null;
+  };
+
+  const handleFetchArticles = async (cleanFilters = null) => {
     if (!searchQuery.trim()) return;
 
     console.log('🚀 Starting article fetch process...');
-    console.log('📋 Filters:', filters);
     setLoading(true);
     setIsSearchView(false);
     
-    // Add initial user message with timestamp
-    setChatMessages([{ 
-      type: 'user', 
-      text: searchQuery,
-      timestamp: new Date()
-    }]);
+    // Add initial user message
+    setChatMessages([{ type: 'user', text: searchQuery }]);
     
     try {
-      // Include filters in the API call
-      const data = await apiService.fetchTopicData(searchQuery, selectedSource, filters);
+      // Use the cleanFilters passed from SearchView
+      const data = await apiService.fetchTopicData(searchQuery, selectedSource, cleanFilters);
       
       if (data.topic_id) {
         console.log(`🆔 Topic ID assigned: ${data.topic_id}`);
         setCurrentTopicId(data.topic_id);
         setTopicStatus(data.status);
         
-        // Add loading message with timestamp
+        // Add loading message
         setChatMessages(prev => [...prev, {
           type: 'assistant',
           text: `I'm searching for articles about "${searchQuery}" in ${selectedSource}. This may take a moment...`,
           isLoading: true,
-          isInitialLoad: true,
-          timestamp: new Date()
+          isInitialLoad: true
         }]);
 
         // Add to conversation history
@@ -165,8 +219,7 @@ export default function VivumPlatform() {
       setChatMessages(prev => [...prev, {
         type: 'assistant',
         text: `Sorry, I encountered an error while fetching articles: ${error.message}. Please check the console for details.`,
-        isError: true,
-        timestamp: new Date()
+        isError: true
       }]);
     } finally {
       setLoading(false);
@@ -188,33 +241,27 @@ export default function VivumPlatform() {
     console.log('💬 Sending user message:', userMessage);
     setChatInput('');
     
-    // Add user message with timestamp
-    setChatMessages(prev => [...prev, { 
-      type: 'user', 
-      text: userMessage,
-      timestamp: new Date()
-    }]);
+    // Add user message
+    setChatMessages(prev => [...prev, { type: 'user', text: userMessage }]);
     
-    // Add loading message with timestamp
+    // Add loading message
     const loadingMessageId = Date.now();
     setChatMessages(prev => [...prev, {
       id: loadingMessageId,
       type: 'assistant',
       text: 'Analyzing research articles...',
-      isLoading: true,
-      timestamp: new Date()
+      isLoading: true
     }]);
 
     try {
       const data = await apiService.sendQuery(userMessage, currentTopicId);
       
-      // Remove loading message and add response with timestamp
+      // Remove loading message and add response
       setChatMessages(prev => prev.filter(msg => msg.id !== loadingMessageId));
       setChatMessages(prev => [...prev, {
         type: 'assistant',
         text: data.response || 'No answer provided',
-        citations: data.citations || [],
-        timestamp: new Date()
+        citations: data.citations || []
       }]);
     } catch (error) {
       console.error('❌ Error in handleSendMessage:', error);
@@ -223,8 +270,7 @@ export default function VivumPlatform() {
       setChatMessages(prev => [...prev, {
         type: 'assistant',
         text: `Sorry, I encountered an error while processing your question: ${error.message}. Please check the console for details.`,
-        isError: true,
-        timestamp: new Date()
+        isError: true
       }]);
     }
   };
@@ -236,85 +282,62 @@ export default function VivumPlatform() {
     setIsSearchView(false);
     setSidebarOpen(false);
     fetchTopicArticles(conversation.id);
-    // Clear existing messages when selecting a conversation
-    setChatMessages([]);
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-gray-950">
-      {/* Fixed height container with canvas support */}
-      <div className={cn(
-        "h-full flex flex-col transition-all duration-300",
-        showSources && "md:pr-[600px] lg:pr-[700px]" // Make room for the canvas
-      )}>
-        {/* API Status Bar - Fixed at top */}
-        {(!apiStatus.model || !apiStatus.supabase) && (
-          <ApiStatusBar apiStatus={apiStatus} />
-        )}
+    <div className="min-h-screen dark">
+      <div className="bg-gray-950 text-gray-100 min-h-screen transition-colors duration-300">
+        <ApiStatusBar apiStatus={apiStatus} />
         
-        {/* Main content area */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Sidebar - Fixed height */}
-          <Sidebar
+        <Sidebar
+          sidebarOpen={sidebarOpen}
+          conversationHistory={conversationHistory}
+          onSelectConversation={handleSelectConversation}
+        />
+
+        <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
+          <Header
             sidebarOpen={sidebarOpen}
-            conversationHistory={conversationHistory}
-            onSelectConversation={handleSelectConversation}
+            setSidebarOpen={setSidebarOpen}
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+            isSearchView={isSearchView}
+            setIsSearchView={setIsSearchView}
+            showSources={showSources}
+            setShowSources={setShowSources}
+            articles={articles}
           />
 
-          {/* Content area with proper transitions */}
-          <div className={cn(
-            "flex-1 flex flex-col transition-all duration-300",
-            sidebarOpen ? 'ml-80' : 'ml-0'
-          )}>
-            {/* Header - Fixed at top of content */}
-            <Header
-              sidebarOpen={sidebarOpen}
-              setSidebarOpen={setSidebarOpen}
-              darkMode={darkMode}
-              toggleDarkMode={toggleDarkMode}
-              isSearchView={isSearchView}
-              setIsSearchView={setIsSearchView}
-              showSources={showSources}
-              setShowSources={setShowSources}
-              articles={articles}
+          {isSearchView ? (
+            <SearchView
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedSource={selectedSource}
+              setSelectedSource={setSelectedSource}
+              handleFetchArticles={handleFetchArticles}
+              loading={loading}
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
             />
-
-            {/* Main view area - Scrollable */}
-            <div className="flex-1 overflow-hidden">
-              {isSearchView ? (
-                <SearchView
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  selectedSource={selectedSource}
-                  setSelectedSource={setSelectedSource}
-                  handleFetchArticles={handleFetchArticles}
-                  loading={loading}
-                  showFilters={showFilters}
-                  setShowFilters={setShowFilters}
-                />
-              ) : (
-                <ChatView
-                  chatMessages={chatMessages}
-                  chatInput={chatInput}
-                  setChatInput={setChatInput}
-                  handleSendMessage={handleSendMessage}
-                  topicStatus={topicStatus}
-                  setIsSearchView={setIsSearchView}
-                  sidebarOpen={sidebarOpen}
-                  currentTopic={searchQuery}
-                />
-              )}
-            </div>
-          </div>
+          ) : (
+            <ChatView
+              chatMessages={chatMessages}
+              chatInput={chatInput}
+              setChatInput={setChatInput}
+              handleSendMessage={handleSendMessage}
+              topicStatus={topicStatus}
+              setIsSearchView={setIsSearchView}
+              sidebarOpen={sidebarOpen}
+            />
+          )}
         </div>
-      </div>
 
-      {/* Sources Canvas - Slides in from right */}
-      <SourcesCanvas
-        articles={articles}
-        isOpen={showSources}
-        onClose={() => setShowSources(false)}
-      />
+        <SourcesOverlay
+          showSources={showSources}
+          setShowSources={setShowSources}
+          articles={articles}
+        />
+      </div>
     </div>
   );
 }
