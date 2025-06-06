@@ -1,8 +1,8 @@
-// app/components/search/SearchView.js
+// app/component/search/SearchView.js
 import React, { useEffect, useState } from 'react';
 import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
-import { Info } from 'lucide-react';
+import { Info, Sparkles } from 'lucide-react';
 
 export default function SearchView({ 
   searchQuery, 
@@ -14,15 +14,14 @@ export default function SearchView({
   showFilters,
   setShowFilters
 }) {
-  // Manage filters internally like your original version
+  // Initialize filters with defaults
   const [filters, setFilters] = useState({
     publication_date: '',
     custom_start_date: '',
     custom_end_date: '',
-    text_availability: [],
     article_types: [],
-    languages: [],
-    species: [],
+    languages: ['english'], // Default to English
+    species: ['humans'], // Default to humans
     sex: [],
     age_groups: [],
     other_filters: [],
@@ -30,9 +29,10 @@ export default function SearchView({
     sort_by: 'relevance',
     search_field: 'title/abstract'
   });
+  
   const [booleanMode, setBooleanMode] = useState(false);
 
-  // Clean filters function - only include non-empty values
+  // Clean filters function - only include non-default values
   const buildCleanFilters = () => {
     const cleanFilters = {};
     
@@ -57,20 +57,20 @@ export default function SearchView({
       cleanFilters.search_field = filters.search_field;
     }
     
-    // Only add non-empty arrays
-    if (filters.text_availability && filters.text_availability.length > 0) {
-      cleanFilters.text_availability = filters.text_availability;
-    }
-    
+    // Only add non-empty arrays or arrays that differ from defaults
     if (filters.article_types && filters.article_types.length > 0) {
       cleanFilters.article_types = filters.article_types;
     }
     
-    if (filters.languages && filters.languages.length > 0) {
+    // Only include languages if not default English
+    if (filters.languages && filters.languages.length > 0 && 
+        !(filters.languages.length === 1 && filters.languages[0] === 'english')) {
       cleanFilters.languages = filters.languages;
     }
     
-    if (filters.species && filters.species.length > 0) {
+    // Only include species if not default humans
+    if (filters.species && filters.species.length > 0 && 
+        !(filters.species.length === 1 && filters.species[0] === 'humans')) {
       cleanFilters.species = filters.species;
     }
     
@@ -97,7 +97,6 @@ export default function SearchView({
   // Handle search with filters
   const handleSearch = () => {
     const cleanFilters = buildCleanFilters();
-    // Call the parent's handleFetchArticles with clean filters
     handleFetchArticles(cleanFilters);
   };
 
@@ -128,13 +127,23 @@ export default function SearchView({
     setBooleanMode(hasBooleanOperators);
   }, [searchQuery]);
 
-  // Count active filters
-  const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
-    if (key === 'sort_by' || key === 'search_field') return count;
-    if (Array.isArray(value) && value.length > 0) return count + 1;
-    if (typeof value === 'string' && value !== '') return count + 1;
+  // Count active filters (excluding defaults)
+  const activeFilterCount = () => {
+    let count = 0;
+    if (filters.publication_date && filters.publication_date !== '') count++;
+    if (filters.article_types && filters.article_types.length > 0) count++;
+    if (filters.languages && filters.languages.length > 0 && 
+        !(filters.languages.length === 1 && filters.languages[0] === 'english')) count++;
+    if (filters.species && filters.species.length > 0 && 
+        !(filters.species.length === 1 && filters.species[0] === 'humans')) count++;
+    if (filters.sex && filters.sex.length > 0) count++;
+    if (filters.age_groups && filters.age_groups.length > 0) count++;
+    if (filters.other_filters && filters.other_filters.length > 0) count++;
+    if (filters.sort_by && filters.sort_by !== 'relevance') count++;
+    if (filters.search_field && filters.search_field !== 'title/abstract') count++;
+    if (filters.custom_filters && filters.custom_filters.trim()) count++;
     return count;
-  }, 0);
+  };
 
   // Helper function to apply CSS classes conditionally
   const cn = (...classes) => {
@@ -172,10 +181,10 @@ export default function SearchView({
               showFilters && "mt-8"
             )}>
               <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-in fade-in duration-500">
-                Take a Leap to <span className="bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">Analyze.</span>
+                Discover Research with <span className="bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">Precision.</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto animate-in slide-in-from-bottom-3 duration-500">
-                The world's first real-time AI agent for research and evidence synthesis from PubMed and Scopus.
+                Advanced AI-powered search across PubMed and Scopus with intelligent filtering and evidence synthesis.
               </p>
               
               {/* Boolean mode indicator */}
@@ -185,10 +194,20 @@ export default function SearchView({
                   <span className="text-sm text-purple-400">Boolean search mode active</span>
                 </div>
               )}
+
+              {/* Active filters indicator */}
+              {activeFilterCount() > 0 && !showFilters && (
+                <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-blue-600/10 rounded-full">
+                  <Sparkles className="w-4 h-4 text-blue-400" />
+                  <span className="text-sm text-blue-400">
+                    {activeFilterCount()} filter{activeFilterCount() > 1 ? 's' : ''} applied
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Search and filters section */}
-            <div className="space-y-4">
+            <div className="space-y-6">
               <SearchBar
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
@@ -198,15 +217,17 @@ export default function SearchView({
                 loading={loading}
                 showFilters={showFilters}
                 setShowFilters={setShowFilters}
-                activeFilterCount={activeFilterCount}
+                activeFilterCount={activeFilterCount()}
               />
 
               {showFilters && (
-                <FilterPanel 
-                  filters={filters}
-                  setFilters={setFilters}
-                  selectedSource={selectedSource}
-                />
+                <div className="animate-in slide-in-from-top-3 duration-300">
+                  <FilterPanel 
+                    filters={filters}
+                    setFilters={setFilters}
+                    selectedSource={selectedSource}
+                  />
+                </div>
               )}
 
               {/* Search tips - only show when filters are hidden */}
@@ -238,19 +259,6 @@ export default function SearchView({
                       <div><code className="bg-purple-100 dark:bg-purple-900/30 px-1 rounded">NOT</code> - Exclude term</div>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* Active filters indicator */}
-              {activeFilterCount > 0 && !showFilters && (
-                <div className="text-center mt-4">
-                  <button
-                    onClick={() => setShowFilters(true)}
-                    className="inline-flex items-center gap-2 px-3 py-1 bg-purple-600/10 text-purple-400 rounded-full text-sm hover:bg-purple-600/20 transition-colors"
-                  >
-                    <span>{activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active</span>
-                    <span className="text-xs">Click to modify</span>
-                  </button>
                 </div>
               )}
             </div>
