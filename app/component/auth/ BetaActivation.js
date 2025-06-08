@@ -269,7 +269,7 @@ export default function BetaActivation({ onActivationSuccess }) {
               <div className="text-center pt-4 border-t border-gray-800">
                 <p className="text-xs text-gray-500">
                   Need help?{' '}
-                  <a href="mailto:support@vivum.ai" className="text-purple-400 hover:text-purple-300 underline">
+                  <a href="mailto:connect@vivum.im" className="text-purple-400 hover:text-purple-300 underline">
                     Contact Support
                   </a>
                 </p>

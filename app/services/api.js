@@ -26,20 +26,16 @@ export const apiService = {
   },
 
   async checkAPIStatus() {
-    console.log('🔍 Checking API status...');
     const [model, supabase] = await Promise.all([
       this.checkModelStatus(),
       this.checkSupabaseStatus()
     ]);
     
-    console.log('✅ API Status Check Complete:', { model, supabase });
     return { model, supabase };
   },
 
   // Topic operations
   async fetchTopicData(topic, source, filters = null) {
-    console.log(`📤 Sending request to ${API_BASE_URL}/fetch-topic-data`);
-    
     // Build request payload that matches backend expectations
     const requestPayload = {
       topic,  // Single topic for backward compatibility
@@ -52,8 +48,6 @@ export const apiService = {
       requestPayload.filters = filters;
     }
     
-    console.log('📤 Request payload:', requestPayload);
-    
     const response = await fetch(`${API_BASE_URL}/fetch-topic-data`, {
       method: 'POST',
       headers: {
@@ -61,8 +55,6 @@ export const apiService = {
       },
       body: JSON.stringify(requestPayload),
     });
-
-    console.log(`📥 Response status: ${response.status} ${response.statusText}`);
     
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No error details');
@@ -70,14 +62,11 @@ export const apiService = {
     }
 
     const data = await response.json();
-    console.log('✅ Topic data received:', data);
     return data;
   },
 
   // Multi-topic boolean search (for advanced users)
   async fetchMultiTopicData(topics, operator = 'AND', source = 'pubmed', filters = null, maxResults = 20) {
-    console.log(`📤 Sending multi-topic request to ${API_BASE_URL}/fetch-topic-data`);
-    
     const requestPayload = {
       topics,  // Array of topics
       operator,  // AND, OR, NOT
@@ -90,8 +79,6 @@ export const apiService = {
       requestPayload.filters = filters;
     }
     
-    console.log('📤 Multi-topic request payload:', requestPayload);
-    
     const response = await fetch(`${API_BASE_URL}/fetch-topic-data`, {
       method: 'POST',
       headers: {
@@ -99,8 +86,6 @@ export const apiService = {
       },
       body: JSON.stringify(requestPayload),
     });
-
-    console.log(`📥 Response status: ${response.status} ${response.statusText}`);
     
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No error details');
@@ -108,14 +93,11 @@ export const apiService = {
     }
 
     const data = await response.json();
-    console.log('✅ Multi-topic data received:', data);
     return data;
   },
 
   // Advanced query search (for power users)
   async fetchAdvancedQuery(advancedQuery, source = 'pubmed', filters = null, maxResults = 20) {
-    console.log(`📤 Sending advanced query request to ${API_BASE_URL}/fetch-topic-data`);
-    
     const requestPayload = {
       advanced_query: advancedQuery,
       source: source.toLowerCase(),
@@ -127,8 +109,6 @@ export const apiService = {
       requestPayload.filters = filters;
     }
     
-    console.log('📤 Advanced query request payload:', requestPayload);
-    
     const response = await fetch(`${API_BASE_URL}/fetch-topic-data`, {
       method: 'POST',
       headers: {
@@ -136,8 +116,6 @@ export const apiService = {
       },
       body: JSON.stringify(requestPayload),
     });
-
-    console.log(`📥 Response status: ${response.status} ${response.statusText}`);
     
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No error details');
@@ -145,13 +123,10 @@ export const apiService = {
     }
 
     const data = await response.json();
-    console.log('✅ Advanced query data received:', data);
     return data;
   },
 
   async checkTopicStatus(topicId) {
-    console.log(`🔄 Checking topic status for ID: ${topicId}`);
-    
     const response = await fetch(`${API_BASE_URL}/topic/${topicId}/status`);
     
     if (!response.ok) {
@@ -160,13 +135,10 @@ export const apiService = {
     }
     
     const data = await response.json();
-    console.log(`📊 Topic status response:`, data);
     return data;
   },
 
   async fetchTopicArticles(topicId) {
-    console.log(`📚 Fetching articles for topic ID: ${topicId}`);
-    
     const response = await fetch(`${API_BASE_URL}/topic/${topicId}/articles`);
     
     if (!response.ok) {
@@ -175,18 +147,10 @@ export const apiService = {
     }
     
     const data = await response.json();
-    console.log(`✅ Articles fetched successfully:`, {
-      count: data.articles?.length || 0,
-      articles: data.articles
-    });
-    
     return data.articles || [];
   },
 
   async sendQuery(query, topicId) {
-    console.log(`📤 Sending query to ${API_BASE_URL}/query`);
-    console.log('Request payload:', { query, topic_id: topicId });
-
     const response = await fetch(`${API_BASE_URL}/query`, {
       method: 'POST',
       headers: {
@@ -198,20 +162,12 @@ export const apiService = {
       }),
     });
 
-    console.log(`📥 Query response status: ${response.status} ${response.statusText}`);
-
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No error details');
       throw new Error(`API returned ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('✅ Query response received:', {
-      hasResponse: !!data.response,
-      citationCount: data.citations?.length || 0,
-      response: data
-    });
-    
     return data;
   }
 };
