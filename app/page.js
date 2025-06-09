@@ -60,15 +60,6 @@ export default function VivumPlatform() {
       const activated = sessionStorage.getItem('vivum_beta_activated');
       setIsActivated(activated === 'true');
       setIsCheckingActivation(false);
-      
-      // Log session info for debugging
-      if (activated === 'true') {
-        const activationCode = sessionStorage.getItem('vivum_activation_code');
-        const activationDate = sessionStorage.getItem('vivum_activation_date');
-        console.log('✅ Active session found:', { activationCode, activationDate });
-      } else {
-        console.log('🔒 No active session - activation required');
-      }
     };
 
     // Small delay to prevent flash
@@ -78,7 +69,6 @@ export default function VivumPlatform() {
   // Initialize app after activation
   useEffect(() => {
     if (isActivated) {
-      console.log('🎯 Vivum Platform initialized');
       checkAPIStatus();
     }
   }, [isActivated]);
@@ -86,12 +76,10 @@ export default function VivumPlatform() {
   // Poll topic status when processing
   useEffect(() => {
     if (currentTopicId && topicStatus === 'processing') {
-      console.log('⏱️ Starting topic status polling...');
       const interval = setInterval(() => {
         checkTopicStatus(currentTopicId);
       }, 2000);
       return () => {
-        console.log('⏹️ Stopping topic status polling');
         clearInterval(interval);
       };
     }
@@ -113,7 +101,6 @@ export default function VivumPlatform() {
 
   const handleActivationSuccess = () => {
     setIsActivated(true);
-    console.log('✅ Beta activation successful');
   };
 
   const handleLogout = () => {
@@ -130,8 +117,6 @@ export default function VivumPlatform() {
     setArticles([]);
     setTopicStatus('idle');
     setConversationHistory([]);
-    
-    console.log('🔓 Session ended - logged out');
   };
 
   const checkAPIStatus = async () => {
@@ -139,7 +124,6 @@ export default function VivumPlatform() {
       const status = await apiService.checkAPIStatus();
       setApiStatus(status);
     } catch (error) {
-      console.error('❌ Critical error checking API status:', error);
       setApiStatus({ model: false, supabase: false });
     }
   };
@@ -149,14 +133,11 @@ export default function VivumPlatform() {
       const data = await apiService.checkTopicStatus(topicId);
       
       if (data.status === 'completed' || data.status === 'ready') {
-        console.log('✅ Topic is ready!');
         setTopicStatus('ready');
         fetchTopicArticles(topicId);
-      } else {
-        console.log(`⏳ Topic still processing... Status: ${data.status}`);
       }
     } catch (error) {
-      console.error('❌ Error checking topic status:', error);
+      // Handle error silently or with user notification
     }
   };
 
@@ -165,7 +146,6 @@ export default function VivumPlatform() {
       const articles = await apiService.fetchTopicArticles(topicId);
       setArticles(articles);
     } catch (error) {
-      console.error('❌ Error fetching articles:', error);
       setArticles([]);
     }
   };
@@ -173,7 +153,6 @@ export default function VivumPlatform() {
   const handleFetchArticles = async (cleanFilters = null) => {
     if (!searchQuery.trim()) return;
 
-    console.log('🚀 Starting article fetch process...');
     setLoading(true);
     setIsSearchView(false);
     
@@ -185,7 +164,6 @@ export default function VivumPlatform() {
       const data = await apiService.fetchTopicData(searchQuery, selectedSource, cleanFilters);
       
       if (data.topic_id) {
-        console.log(`🆔 Topic ID assigned: ${data.topic_id}`);
         setCurrentTopicId(data.topic_id);
         setTopicStatus(data.status);
         
@@ -205,35 +183,25 @@ export default function VivumPlatform() {
           source: selectedSource
         }]);
       } else {
-        console.error('❌ No topic_id in response:', data);
         throw new Error('Invalid response: missing topic_id');
       }
     } catch (error) {
-      console.error('❌ Error in handleFetchArticles:', error);
-      
       setChatMessages(prev => [...prev, {
         type: 'assistant',
-        text: `Sorry, I encountered an error while fetching articles: ${error.message}. Please check the console for details.`,
+        text: `Sorry, I encountered an error while fetching articles: ${error.message}. Please try again.`,
         isError: true
       }]);
     } finally {
       setLoading(false);
-      console.log('🏁 Article fetch process completed');
     }
   };
 
   const handleSendMessage = async () => {
     if (!chatInput.trim() || !currentTopicId || topicStatus !== 'ready') {
-      console.warn('⚠️ Cannot send message:', { 
-        hasInput: !!chatInput.trim(), 
-        topicId: currentTopicId, 
-        topicStatus 
-      });
       return;
     }
 
     const userMessage = chatInput;
-    console.log('💬 Sending user message:', userMessage);
     setChatInput('');
     
     // Add user message
@@ -259,12 +227,10 @@ export default function VivumPlatform() {
         citations: data.citations || []
       }]);
     } catch (error) {
-      console.error('❌ Error in handleSendMessage:', error);
-      
       setChatMessages(prev => prev.filter(msg => msg.id !== loadingMessageId));
       setChatMessages(prev => [...prev, {
         type: 'assistant',
-        text: `Sorry, I encountered an error while processing your question: ${error.message}. Please check the console for details.`,
+        text: `Sorry, I encountered an error while processing your question: ${error.message}. Please try again.`,
         isError: true
       }]);
     }
