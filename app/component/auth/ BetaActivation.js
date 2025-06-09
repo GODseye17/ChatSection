@@ -253,8 +253,9 @@ export default function BetaActivation({ onActivationSuccess }) {
               {/* Features preview */}
               <div className="pt-4 border-t border-gray-800">
                 <p className="text-xs text-gray-500 mb-3 text-center">
-                  What you'll get access to:
-                </p>
+  What you&apos;ll get access to:
+</p>
+
                 <div className="space-y-2">
                   {features.map((feature, index) => (
                     <div key={index} className="flex items-center gap-3 text-sm">
