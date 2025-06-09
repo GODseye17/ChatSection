@@ -50,9 +50,9 @@ export default function SessionWarning() {
             <div className="flex-1">
               <p className="font-medium mb-1">Session Active</p>
               <p className="text-xs text-amber-200/80">
-                You've been active for {sessionDuration} minutes. 
-                Remember to save any important work - your session will end when you close this tab.
-              </p>
+  {`You've been active for ${sessionDuration} minutes. Remember to save any important work — your session will end when you close this tab.`}
+</p>
+
             </div>
             <Button
               variant="ghost"

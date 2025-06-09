@@ -286,7 +286,8 @@ export default function BetaActivation({ onActivationSuccess }) {
                     return (
                       <div className="mt-2 p-2 bg-gray-800/50 rounded-lg">
                         <p className="text-xs text-gray-400">
-                          {totalActivations} session{totalActivations !== '1' ? 's' : ''} activated
+                          {`${totalActivations} session${totalActivations !== '1' ? 's' : ''} activated`}
+
                           {isToday && ' • Last: Today'}
                         </p>
                       </div>
