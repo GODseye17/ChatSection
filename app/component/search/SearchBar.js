@@ -1,6 +1,6 @@
 // app/components/search/SearchBar.js
 import React from 'react';
-import { ChevronDown, Filter, Search, Loader2 } from 'lucide-react';
+import { ChevronDown, Filter, Search, Loader2, Lock } from 'lucide-react';
 
 export default function SearchBar({ 
   searchQuery, 
@@ -13,19 +13,40 @@ export default function SearchBar({
   setShowFilters,
   activeFilterCount = 0
 }) {
+  
+  const handleSourceChange = (e) => {
+    const newSource = e.target.value;
+    
+    if (newSource === 'scopus') {
+      // Show alert and prevent selection
+      alert('🚀 Scopus integration coming soon! Stay tuned for updates.');
+      // Keep the current selection (should be pubmed)
+      return;
+    }
+    
+    setSelectedSource(newSource);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl dark:shadow-2xl p-2 border border-gray-200 dark:border-gray-800">
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative">
           <select 
             value={selectedSource}
-            onChange={(e) => setSelectedSource(e.target.value)}
+            onChange={handleSourceChange}
             className="appearance-none bg-gray-100 dark:bg-gray-800 text-sm font-medium px-4 py-3 pr-10 rounded-xl cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <option value="pubmed">PubMed</option>
-            <option value="scopus">Scopus</option>
+            <option value="scopus" className="text-gray-500">
+              Scopus (Coming Soon)
+            </option>
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
+            {selectedSource === 'scopus' && (
+              <Lock className="w-3 h-3 text-gray-500" />
+            )}
+            <ChevronDown className="w-4 h-4" />
+          </div>
         </div>
         
         <input
@@ -57,7 +78,7 @@ export default function SearchBar({
           
           <button
             onClick={handleFetchArticles}
-            disabled={loading || !searchQuery.trim()}
+            disabled={loading || !searchQuery.trim() || selectedSource === 'scopus'}
             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white rounded-xl transition-all transform hover:scale-105 flex items-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {loading ? (
@@ -65,7 +86,7 @@ export default function SearchBar({
             ) : (
               <Search className="w-4 h-4" />
             )}
-            Fetch Articles
+            {selectedSource === 'scopus' ? 'Coming Soon' : 'Fetch Articles'}
           </button>
         </div>
       </div>
