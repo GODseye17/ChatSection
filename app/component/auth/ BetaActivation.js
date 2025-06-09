@@ -192,16 +192,6 @@ export default function BetaActivation({ onActivationSuccess }) {
                 <h2 className="text-xl font-semibold text-gray-100 mb-2">
                   Beta Access Required
                 </h2>
-                <p className="text-gray-400 text-sm mb-3">
-                  Enter any of the 5 beta activation codes to access Vivum
-                </p>
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-blue-400">Reusable codes • Session-based</span>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Codes work unlimited times but expire when you close the tab
-                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -253,8 +243,8 @@ export default function BetaActivation({ onActivationSuccess }) {
               {/* Features preview */}
               <div className="pt-4 border-t border-gray-800">
                 <p className="text-xs text-gray-500 mb-3 text-center">
-  What you&apos;ll get access to:
-</p>
+                  What you&apos;ll get access to:
+                </p>
 
                 <div className="space-y-2">
                   {features.map((feature, index) => (
@@ -288,7 +278,6 @@ export default function BetaActivation({ onActivationSuccess }) {
                       <div className="mt-2 p-2 bg-gray-800/50 rounded-lg">
                         <p className="text-xs text-gray-400">
                           {`${totalActivations} session${totalActivations !== '1' ? 's' : ''} activated`}
-
                           {isToday && ' • Last: Today'}
                         </p>
                       </div>
