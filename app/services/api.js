@@ -139,6 +139,8 @@ export class VivumAPI {
         body.filters = filters;
       }
 
+      console.log('Sending fetch request with body:', body);
+
       // Initiate fetch
       const fetchResponse = await fetch(`${API_BASE_URL}/fetch-topic-data`, {
         method: 'POST',
@@ -153,6 +155,7 @@ export class VivumAPI {
 
       const fetchData = await fetchResponse.json();
       this.currentTopicId = fetchData.topic_id;
+      console.log('Fetch initiated, topic ID:', this.currentTopicId);
 
       // Start monitoring if callback provided
       if (onStatusUpdate) {
@@ -254,17 +257,26 @@ export class VivumAPI {
     if (!id) throw new Error('No topic ID provided');
 
     try {
+      console.log(`Fetching articles for topic ${id} with limit ${limit}, offset ${offset}`);
+      
       const response = await fetch(
         `${API_BASE_URL}/topic/${id}/articles?limit=${limit}&offset=${offset}`
       );
 
       if (!response.ok) {
-        console.error('Failed to get articles:', response.status);
-        throw new Error('Failed to get articles');
+        console.error('Failed to get articles:', response.status, response.statusText);
+        throw new Error(`Failed to get articles: ${response.status}`);
       }
       
       const data = await response.json();
       console.log('API getArticles response:', data); // Debug log
+      
+      // Ensure we return the expected structure
+      if (!data.articles) {
+        console.warn('No articles property in response:', data);
+        return { articles: [], total: 0 };
+      }
+      
       return data;
     } catch (error) {
       console.error('Get articles error:', error);

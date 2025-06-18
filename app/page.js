@@ -102,9 +102,10 @@ export default function VivumApp() {
     setLoading(true);
     setSearchProgress({ status: 'initiating', message: 'Starting search...' });
     
-    // Clear previous data - don't clear articles yet
+    // Clear previous data
     setChatMessages([]);
     setConversationId(null);
+    setArticles([]); // Clear articles immediately
     apiService.currentConversationId = null;
 
     try {
@@ -163,39 +164,54 @@ export default function VivumApp() {
       setCurrentTopicId(result.topicId);
       apiService.currentTopicId = result.topicId;
 
-      // Wait a bit to ensure processing is complete
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Fetch completed, topic ID:', result.topicId);
 
-      // Get articles - retry if needed
+      // Wait for processing to complete and then fetch articles
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Get articles with retry logic
       let articlesData = null;
       let retries = 0;
-      const maxRetries = 3;
+      const maxRetries = 5;
       
       while (retries < maxRetries) {
         try {
+          console.log(`Fetching articles attempt ${retries + 1} for topic:`, result.topicId);
           articlesData = await apiService.getArticles(result.topicId);
-          console.log(`Articles fetch attempt ${retries + 1}:`, articlesData);
+          console.log(`Articles fetch attempt ${retries + 1} result:`, articlesData);
           
           if (articlesData && articlesData.articles && articlesData.articles.length > 0) {
+            console.log('Successfully fetched articles:', articlesData.articles.length);
             break; // Success
           }
           
           // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          console.log(`No articles found, retrying in ${(retries + 1) * 1000}ms...`);
+          await new Promise(resolve => setTimeout(resolve, (retries + 1) * 1000));
           retries++;
         } catch (error) {
           console.error(`Articles fetch error on attempt ${retries + 1}:`, error);
           retries++;
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
       
       // Extract articles from the response
       const fetchedArticles = articlesData?.articles || [];
-      console.log('Final number of articles:', fetchedArticles.length);
+      console.log('Final articles to set in state:', fetchedArticles.length);
       
-      // Update articles state immediately
+      // Force update articles state
       setArticles(fetchedArticles);
-      console.log('Articles state updated with:', fetchedArticles.length, 'articles');
+      
+      // Force a re-render to ensure UI updates
+      setTimeout(() => {
+        console.log('Articles state after timeout:', fetchedArticles.length);
+        setArticles(prev => {
+          console.log('Previous articles state:', prev.length);
+          console.log('New articles state:', fetchedArticles.length);
+          return fetchedArticles;
+        });
+      }, 100);
       
       // Update conversation history
       const searchTopic = isAdvancedQuery && options.advanced_query
@@ -365,6 +381,18 @@ export default function VivumApp() {
           } catch (error) {
             console.error('Manual fetch failed:', error);
           }
+        },
+        forceSetArticles: (count = 5) => {
+          const mockArticles = Array.from({ length: count }, (_, i) => ({
+            id: i,
+            title: `Mock Article ${i + 1}`,
+            abstract: `This is a mock article for testing purposes.`,
+            authors: [`Author ${i + 1}`],
+            journal: 'Test Journal',
+            doi: `10.1000/test.${i + 1}`
+          }));
+          console.log('Setting mock articles:', mockArticles);
+          setArticles(mockArticles);
         }
       };
     }

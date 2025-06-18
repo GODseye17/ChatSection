@@ -20,7 +20,7 @@ export default function Header({
 }) {
   // Ensure articles is an array and get count
   const articleCount = Array.isArray(articles) ? articles.length : 0;
-  console.log('Header - Articles:', articles, 'Count:', articleCount, 'isSearchView:', isSearchView); // Debug log
+  console.log('Header render - Articles count:', articleCount, 'isSearchView:', isSearchView, 'articles:', articles); // Debug log
 
   return (
     <header className="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-30">
@@ -53,7 +53,7 @@ export default function Header({
           </TooltipContent>
         </Tooltip>
 
-        {/* Sources Button - Show when in chat view and we have articles */}
+        {/* Sources Button - Show when in chat view */}
         {!isSearchView && (
           <Button
             onClick={() => setShowSources(!showSources)}
@@ -62,15 +62,19 @@ export default function Header({
             className={cn(
               "gap-2 relative transition-all",
               showSources && "bg-purple-600 hover:bg-purple-700",
-              articleCount === 0 && "opacity-50"
+              articleCount === 0 && "opacity-50 cursor-not-allowed"
             )}
             disabled={articleCount === 0}
+            title={articleCount === 0 ? "No articles available" : `View ${articleCount} articles`}
           >
             <BookOpen className="w-4 h-4" />
             Sources
             <Badge 
               variant={showSources ? "secondary" : "default"}
-              className="ml-1 px-1.5 py-0 text-xs min-w-[20px] text-center"
+              className={cn(
+                "ml-1 px-1.5 py-0 text-xs min-w-[20px] text-center",
+                articleCount === 0 && "bg-gray-600 text-gray-400"
+              )}
             >
               {articleCount}
             </Badge>
