@@ -140,6 +140,7 @@ export default function VivumApp() {
     setChatMessages([]);
     setConversationId(null);
     setArticles([]); // Clear articles immediately
+    setTopicStatus('processing');
     apiService.currentConversationId = null;
 
     try {
@@ -201,12 +202,12 @@ export default function VivumApp() {
       console.log('Fetch completed, topic ID:', result.topicId);
 
       // Wait for processing to complete and then fetch articles
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Get articles with retry logic
+      // Get articles with aggressive retry logic
       let articlesData = null;
       let retries = 0;
-      const maxRetries = 5;
+      const maxRetries = 8;
       
       while (retries < maxRetries) {
         try {
@@ -219,9 +220,10 @@ export default function VivumApp() {
             break; // Success
           }
           
-          // Wait before retry
-          console.log(`No articles found, retrying in ${(retries + 1) * 1000}ms...`);
-          await new Promise(resolve => setTimeout(resolve, (retries + 1) * 1000));
+          // Wait progressively longer before retry
+          const waitTime = Math.min((retries + 1) * 1500, 5000);
+          console.log(`No articles found, retrying in ${waitTime}ms...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
           retries++;
         } catch (error) {
           console.error(`Articles fetch error on attempt ${retries + 1}:`, error);
@@ -234,18 +236,21 @@ export default function VivumApp() {
       const fetchedArticles = articlesData?.articles || [];
       console.log('Final articles to set in state:', fetchedArticles.length);
       
-      // Force update articles state
+      // Set articles state with force update
       setArticles(fetchedArticles);
       
-      // Force a re-render to ensure UI updates
+      // Double-check articles were set correctly
       setTimeout(() => {
-        console.log('Articles state after timeout:', fetchedArticles.length);
+        console.log('Articles state verification:', fetchedArticles.length);
         setArticles(prev => {
-          console.log('Previous articles state:', prev.length);
-          console.log('New articles state:', fetchedArticles.length);
-          return fetchedArticles;
+          console.log('Previous articles in state:', prev.length);
+          if (prev.length !== fetchedArticles.length) {
+            console.log('State mismatch detected, forcing update');
+            return [...fetchedArticles]; // Force new array reference
+          }
+          return prev;
         });
-      }, 100);
+      }, 500);
       
       // Update conversation history
       const searchTopic = isAdvancedQuery && options.advanced_query
@@ -262,6 +267,7 @@ export default function VivumApp() {
 
       // Switch to chat view
       setIsSearchView(false);
+      setTopicStatus('ready');
       
       // Show success message with correct article count
       if (fetchedArticles.length > 0) {
@@ -427,6 +433,10 @@ export default function VivumApp() {
           }));
           console.log('Setting mock articles:', mockArticles);
           setArticles(mockArticles);
+        },
+        getArticlesState: () => {
+          console.log('Current articles state:', articles);
+          return articles;
         }
       };
     }
@@ -646,6 +656,7 @@ export default function VivumApp() {
                 setIsSearchView={setIsSearchView}
                 sidebarOpen={sidebarOpen}
                 currentTopic={searchQuery || (useMultiTopic ? topics.filter(t => t.trim()).join(` ${operator} `) : '')}
+                articles={articles} // Pass articles to ChatView
               />
             )}
           </main>

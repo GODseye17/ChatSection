@@ -176,7 +176,7 @@ export class VivumAPI {
   async monitorFetchProgress(topicId, onStatusUpdate) {
     return new Promise((resolve, reject) => {
       let attempts = 0;
-      const maxAttempts = 60; // 2 minutes max
+      const maxAttempts = 90; // 3 minutes max (increased from 60)
 
       this.pollingInterval = setInterval(async () => {
         attempts++;
@@ -209,10 +209,10 @@ export class VivumAPI {
             clearInterval(this.pollingInterval);
             this.pollingInterval = null;
             
-            // Add a small delay to ensure backend has finished writing data
+            // Add a longer delay to ensure backend has finished writing data
             setTimeout(() => {
               resolve({ status: 'completed', topicId });
-            }, 500);
+            }, 1000);
           } else if (status.startsWith('error') || status === 'failed') {
             clearInterval(this.pollingInterval);
             this.pollingInterval = null;
@@ -236,7 +236,10 @@ export class VivumAPI {
     const messages = {
       'processing': 'Processing articles...',
       'completed': 'Processing complete!',
-      'failed': 'Processing failed'
+      'failed': 'Processing failed',
+      'fetching': 'Fetching articles from PubMed...',
+      'embedding': 'Creating embeddings...',
+      'storing': 'Storing articles...'
     };
     return messages[status] || 'Processing...';
   }
@@ -260,12 +263,20 @@ export class VivumAPI {
       console.log(`Fetching articles for topic ${id} with limit ${limit}, offset ${offset}`);
       
       const response = await fetch(
-        `${API_BASE_URL}/topic/${id}/articles?limit=${limit}&offset=${offset}`
+        `${API_BASE_URL}/topic/${id}/articles?limit=${limit}&offset=${offset}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
 
       if (!response.ok) {
         console.error('Failed to get articles:', response.status, response.statusText);
-        throw new Error(`Failed to get articles: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Failed to get articles: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
@@ -277,7 +288,17 @@ export class VivumAPI {
         return { articles: [], total: 0 };
       }
       
-      return data;
+      // Validate articles structure
+      const validArticles = data.articles.filter(article => {
+        return article && (article.title || article.abstract || article.pmid);
+      });
+      
+      console.log(`Filtered ${validArticles.length} valid articles from ${data.articles.length} total`);
+      
+      return {
+        articles: validArticles,
+        total: data.total || validArticles.length
+      };
     } catch (error) {
       console.error('Get articles error:', error);
       throw error;
