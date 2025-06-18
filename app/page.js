@@ -1,277 +1,443 @@
-// app/page.js
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { apiService } from './services/api';
-import { useDarkMode } from './hooks/useDarkMode';
-
-// Auth Components
-import BetaActivation from './component/auth/ BetaActivation';
-import SessionWarning from './component/auth/SessionWarning';
-
-// Layout Components
-import Header from './component/layout/Header';
-import Sidebar from './component/layout/Sidebar';
-import ApiStatusBar from './component/layout/ApiStatusBar';
-
-// Search Components
 import SearchView from './component/search/SearchView';
-
-// Chat Components
 import ChatView from './component/chat/ChatView';
+import Sidebar from './component/layout/Sidebar';
+import Header from './component/layout/Header';
+import SourcesCanvas from './component/canvas/SourcesCanvas';
+import SystemStatus from './component/layout/SystemStatus';
+import { AlertCircle, CheckCircle, Loader2, Zap, Sparkles } from 'lucide-react';
+import { Badge } from './component/ui/badge';
 
-// Sources Components
-import SourcesOverlay from './component/sources/SourcesOverlay';
+export default function VivumApp() {
+  // System health
+  const [systemHealth, setSystemHealth] = useState(null);
+  const [isCheckingHealth, setIsCheckingHealth] = useState(true);
 
-export default function VivumPlatform() {
-  // Auth state
-  const [isActivated, setIsActivated] = useState(false);
-  const [isCheckingActivation, setIsCheckingActivation] = useState(true);
-
-  // Core state
-  const { darkMode, toggleDarkMode } = useDarkMode();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Main state
   const [isSearchView, setIsSearchView] = useState(true);
-  const [showFilters, setShowFilters] = useState(false);
-  const [showSources, setShowSources] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [apiStatus, setApiStatus] = useState({ model: true, supabase: true });
   
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSource, setSelectedSource] = useState('pubmed');
+  const [showFilters, setShowFilters] = useState(false);
+  const [transformedQuery, setTransformedQuery] = useState(null);
+  const [searchProgress, setSearchProgress] = useState(null);
+  
+  // Advanced search
+  const [useMultiTopic, setUseMultiTopic] = useState(false);
+  const [topics, setTopics] = useState(['', '']); // Initialize with 2 empty fields
+  const [operator, setOperator] = useState('AND');
+  const [showSystemStatus, setShowSystemStatus] = useState(false);
+  
+  // Articles and RAG
+  const [articles, setArticles] = useState([]);
+  const [currentTopicId, setCurrentTopicId] = useState(null);
+  const [topicStatus, setTopicStatus] = useState('idle');
+  const [conversationId, setConversationId] = useState(null);
   
   // Chat state
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   
-  // Topic state
-  const [currentTopicId, setCurrentTopicId] = useState(null);
-  const [articles, setArticles] = useState([]);
-  const [topicStatus, setTopicStatus] = useState('idle');
-  
-  // API state
-  const [apiStatus, setApiStatus] = useState({ model: false, supabase: false });
+  // UI state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showSources, setShowSources] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [conversationHistory, setConversationHistory] = useState([]);
 
-  // Check activation status on mount
+  // Refs for cleanup
+  const cleanupTimeoutRef = useRef(null);
+
+  // ============================================
+  // INITIALIZATION & HEALTH CHECKS
+  // ============================================
+
   useEffect(() => {
-    const checkActivation = () => {
-      // Check sessionStorage instead of localStorage (expires when tab closes)
-      const activated = sessionStorage.getItem('vivum_beta_activated');
-      setIsActivated(activated === 'true');
-      setIsCheckingActivation(false);
+    const initializeApp = async () => {
+      // Check system health in parallel with other operations
+      await checkSystemHealth();
     };
 
-    // Small delay to prevent flash
-    setTimeout(checkActivation, 100);
+    initializeApp();
   }, []);
 
-  // Initialize app after activation
-  useEffect(() => {
-    if (isActivated) {
-      checkAPIStatus();
-    }
-  }, [isActivated]);
-
-  // Poll topic status when processing
-  useEffect(() => {
-    if (currentTopicId && topicStatus === 'processing') {
-      const interval = setInterval(() => {
-        checkTopicStatus(currentTopicId);
-      }, 2000);
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [currentTopicId, topicStatus]);
-
-  // Update loading message when topic is ready
-  useEffect(() => {
-    if (topicStatus === 'ready' && articles.length > 0) {
-      setChatMessages(prev => prev.map(msg => 
-        msg.isLoading && msg.isInitialLoad ? {
-          ...msg,
-          text: `I found ${articles.length} relevant articles from ${selectedSource}. You can now ask me questions about this research topic.`,
-          isLoading: false,
-          isInitialLoad: false
-        } : msg
-      ));
-    }
-  }, [topicStatus, articles.length, selectedSource]);
-
-  const handleActivationSuccess = () => {
-    setIsActivated(true);
-  };
-
-  const handleLogout = () => {
-    // Clear session storage
-    sessionStorage.removeItem('vivum_beta_activated');
-    sessionStorage.removeItem('vivum_activation_code');
-    sessionStorage.removeItem('vivum_activation_date');
-    
-    // Reset app state
-    setIsActivated(false);
-    setIsSearchView(true);
-    setChatMessages([]);
-    setCurrentTopicId(null);
-    setArticles([]);
-    setTopicStatus('idle');
-    setConversationHistory([]);
-  };
-
-  const checkAPIStatus = async () => {
+  const checkSystemHealth = async () => {
+    setIsCheckingHealth(true);
     try {
-      const status = await apiService.checkAPIStatus();
-      setApiStatus(status);
-    } catch (error) {
-      setApiStatus({ model: false, supabase: false });
-    }
-  };
+      const [health, cleanup] = await Promise.all([
+        apiService.checkSystemHealth(),
+        apiService.getCleanupStatus()
+      ]);
 
-  const checkTopicStatus = async (topicId) => {
-    try {
-      const data = await apiService.checkTopicStatus(topicId);
-      
-      if (data.status === 'completed' || data.status === 'ready') {
-        setTopicStatus('ready');
-        fetchTopicArticles(topicId);
+      setSystemHealth({ ...health, cleanup });
+      setApiStatus({
+        model: health.models,
+        supabase: health.supabase
+      });
+
+      // Show warning if system not fully operational
+      if (!health.server || !health.database || !health.models) {
+        console.warn('System health check:', health);
       }
     } catch (error) {
-      // Handle error silently or with user notification
+      console.error('Health check failed:', error);
+      setApiStatus({ model: false, supabase: false });
+    } finally {
+      setIsCheckingHealth(false);
     }
   };
 
-  const fetchTopicArticles = async (topicId) => {
-    try {
-      const articles = await apiService.fetchTopicArticles(topicId);
-      setArticles(articles);
-    } catch (error) {
-      setArticles([]);
-    }
-  };
+  // ============================================
+  // SEARCH WITH ALL FEATURES - FIXED VERSION
+  // ============================================
 
-  const handleFetchArticles = async (cleanFilters = null) => {
-    if (!searchQuery.trim()) return;
+  const handleFetchArticles = async (options = {}) => {
+    // Ensure options is always an object, never null
+    if (!options || typeof options !== 'object') {
+      options = {};
+    }
+
+    // Handle both regular calls and advanced query calls
+    const filters = options.advanced_query === undefined ? options : null;
+    const isAdvancedQuery = options && options.advanced_query !== undefined;
+    
+    if (!isAdvancedQuery && !searchQuery.trim() && !useMultiTopic) return;
 
     setLoading(true);
-    setIsSearchView(false);
+    setSearchProgress({ status: 'initiating', message: 'Starting search...' });
     
-    // Add initial user message
-    setChatMessages([{ type: 'user', text: searchQuery }]);
-    
-    try {
-      // Use the cleanFilters passed from SearchView
-      const data = await apiService.fetchTopicData(searchQuery, selectedSource, cleanFilters);
-      
-      if (data.topic_id) {
-        setCurrentTopicId(data.topic_id);
-        setTopicStatus(data.status);
-        
-        // Add loading message
-        setChatMessages(prev => [...prev, {
-          type: 'assistant',
-          text: `I'm searching for articles about "${searchQuery}" in ${selectedSource}. This may take a moment...`,
-          isLoading: true,
-          isInitialLoad: true
-        }]);
+    // Clear previous data
+    setArticles([]);
+    setChatMessages([]);
+    setConversationId(null);
+    apiService.currentConversationId = null;
 
-        // Add to conversation history
-        setConversationHistory(prev => [...prev, {
-          id: data.topic_id,
-          topic: searchQuery,
-          timestamp: new Date(),
-          source: selectedSource
-        }]);
-      } else {
-        throw new Error('Invalid response: missing topic_id');
+    try {
+      // Transform query if single topic search
+      let queryTransformation = null;
+      if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
+        queryTransformation = await apiService.transformQuery(searchQuery);
+        setTransformedQuery(queryTransformation);
+        
+        // Show transformation briefly
+        if (queryTransformation.is_transformed) {
+          setSearchProgress({
+            status: 'transforming',
+            message: `Query transformed: "${queryTransformation.transformed_query}"`
+          });
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
       }
+
+      // Prepare fetch options
+      const fetchOptions = {
+        max_results: 20,
+        create_embeddings: true,
+        auto_transform: true,
+        filters: filters,
+        onStatusUpdate: (progress) => {
+          setSearchProgress(progress);
+          
+          // Update topic status for chat
+          if (progress.status === 'completed' || progress.status === 'ready') {
+            setTopicStatus('ready');
+          } else if (progress.status.startsWith('error')) {
+            setTopicStatus('error');
+          } else {
+            setTopicStatus('processing');
+          }
+        }
+      };
+
+      // Handle different search types
+      if (isAdvancedQuery) {
+        fetchOptions.advanced_query = options.advanced_query;
+      } else if (useMultiTopic) {
+        const validTopics = topics.filter(t => t.trim());
+        if (validTopics.length === 0) {
+          throw new Error('Please enter at least one topic');
+        }
+        fetchOptions.topics = validTopics;
+        fetchOptions.operator = operator;
+      } else {
+        fetchOptions.topic = searchQuery;
+      }
+
+      // Fetch articles
+      const result = await apiService.fetchArticles(fetchOptions);
+      setCurrentTopicId(result.topicId);
+      apiService.currentTopicId = result.topicId;
+
+      // Get articles immediately after completion
+      const articlesData = await apiService.getArticles(result.topicId);
+      setArticles(articlesData.articles || []);
+      
+      // Update conversation history
+      const searchTopic = isAdvancedQuery && options.advanced_query
+        ? options.advanced_query 
+        : (useMultiTopic ? topics.filter(t => t.trim()).join(` ${operator} `) : searchQuery);
+        
+      setConversationHistory(prev => [{
+        topic: searchTopic,
+        source: selectedSource,
+        timestamp: new Date(),
+        topicId: result.topicId,
+        articleCount: articlesData.articles?.length || 0
+      }, ...prev.slice(0, 9)]);
+
+      // Switch to chat view
+      setIsSearchView(false);
+      
+      // Save search to recent (for single topic searches)
+      if (!isAdvancedQuery && !useMultiTopic && searchQuery.trim()) {
+        try {
+          const saved = localStorage.getItem('vivum_recent_searches');
+          const recent = saved ? JSON.parse(saved) : [];
+          const updated = [searchQuery, ...recent.filter(s => s !== searchQuery)].slice(0, 10);
+          localStorage.setItem('vivum_recent_searches', JSON.stringify(updated));
+        } catch (e) {
+          console.error('Failed to save recent search:', e);
+        }
+      }
+
+      // Show success message
+      setChatMessages([{
+        type: 'system',
+        text: `Found ${articlesData.articles?.length || 0} articles. You can now ask questions about the research!`,
+        timestamp: new Date()
+      }]);
+
+      // Schedule cleanup after 1 hour of inactivity
+      scheduleCleanup(result.topicId);
+
     } catch (error) {
-      setChatMessages(prev => [...prev, {
-        type: 'assistant',
-        text: `Sorry, I encountered an error while fetching articles: ${error.message}. Please try again.`,
+      console.error('Fetch error:', error);
+      setTopicStatus('error');
+      setChatMessages([{
+        type: 'system',
+        text: `Error: ${error.message}`,
+        timestamp: new Date(),
         isError: true
       }]);
+      setIsSearchView(false);
     } finally {
       setLoading(false);
+      setSearchProgress(null);
     }
   };
+
+  // ============================================
+  // CHAT WITH CONVERSATION SUPPORT
+  // ============================================
 
   const handleSendMessage = async () => {
-    if (!chatInput.trim() || !currentTopicId || topicStatus !== 'ready') {
-      return;
-    }
+    if (!chatInput.trim() || topicStatus !== 'ready') return;
 
-    const userMessage = chatInput;
+    const userMessage = {
+      type: 'user',
+      text: chatInput,
+      timestamp: new Date()
+    };
+
+    setChatMessages(prev => [...prev, userMessage]);
     setChatInput('');
-    
-    // Add user message
-    setChatMessages(prev => [...prev, { type: 'user', text: userMessage }]);
-    
+
     // Add loading message
-    const loadingMessageId = Date.now();
-    setChatMessages(prev => [...prev, {
-      id: loadingMessageId,
+    const loadingMessage = {
       type: 'assistant',
-      text: 'Analyzing research articles...',
-      isLoading: true
-    }]);
+      text: 'Analyzing research papers...',
+      timestamp: new Date(),
+      isLoading: true,
+      id: Date.now()
+    };
+    setChatMessages(prev => [...prev, loadingMessage]);
 
     try {
-      const data = await apiService.sendQuery(userMessage, currentTopicId);
-      
-      // Remove loading message and add response
-      setChatMessages(prev => prev.filter(msg => msg.id !== loadingMessageId));
-      setChatMessages(prev => [...prev, {
-        type: 'assistant',
-        text: data.response || 'No answer provided',
-        citations: data.citations || []
-      }]);
+      const response = await apiService.query(
+        chatInput, 
+        currentTopicId, 
+        conversationId
+      );
+
+      // Update conversation ID for follow-ups
+      if (response.conversation_id && !conversationId) {
+        setConversationId(response.conversation_id);
+      }
+
+      // Replace loading message with actual response
+      setChatMessages(prev => 
+        prev.map(msg => 
+          msg.id === loadingMessage.id
+            ? {
+                type: 'assistant',
+                text: response.response,
+                timestamp: new Date(),
+                citations: response.citations,
+                context: response.context
+              }
+            : msg
+        )
+      );
+
     } catch (error) {
-      setChatMessages(prev => prev.filter(msg => msg.id !== loadingMessageId));
-      setChatMessages(prev => [...prev, {
-        type: 'assistant',
-        text: `Sorry, I encountered an error while processing your question: ${error.message}. Please try again.`,
-        isError: true
-      }]);
+      console.error('Query error:', error);
+      // Replace loading message with error
+      setChatMessages(prev => 
+        prev.map(msg => 
+          msg.id === loadingMessage.id
+            ? {
+                type: 'assistant',
+                text: `I encountered an error: ${error.message}. Please try again.`,
+                timestamp: new Date(),
+                isError: true
+              }
+            : msg
+        )
+      );
     }
   };
 
-  const handleSelectConversation = (conversation) => {
-    setCurrentTopicId(conversation.id);
-    setSearchQuery(conversation.topic);
-    setSelectedSource(conversation.source);
-    setIsSearchView(false);
-    setSidebarOpen(false);
-    fetchTopicArticles(conversation.id);
+  // ============================================
+  // CLEANUP MANAGEMENT
+  // ============================================
+
+  const scheduleCleanup = (topicId) => {
+    // Clear existing timeout
+    if (cleanupTimeoutRef.current) {
+      clearTimeout(cleanupTimeoutRef.current);
+    }
+
+    // Schedule cleanup after 1 hour
+    cleanupTimeoutRef.current = setTimeout(async () => {
+      try {
+        await apiService.cleanupTopic(topicId);
+        console.log(`Cleaned up topic ${topicId} after inactivity`);
+      } catch (error) {
+        console.error('Auto cleanup failed:', error);
+      }
+    }, 60 * 60 * 1000); // 1 hour
   };
 
-  // Show loading while checking activation
-  if (isCheckingActivation) {
+  const handleManualCleanup = async () => {
+    if (!currentTopicId) return;
+    
+    if (confirm('This will clear all current data. Continue?')) {
+      try {
+        await apiService.cleanupTopic(currentTopicId);
+        // Reset state
+        setArticles([]);
+        setChatMessages([]);
+        setCurrentTopicId(null);
+        setConversationId(null);
+        setTopicStatus('idle');
+        setIsSearchView(true);
+        
+        // Clear cleanup timeout
+        if (cleanupTimeoutRef.current) {
+          clearTimeout(cleanupTimeoutRef.current);
+        }
+      } catch (error) {
+        console.error('Manual cleanup failed:', error);
+      }
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Stop monitoring if active
+      apiService.stopMonitoring();
+      
+      // Clear cleanup timeout
+      if (cleanupTimeoutRef.current) {
+        clearTimeout(cleanupTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // ============================================
+  // UI HELPERS
+  // ============================================
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const onSelectConversation = (conversation) => {
+    // Restore conversation
+    setCurrentTopicId(conversation.topicId);
+    apiService.currentTopicId = conversation.topicId;
+    setSearchQuery(conversation.topic);
+    setIsSearchView(false);
+    
+    // Load articles for this topic
+    apiService.getArticles(conversation.topicId)
+      .then(data => {
+        setArticles(data.articles || []);
+        setTopicStatus('ready');
+      })
+      .catch(console.error);
+  };
+
+  // ============================================
+  // RENDER
+  // ============================================
+
+  if (isCheckingHealth) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-purple-600/30 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading Vivum...</p>
+          <Loader2 className="w-8 h-8 text-purple-500 animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Initializing Vivum...</p>
         </div>
       </div>
     );
   }
 
-  // Show activation page if not activated
-  if (!isActivated) {
-    return <BetaActivation onActivationSuccess={handleActivationSuccess} />;
-  }
-
-  // Show main app if activated
   return (
-    <div className="min-h-screen dark">
-      <div className="bg-gray-950 text-gray-100 min-h-screen transition-colors duration-300">
-        <ApiStatusBar apiStatus={apiStatus} />
-        
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+        {/* System Status Bar */}
+        {systemHealth && (!systemHealth.server || !systemHealth.database || !systemHealth.models) && (
+          <div className="bg-yellow-500/10 border-b border-yellow-500/20 px-4 py-2">
+            <div className="flex items-center justify-between max-w-7xl mx-auto">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-yellow-500" />
+                <span className="text-sm">System Status:</span>
+                <Badge variant={systemHealth.server ? "default" : "destructive"} className="text-xs">
+                  Server: {systemHealth.server ? '✓' : '✗'}
+                </Badge>
+                <Badge variant={systemHealth.database ? "default" : "destructive"} className="text-xs">
+                  DB: {systemHealth.database ? '✓' : '✗'}
+                </Badge>
+                <Badge variant={systemHealth.models ? "default" : "destructive"} className="text-xs">
+                  AI: {systemHealth.models ? '✓' : '✗'}
+                </Badge>
+                {systemHealth.tasks > 0 && (
+                  <Badge variant="secondary" className="text-xs">
+                    Tasks: {systemHealth.tasks}
+                  </Badge>
+                )}
+              </div>
+              <button
+                onClick={() => setShowSystemStatus(true)}
+                className="text-xs text-yellow-500 hover:text-yellow-400"
+              >
+                Details
+              </button>
+            </div>
+          </div>
+        )}
+
         <Sidebar
           sidebarOpen={sidebarOpen}
           conversationHistory={conversationHistory}
-          onSelectConversation={handleSelectConversation}
+          onSelectConversation={onSelectConversation}
         />
 
         <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
@@ -285,41 +451,126 @@ export default function VivumPlatform() {
             showSources={showSources}
             setShowSources={setShowSources}
             articles={articles}
-            onLogout={handleLogout}
+            onShowSystemStatus={() => setShowSystemStatus(true)}
           />
 
-          {isSearchView ? (
-            <SearchView
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              selectedSource={selectedSource}
-              setSelectedSource={setSelectedSource}
-              handleFetchArticles={handleFetchArticles}
-              loading={loading}
-              showFilters={showFilters}
-              setShowFilters={setShowFilters}
-            />
-          ) : (
-            <ChatView
-              chatMessages={chatMessages}
-              chatInput={chatInput}
-              setChatInput={setChatInput}
-              handleSendMessage={handleSendMessage}
-              topicStatus={topicStatus}
-              setIsSearchView={setIsSearchView}
-              sidebarOpen={sidebarOpen}
-            />
+          <main className="h-[calc(100vh-4rem)]">
+            {isSearchView ? (
+              <>
+                <SearchView
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  selectedSource={selectedSource}
+                  setSelectedSource={setSelectedSource}
+                  handleFetchArticles={handleFetchArticles}
+                  loading={loading}
+                  showFilters={showFilters}
+                  setShowFilters={setShowFilters}
+                  // Multi-topic search props
+                  useMultiTopic={useMultiTopic}
+                  setUseMultiTopic={setUseMultiTopic}
+                  topics={topics}
+                  setTopics={setTopics}
+                  operator={operator}
+                  setOperator={setOperator}
+                />
+                
+                {/* Search Progress Overlay */}
+                {searchProgress && (
+                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-gray-800 shadow-2xl">
+                      <div className="text-center">
+                        {/* Animated icon */}
+                        <div className="relative inline-flex items-center justify-center w-20 h-20 mb-6">
+                          <div className="absolute inset-0 bg-purple-600/20 rounded-full animate-ping"></div>
+                          <div className="relative bg-gradient-to-br from-purple-600 to-purple-700 rounded-full p-4">
+                            <Loader2 className="w-12 h-12 text-white animate-spin" />
+                          </div>
+                        </div>
+                        
+                        <h3 className="text-2xl font-semibold mb-2 text-gray-100">Processing Research</h3>
+                        <p className="text-gray-400 mb-6">{searchProgress.message}</p>
+                        
+                        {/* Progress bar */}
+                        {searchProgress.attempts && searchProgress.maxAttempts && (
+                          <div className="mb-6">
+                            <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+                              <div 
+                                className="bg-gradient-to-r from-purple-600 to-purple-500 h-full rounded-full transition-all duration-500 relative overflow-hidden"
+                                style={{ 
+                                  width: `${(searchProgress.attempts / searchProgress.maxAttempts) * 100}%` 
+                                }}
+                              >
+                                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                              </div>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">
+                              Step {searchProgress.attempts} of {searchProgress.maxAttempts}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* Query transformation display */}
+                        {transformedQuery && transformedQuery.is_transformed && (
+                          <div className="mb-6 p-4 bg-purple-600/10 rounded-xl border border-purple-600/20">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Sparkles className="w-4 h-4 text-purple-400" />
+                              <p className="text-sm font-medium text-purple-300">Query Optimized</p>
+                            </div>
+                            <p className="text-sm text-purple-200 italic">&quot;{transformedQuery.transformed_query}&quot;</p>
+                          </div>
+                        )}
+                        
+                        <button
+                          onClick={() => {
+                            apiService.stopMonitoring();
+                            setSearchProgress(null);
+                            setLoading(false);
+                          }}
+                          className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <ChatView
+                chatMessages={chatMessages}
+                chatInput={chatInput}
+                setChatInput={setChatInput}
+                handleSendMessage={handleSendMessage}
+                topicStatus={topicStatus}
+                setIsSearchView={setIsSearchView}
+                sidebarOpen={sidebarOpen}
+                currentTopic={searchQuery || (useMultiTopic ? topics.filter(t => t.trim()).join(` ${operator} `) : '')}
+              />
+            )}
+          </main>
+
+          <SourcesCanvas
+            articles={articles}
+            isOpen={showSources}
+            onClose={() => setShowSources(false)}
+          />
+
+          <SystemStatus 
+            isOpen={showSystemStatus}
+            onClose={() => setShowSystemStatus(false)}
+          />
+
+          {/* Cleanup Button (for testing) */}
+          {process.env.NODE_ENV === 'development' && currentTopicId && (
+            <button
+              onClick={handleManualCleanup}
+              className="fixed bottom-4 left-4 px-3 py-1 bg-red-500/10 text-red-400 text-xs rounded-lg border border-red-500/20 hover:bg-red-500/20"
+            >
+              Cleanup Topic
+            </button>
           )}
         </div>
-
-        <SourcesOverlay
-          showSources={showSources}
-          setShowSources={setShowSources}
-          articles={articles}
-        />
-
-        {/* Session warning for long sessions */}
-        <SessionWarning />
       </div>
     </div>
   );
