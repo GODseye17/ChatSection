@@ -8,7 +8,7 @@ import Sidebar from './component/layout/Sidebar';
 import Header from './component/layout/Header';
 import SourcesCanvas from './component/canvas/SourcesCanvas';
 import SystemStatus from './component/layout/SystemStatus';
-import BetaActivation from './component/auth/BetaActivation';
+import BetaActivation from './component/auth/ BetaActivation';
 import SessionWarning from './component/auth/SessionWarning';
 import { AlertCircle, CheckCircle, Loader2, Sparkles } from 'lucide-react';
 import { Badge } from './component/ui/badge';
