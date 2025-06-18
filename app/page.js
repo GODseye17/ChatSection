@@ -58,6 +58,7 @@ export default function VivumApp() {
 
   // Refs for cleanup
   const cleanupTimeoutRef = useRef(null);
+  const articlesUpdateRef = useRef(null);
 
   // ============================================
   // BETA ACTIVATION CHECK
@@ -119,6 +120,39 @@ export default function VivumApp() {
   };
 
   // ============================================
+  // IMMEDIATE ARTICLES UPDATE FUNCTION
+  // ============================================
+
+  const updateArticlesImmediately = useCallback((newArticles) => {
+    console.log('🚀 Immediate articles update:', newArticles.length);
+    
+    // Clear any pending updates
+    if (articlesUpdateRef.current) {
+      clearTimeout(articlesUpdateRef.current);
+    }
+    
+    // Force immediate state update with new array reference
+    setArticles([...newArticles]);
+    
+    // Force re-render by updating a timestamp
+    const timestamp = Date.now();
+    
+    // Verify update took effect
+    articlesUpdateRef.current = setTimeout(() => {
+      setArticles(prev => {
+        if (prev.length !== newArticles.length) {
+          console.log('⚠️ Articles state mismatch detected, forcing correction');
+          return [...newArticles];
+        }
+        console.log('✅ Articles state verified:', prev.length);
+        return prev;
+      });
+    }, 100);
+    
+    return timestamp;
+  }, []);
+
+  // ============================================
   // SEARCH AND FETCH ARTICLES
   // ============================================
 
@@ -136,10 +170,10 @@ export default function VivumApp() {
     setLoading(true);
     setSearchProgress({ status: 'initiating', message: 'Starting search...' });
     
-    // Clear previous data
+    // Clear previous data IMMEDIATELY
     setChatMessages([]);
     setConversationId(null);
-    setArticles([]); // Clear articles immediately
+    updateArticlesImmediately([]); // Clear articles immediately
     setTopicStatus('processing');
     apiService.currentConversationId = null;
 
@@ -199,34 +233,40 @@ export default function VivumApp() {
       setCurrentTopicId(result.topicId);
       apiService.currentTopicId = result.topicId;
 
-      console.log('Fetch completed, topic ID:', result.topicId);
+      console.log('🔍 Fetch completed, topic ID:', result.topicId);
 
-      // Wait for processing to complete and then fetch articles
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      // Get articles with aggressive retry logic
+      // Start aggressive article fetching immediately
+      const startTime = Date.now();
       let articlesData = null;
       let retries = 0;
-      const maxRetries = 8;
+      const maxRetries = 12; // Increased retries
       
+      // Start fetching articles immediately without waiting
       while (retries < maxRetries) {
         try {
-          console.log(`Fetching articles attempt ${retries + 1} for topic:`, result.topicId);
+          const elapsed = Date.now() - startTime;
+          console.log(`📚 Fetching articles attempt ${retries + 1} (${elapsed}ms elapsed)`);
+          
           articlesData = await apiService.getArticles(result.topicId);
-          console.log(`Articles fetch attempt ${retries + 1} result:`, articlesData);
+          console.log(`📊 Articles fetch result:`, articlesData);
           
           if (articlesData && articlesData.articles && articlesData.articles.length > 0) {
-            console.log('Successfully fetched articles:', articlesData.articles.length);
-            break; // Success
+            console.log('✅ Successfully fetched articles:', articlesData.articles.length);
+            
+            // UPDATE ARTICLES IMMEDIATELY
+            const timestamp = updateArticlesImmediately(articlesData.articles);
+            console.log(`🎯 Articles updated at timestamp: ${timestamp}`);
+            
+            break; // Success - exit retry loop
           }
           
-          // Wait progressively longer before retry
-          const waitTime = Math.min((retries + 1) * 1500, 5000);
-          console.log(`No articles found, retrying in ${waitTime}ms...`);
+          // Progressive wait times: 500ms, 1s, 1.5s, 2s, 2.5s, 3s, then 3s max
+          const waitTime = Math.min(500 + (retries * 500), 3000);
+          console.log(`⏳ No articles found, retrying in ${waitTime}ms...`);
           await new Promise(resolve => setTimeout(resolve, waitTime));
           retries++;
         } catch (error) {
-          console.error(`Articles fetch error on attempt ${retries + 1}:`, error);
+          console.error(`❌ Articles fetch error on attempt ${retries + 1}:`, error);
           retries++;
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
@@ -234,23 +274,12 @@ export default function VivumApp() {
       
       // Extract articles from the response
       const fetchedArticles = articlesData?.articles || [];
-      console.log('Final articles to set in state:', fetchedArticles.length);
+      console.log('📋 Final articles count:', fetchedArticles.length);
       
-      // Set articles state with force update
-      setArticles(fetchedArticles);
-      
-      // Double-check articles were set correctly
-      setTimeout(() => {
-        console.log('Articles state verification:', fetchedArticles.length);
-        setArticles(prev => {
-          console.log('Previous articles in state:', prev.length);
-          if (prev.length !== fetchedArticles.length) {
-            console.log('State mismatch detected, forcing update');
-            return [...fetchedArticles]; // Force new array reference
-          }
-          return prev;
-        });
-      }, 500);
+      // Ensure articles are set (double-check)
+      if (fetchedArticles.length > 0) {
+        updateArticlesImmediately(fetchedArticles);
+      }
       
       // Update conversation history
       const searchTopic = isAdvancedQuery && options.advanced_query
@@ -286,7 +315,7 @@ export default function VivumApp() {
         }]);
         
         // Log for debugging
-        console.warn('No articles returned from API for topic:', result.topicId);
+        console.warn('⚠️ No articles returned from API for topic:', result.topicId);
         console.log('API response was:', articlesData);
       }
 
@@ -294,7 +323,7 @@ export default function VivumApp() {
       scheduleCleanup(result.topicId);
 
     } catch (error) {
-      console.error('Fetch error:', error);
+      console.error('❌ Fetch error:', error);
       setTopicStatus('error');
       setChatMessages([{
         type: 'system',
@@ -416,7 +445,7 @@ export default function VivumApp() {
           try {
             const data = await apiService.getArticles(currentTopicId);
             console.log('Manual fetch result:', data);
-            setArticles(data.articles || []);
+            updateArticlesImmediately(data.articles || []);
             return data;
           } catch (error) {
             console.error('Manual fetch failed:', error);
@@ -432,11 +461,15 @@ export default function VivumApp() {
             doi: `10.1000/test.${i + 1}`
           }));
           console.log('Setting mock articles:', mockArticles);
-          setArticles(mockArticles);
+          updateArticlesImmediately(mockArticles);
         },
         getArticlesState: () => {
           console.log('Current articles state:', articles);
           return articles;
+        },
+        clearArticles: () => {
+          console.log('Clearing articles');
+          updateArticlesImmediately([]);
         }
       };
     }
@@ -448,12 +481,16 @@ export default function VivumApp() {
         clearTimeout(cleanupTimeoutRef.current);
       }
       
+      if (articlesUpdateRef.current) {
+        clearTimeout(articlesUpdateRef.current);
+      }
+      
       // Clean up debug
       if (window.debugVivum) {
         delete window.debugVivum;
       }
     };
-  }, [articles, currentTopicId]);
+  }, [articles, currentTopicId, updateArticlesImmediately]);
 
   // ============================================
   // UI HELPERS
@@ -474,7 +511,7 @@ export default function VivumApp() {
     try {
       const data = await apiService.getArticles(conversation.topicId);
       console.log('Loaded articles for conversation:', data);
-      setArticles(data.articles || []);
+      updateArticlesImmediately(data.articles || []);
       setTopicStatus('ready');
     } catch (error) {
       console.error('Failed to load articles:', error);
