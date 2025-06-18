@@ -193,7 +193,7 @@ export default function VivumApp() {
       const fetchedArticles = articlesData?.articles || [];
       console.log('Final number of articles:', fetchedArticles.length);
       
-      // Only clear old articles after we have new ones
+      // Update articles state immediately
       setArticles(fetchedArticles);
       console.log('Articles state updated with:', fetchedArticles.length, 'articles');
       

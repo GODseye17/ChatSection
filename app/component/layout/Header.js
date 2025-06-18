@@ -18,9 +18,9 @@ export default function Header({
   articles,
   onShowSystemStatus
 }) {
-  // Ensure articles is an array for counting
+  // Ensure articles is an array and get count
   const articleCount = Array.isArray(articles) ? articles.length : 0;
-  console.log('Header - Articles:', articles, 'Count:', articleCount); // Debug log
+  console.log('Header - Articles:', articles, 'Count:', articleCount, 'isSearchView:', isSearchView); // Debug log
 
   return (
     <header className="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-30">
@@ -53,16 +53,18 @@ export default function Header({
           </TooltipContent>
         </Tooltip>
 
-        {/* Sources Button - Show when not in search view and we have articles */}
-        {!isSearchView && articleCount > 0 && (
+        {/* Sources Button - Show when in chat view and we have articles */}
+        {!isSearchView && (
           <Button
             onClick={() => setShowSources(!showSources)}
             variant={showSources ? "default" : "secondary"}
             size="sm"
             className={cn(
               "gap-2 relative transition-all",
-              showSources && "bg-purple-600 hover:bg-purple-700"
+              showSources && "bg-purple-600 hover:bg-purple-700",
+              articleCount === 0 && "opacity-50"
             )}
+            disabled={articleCount === 0}
           >
             <BookOpen className="w-4 h-4" />
             Sources
