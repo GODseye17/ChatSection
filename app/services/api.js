@@ -139,7 +139,7 @@ export class VivumAPI {
         body.filters = filters;
       }
 
-      console.log('Sending fetch request with body:', body);
+      console.log('🚀 Sending fetch request with body:', JSON.stringify(body, null, 2));
 
       // Initiate fetch
       const fetchResponse = await fetch(`${API_BASE_URL}/fetch-topic-data`, {
@@ -155,7 +155,7 @@ export class VivumAPI {
 
       const fetchData = await fetchResponse.json();
       this.currentTopicId = fetchData.topic_id;
-      console.log('Fetch initiated, topic ID:', this.currentTopicId);
+      console.log('✅ Fetch initiated, topic ID:', this.currentTopicId);
 
       // Start monitoring if callback provided
       if (onStatusUpdate) {
@@ -168,7 +168,7 @@ export class VivumAPI {
       };
 
     } catch (error) {
-      console.error('Fetch error:', error);
+      console.error('❌ Fetch error:', error);
       throw error;
     }
   }
@@ -176,7 +176,7 @@ export class VivumAPI {
   async monitorFetchProgress(topicId, onStatusUpdate) {
     return new Promise((resolve, reject) => {
       let attempts = 0;
-      const maxAttempts = 90; // 3 minutes max (increased from 60)
+      const maxAttempts = 120; // 4 minutes max (increased from 90)
 
       this.pollingInterval = setInterval(async () => {
         attempts++;
@@ -191,7 +191,7 @@ export class VivumAPI {
           const statusData = await statusResponse.json();
           const status = statusData.status;
           
-          console.log(`Status check ${attempts}:`, status); // Debug log
+          console.log(`📊 Status check ${attempts}:`, status, statusData); // Enhanced debug log
 
           // Callback for UI updates
           if (onStatusUpdate) {
@@ -211,8 +211,9 @@ export class VivumAPI {
             
             // Add a longer delay to ensure backend has finished writing data
             setTimeout(() => {
+              console.log('✅ Processing completed, resolving...');
               resolve({ status: 'completed', topicId });
-            }, 1000);
+            }, 1500); // Increased delay
           } else if (status.startsWith('error') || status === 'failed') {
             clearInterval(this.pollingInterval);
             this.pollingInterval = null;
@@ -239,9 +240,11 @@ export class VivumAPI {
       'failed': 'Processing failed',
       'fetching': 'Fetching articles from PubMed...',
       'embedding': 'Creating embeddings...',
-      'storing': 'Storing articles...'
+      'storing': 'Storing articles...',
+      'indexing': 'Building search index...',
+      'finalizing': 'Finalizing data...'
     };
-    return messages[status] || 'Processing...';
+    return messages[status] || `Processing: ${status}...`;
   }
 
   stopMonitoring() {
@@ -260,7 +263,7 @@ export class VivumAPI {
     if (!id) throw new Error('No topic ID provided');
 
     try {
-      console.log(`Fetching articles for topic ${id} with limit ${limit}, offset ${offset}`);
+      console.log(`📚 Fetching articles for topic ${id} with limit ${limit}, offset ${offset}`);
       
       const response = await fetch(
         `${API_BASE_URL}/topic/${id}/articles?limit=${limit}&offset=${offset}`,
@@ -273,34 +276,44 @@ export class VivumAPI {
       );
 
       if (!response.ok) {
-        console.error('Failed to get articles:', response.status, response.statusText);
+        console.error('❌ Failed to get articles:', response.status, response.statusText);
         const errorText = await response.text();
         console.error('Error response:', errorText);
         throw new Error(`Failed to get articles: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
-      console.log('API getArticles response:', data); // Debug log
+      console.log('📊 API getArticles response:', data); // Debug log
       
       // Ensure we return the expected structure
       if (!data.articles) {
-        console.warn('No articles property in response:', data);
+        console.warn('⚠️ No articles property in response:', data);
         return { articles: [], total: 0 };
       }
       
-      // Validate articles structure
+      // Validate and enhance articles structure
       const validArticles = data.articles.filter(article => {
         return article && (article.title || article.abstract || article.pmid);
-      });
+      }).map(article => ({
+        ...article,
+        // Ensure required fields exist
+        id: article.id || article.pmid || article.doi || Math.random().toString(36),
+        title: article.title || 'Untitled Article',
+        abstract: article.abstract || 'No abstract available',
+        authors: article.authors || ['Unknown Author'],
+        journal: article.journal || 'Unknown Journal',
+        // Add URL if pmid exists
+        url: article.pmid ? `https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/` : article.url
+      }));
       
-      console.log(`Filtered ${validArticles.length} valid articles from ${data.articles.length} total`);
+      console.log(`✅ Filtered ${validArticles.length} valid articles from ${data.articles.length} total`);
       
       return {
         articles: validArticles,
         total: data.total || validArticles.length
       };
     } catch (error) {
-      console.error('Get articles error:', error);
+      console.error('❌ Get articles error:', error);
       throw error;
     }
   }
@@ -324,6 +337,8 @@ export class VivumAPI {
         body.conversation_id = conversationId || this.currentConversationId;
       }
 
+      console.log('🤖 Sending query request:', body);
+
       const response = await fetch(`${API_BASE_URL}/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -336,6 +351,7 @@ export class VivumAPI {
       }
 
       const data = await response.json();
+      console.log('🤖 Query response received:', data);
       
       // Save conversation ID for follow-ups
       if (data.conversation_id) {
@@ -344,7 +360,7 @@ export class VivumAPI {
 
       return data;
     } catch (error) {
-      console.error('Query error:', error);
+      console.error('❌ Query error:', error);
       throw error;
     }
   }
