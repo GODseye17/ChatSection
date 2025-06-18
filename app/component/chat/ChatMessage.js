@@ -1,6 +1,6 @@
 // app/component/chat/ChatMessage.js
 import React, { useState, useEffect } from 'react';
-import { Loader2, ExternalLink, Copy, Check, User, Bot, Sparkles, BookOpen } from 'lucide-react';
+import { Loader2, ExternalLink, Copy, Check, User, Bot, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Avatar, AvatarFallback } from '../ui/avatar';
@@ -127,13 +127,6 @@ export default function ChatMessage({ message }) {
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-purple-400">Vivum AI</span>
           {message.isError && <Badge variant="destructive" className="text-xs">Error</Badge>}
-          }
-          {message.sources_used && (
-            <Badge variant="outline" className="text-xs gap-1 border-green-600/30 text-green-400">
-              <BookOpen className="w-3 h-3" />
-              {message.sources_used} sources
-            </Badge>
-          )}
         </div>
         
         <Card className={cn(
@@ -182,47 +175,11 @@ export default function ChatMessage({ message }) {
                   );
                 },
                 strong: ({children}) => <strong className="font-semibold text-gray-50">{children}</strong>,
-                table: ({children}) => (
-                  <div className="overflow-x-auto my-4">
-                    <table className="min-w-full border border-gray-700 rounded-lg">
-                      {children}
-                    </table>
-                  </div>
-                ),
-                thead: ({children}) => <thead className="bg-gray-800">{children}</thead>,
-                th: ({children}) => <th className="px-4 py-2 text-left text-gray-200 border-b border-gray-700">{children}</th>,
-                td: ({children}) => <td className="px-4 py-2 text-gray-300 border-b border-gray-700">{children}</td>,
               }}
             >
               {processPubMedLinks(displayText)}
             </ReactMarkdown>
           </div>
-
-          {/* Citations section */}
-          {message.citations && message.citations.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-800">
-              <h4 className="text-sm font-medium text-gray-300 mb-2">Sources:</h4>
-              <div className="space-y-2">
-                {message.citations.map((citation, idx) => (
-                  <div key={idx} className="text-xs text-gray-400 bg-gray-800/50 p-2 rounded">
-                    {citation.title && <div className="font-medium text-gray-300">{citation.title}</div>}
-                    }
-                    {citation.pmid && (
-                      <a 
-                        href={`https://pubmed.ncbi.nlm.nih.gov/${citation.pmid}/`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-purple-400 hover:text-purple-300 inline-flex items-center gap-1"
-                      >
-                        PMID: {citation.pmid}
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </Card>
       </div>
     </div>

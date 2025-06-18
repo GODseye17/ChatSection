@@ -15,7 +15,7 @@ import { Badge } from './component/ui/badge';
 
 export default function VivumApp() {
   // Beta activation state
-  const [isActivated, setIsActivated] = useState(false);
+  const [isBetaActivated, setIsBetaActivated] = useState(false);
   const [isCheckingActivation, setIsCheckingActivation] = useState(true);
 
   // System health
@@ -58,48 +58,39 @@ export default function VivumApp() {
 
   // Refs for cleanup
   const cleanupTimeoutRef = useRef(null);
-  const articlesUpdateRef = useRef(null);
-  const fetchTimeoutRef = useRef(null);
 
   // ============================================
   // BETA ACTIVATION CHECK
   // ============================================
 
   useEffect(() => {
-    const checkActivationStatus = () => {
+    const checkBetaActivation = () => {
       setIsCheckingActivation(true);
-      
-      // Check if user is already activated in current session
       const isActivated = sessionStorage.getItem('vivum_beta_activated');
-      
-      if (isActivated === 'true') {
-        setIsActivated(true);
-        // Initialize app after activation check
-        initializeApp();
-      } else {
-        setIsActivated(false);
-        setIsCheckingHealth(false); // Skip health check if not activated
-      }
-      
+      setIsBetaActivated(isActivated === 'true');
       setIsCheckingActivation(false);
     };
 
-    checkActivationStatus();
+    checkBetaActivation();
   }, []);
 
   const handleActivationSuccess = () => {
-    setIsActivated(true);
-    // Initialize app after successful activation
-    initializeApp();
+    setIsBetaActivated(true);
   };
 
   // ============================================
   // INITIALIZATION
   // ============================================
 
-  const initializeApp = async () => {
-    await checkSystemHealth();
-  };
+  useEffect(() => {
+    if (!isBetaActivated) return;
+
+    const initializeApp = async () => {
+      await checkSystemHealth();
+    };
+
+    initializeApp();
+  }, [isBetaActivated]);
 
   const checkSystemHealth = async () => {
     setIsCheckingHealth(true);
@@ -121,43 +112,6 @@ export default function VivumApp() {
   };
 
   // ============================================
-  // IMMEDIATE ARTICLES UPDATE FUNCTION
-  // ============================================
-
-  const updateArticlesImmediately = useCallback((newArticles) => {
-    console.log('🚀 IMMEDIATE ARTICLES UPDATE:', newArticles.length, 'articles');
-    
-    // Clear any pending updates
-    if (articlesUpdateRef.current) {
-      clearTimeout(articlesUpdateRef.current);
-    }
-    
-    // Validate articles structure
-    const validArticles = newArticles.filter(article => {
-      return article && (article.title || article.abstract || article.pmid || article.doi);
-    });
-    
-    console.log(`✅ Validated ${validArticles.length} articles from ${newArticles.length} total`);
-    
-    // Force immediate state update with new array reference
-    setArticles([...validArticles]);
-    
-    // Force re-render verification
-    articlesUpdateRef.current = setTimeout(() => {
-      setArticles(prev => {
-        if (prev.length !== validArticles.length) {
-          console.log('⚠️ Articles state mismatch detected, forcing correction');
-          return [...validArticles];
-        }
-        console.log('✅ Articles state verified:', prev.length, 'articles in state');
-        return prev;
-      });
-    }, 100);
-    
-    return validArticles.length;
-  }, []);
-
-  // ============================================
   // SEARCH AND FETCH ARTICLES
   // ============================================
 
@@ -175,11 +129,9 @@ export default function VivumApp() {
     setLoading(true);
     setSearchProgress({ status: 'initiating', message: 'Starting search...' });
     
-    // Clear previous data IMMEDIATELY
+    // Clear previous data - don't clear articles yet
     setChatMessages([]);
     setConversationId(null);
-    updateArticlesImmediately([]); // Clear articles immediately
-    setTopicStatus('processing');
     apiService.currentConversationId = null;
 
     try {
@@ -234,78 +186,43 @@ export default function VivumApp() {
       }
 
       // Fetch articles
-      console.log('🔍 Starting article fetch with options:', fetchOptions);
       const result = await apiService.fetchArticles(fetchOptions);
       setCurrentTopicId(result.topicId);
       apiService.currentTopicId = result.topicId;
 
-      console.log('🎯 Fetch completed, topic ID:', result.topicId);
+      // Wait a bit to ensure processing is complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Start aggressive article fetching with timeout protection
-      const startTime = Date.now();
+      // Get articles - retry if needed
       let articlesData = null;
       let retries = 0;
-      const maxRetries = 15; // Increased retries
-      const maxWaitTime = 120000; // 2 minutes max total wait
+      const maxRetries = 3;
       
-      // Clear any existing fetch timeout
-      if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current);
-      }
-      
-      // Set overall timeout
-      const fetchPromise = new Promise(async (resolve, reject) => {
-        fetchTimeoutRef.current = setTimeout(() => {
-          reject(new Error('Article fetch timeout after 2 minutes'));
-        }, maxWaitTime);
-        
-        // Start fetching articles immediately
-        while (retries < maxRetries) {
-          try {
-            const elapsed = Date.now() - startTime;
-            console.log(`📚 Fetching articles attempt ${retries + 1} (${elapsed}ms elapsed)`);
-            
-            articlesData = await apiService.getArticles(result.topicId);
-            console.log(`📊 Articles fetch result:`, articlesData);
-            
-            if (articlesData && articlesData.articles && articlesData.articles.length > 0) {
-              console.log('✅ Successfully fetched articles:', articlesData.articles.length);
-              
-              // Clear timeout on success
-              if (fetchTimeoutRef.current) {
-                clearTimeout(fetchTimeoutRef.current);
-              }
-              
-              resolve(articlesData);
-              return;
-            }
-            
-            // Progressive wait times: 500ms, 1s, 2s, 3s, 4s, 5s, then 5s max
-            const waitTime = Math.min(500 + (retries * 1000), 5000);
-            console.log(`⏳ No articles found, retrying in ${waitTime}ms... (attempt ${retries + 1}/${maxRetries})`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-            retries++;
-          } catch (error) {
-            console.error(`❌ Articles fetch error on attempt ${retries + 1}:`, error);
-            retries++;
-            await new Promise(resolve => setTimeout(resolve, 1000));
+      while (retries < maxRetries) {
+        try {
+          articlesData = await apiService.getArticles(result.topicId);
+          console.log(`Articles fetch attempt ${retries + 1}:`, articlesData);
+          
+          if (articlesData && articlesData.articles && articlesData.articles.length > 0) {
+            break; // Success
           }
+          
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          retries++;
+        } catch (error) {
+          console.error(`Articles fetch error on attempt ${retries + 1}:`, error);
+          retries++;
         }
-        
-        // If we get here, all retries failed
-        resolve({ articles: [] });
-      });
-      
-      // Wait for articles with timeout protection
-      articlesData = await fetchPromise;
+      }
       
       // Extract articles from the response
       const fetchedArticles = articlesData?.articles || [];
-      console.log('📋 Final articles count:', fetchedArticles.length);
+      console.log('Final number of articles:', fetchedArticles.length);
       
-      // UPDATE ARTICLES IMMEDIATELY - This is critical!
-      const actualCount = updateArticlesImmediately(fetchedArticles);
-      console.log(`🎯 Articles state updated with ${actualCount} articles`);
+      // Only clear old articles after we have new ones
+      setArticles(fetchedArticles);
+      console.log('Articles state updated with:', fetchedArticles.length, 'articles');
       
       // Update conversation history
       const searchTopic = isAdvancedQuery && options.advanced_query
@@ -317,31 +234,30 @@ export default function VivumApp() {
         source: selectedSource,
         timestamp: new Date(),
         topicId: result.topicId,
-        articleCount: actualCount
+        articleCount: fetchedArticles.length
       }, ...prev.slice(0, 9)]);
 
       // Switch to chat view
       setIsSearchView(false);
-      setTopicStatus('ready');
       
       // Show success message with correct article count
-      if (actualCount > 0) {
+      if (fetchedArticles.length > 0) {
         setChatMessages([{
           type: 'system',
-          text: `Found ${actualCount} articles and created embeddings. You can now ask questions about the research!`,
+          text: `Found ${fetchedArticles.length} articles. You can now ask questions about the research!`,
           timestamp: new Date()
         }]);
       } else {
         // Handle case where no articles were found
         setChatMessages([{
           type: 'system',
-          text: 'Search completed but no articles were found. Try adjusting your search terms or filters.',
+          text: 'Search completed but no articles were found. The AI may still be able to answer questions based on its training.',
           timestamp: new Date(),
           isError: false
         }]);
         
         // Log for debugging
-        console.warn('⚠️ No articles returned from API for topic:', result.topicId);
+        console.warn('No articles returned from API for topic:', result.topicId);
         console.log('API response was:', articlesData);
       }
 
@@ -349,7 +265,7 @@ export default function VivumApp() {
       scheduleCleanup(result.topicId);
 
     } catch (error) {
-      console.error('❌ Fetch error:', error);
+      console.error('Fetch error:', error);
       setTopicStatus('error');
       setChatMessages([{
         type: 'system',
@@ -361,11 +277,6 @@ export default function VivumApp() {
     } finally {
       setLoading(false);
       setSearchProgress(null);
-      
-      // Clear fetch timeout
-      if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current);
-      }
     }
   };
 
@@ -374,7 +285,7 @@ export default function VivumApp() {
   // ============================================
 
   const handleSendMessage = async () => {
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || topicStatus !== 'ready') return;
 
     const userMessage = {
       type: 'user',
@@ -388,9 +299,7 @@ export default function VivumApp() {
     // Add loading message
     const loadingMessage = {
       type: 'assistant',
-      text: articles.length > 0 
-        ? `Analyzing ${articles.length} research papers...` 
-        : 'Processing your question...',
+      text: 'Analyzing research papers...',
       timestamp: new Date(),
       isLoading: true,
       id: Date.now()
@@ -398,20 +307,11 @@ export default function VivumApp() {
     setChatMessages(prev => [...prev, loadingMessage]);
 
     try {
-      console.log('🤖 Sending query with:', {
-        question: chatInput,
-        topicId: currentTopicId,
-        conversationId: conversationId,
-        articlesCount: articles.length
-      });
-
       const response = await apiService.query(
         chatInput, 
         currentTopicId, 
         conversationId
       );
-
-      console.log('🤖 Query response:', response);
 
       // Update conversation ID
       if (response.conversation_id && !conversationId) {
@@ -427,8 +327,7 @@ export default function VivumApp() {
                 text: response.response,
                 timestamp: new Date(),
                 citations: response.citations,
-                context: response.context,
-                sources_used: response.sources_used || articles.length
+                context: response.context
               }
             : msg
         )
@@ -488,44 +387,10 @@ export default function VivumApp() {
           try {
             const data = await apiService.getArticles(currentTopicId);
             console.log('Manual fetch result:', data);
-            updateArticlesImmediately(data.articles || []);
+            setArticles(data.articles || []);
             return data;
           } catch (error) {
             console.error('Manual fetch failed:', error);
-          }
-        },
-        forceSetArticles: (count = 5) => {
-          const mockArticles = Array.from({ length: count }, (_, i) => ({
-            id: i,
-            title: `Mock Article ${i + 1}`,
-            abstract: `This is a mock article for testing purposes.`,
-            authors: [`Author ${i + 1}`],
-            journal: 'Test Journal',
-            doi: `10.1000/test.${i + 1}`,
-            pmid: `${12345678 + i}`
-          }));
-          console.log('Setting mock articles:', mockArticles);
-          updateArticlesImmediately(mockArticles);
-        },
-        getArticlesState: () => {
-          console.log('Current articles state:', articles);
-          return articles;
-        },
-        clearArticles: () => {
-          console.log('Clearing articles');
-          updateArticlesImmediately([]);
-        },
-        testQuery: async (question = "What are the main findings?") => {
-          if (!currentTopicId) {
-            console.log('No topic ID set');
-            return;
-          }
-          try {
-            const response = await apiService.query(question, currentTopicId);
-            console.log('Test query response:', response);
-            return response;
-          } catch (error) {
-            console.error('Test query failed:', error);
           }
         }
       };
@@ -538,20 +403,12 @@ export default function VivumApp() {
         clearTimeout(cleanupTimeoutRef.current);
       }
       
-      if (articlesUpdateRef.current) {
-        clearTimeout(articlesUpdateRef.current);
-      }
-      
-      if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current);
-      }
-      
       // Clean up debug
       if (window.debugVivum) {
         delete window.debugVivum;
       }
     };
-  }, [articles, currentTopicId, updateArticlesImmediately]);
+  }, [articles, currentTopicId]);
 
   // ============================================
   // UI HELPERS
@@ -572,7 +429,7 @@ export default function VivumApp() {
     try {
       const data = await apiService.getArticles(conversation.topicId);
       console.log('Loaded articles for conversation:', data);
-      updateArticlesImmediately(data.articles || []);
+      setArticles(data.articles || []);
       setTopicStatus('ready');
     } catch (error) {
       console.error('Failed to load articles:', error);
@@ -590,17 +447,16 @@ export default function VivumApp() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 text-purple-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Checking activation status...</p>
+          <p className="text-gray-400">Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (!isActivated) {
+  if (!isBetaActivated) {
     return <BetaActivation onActivationSuccess={handleActivationSuccess} />;
   }
 
-  // Show loading while checking health after activation
   if (isCheckingHealth) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -754,7 +610,6 @@ export default function VivumApp() {
                 setIsSearchView={setIsSearchView}
                 sidebarOpen={sidebarOpen}
                 currentTopic={searchQuery || (useMultiTopic ? topics.filter(t => t.trim()).join(` ${operator} `) : '')}
-                articles={articles} // Pass articles to ChatView
               />
             )}
           </main>
