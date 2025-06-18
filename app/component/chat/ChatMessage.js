@@ -127,6 +127,7 @@ export default function ChatMessage({ message }) {
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-purple-400">Vivum AI</span>
           {message.isError && <Badge variant="destructive" className="text-xs">Error</Badge>}
+          }
           {message.sources_used && (
             <Badge variant="outline" className="text-xs gap-1 border-green-600/30 text-green-400">
               <BookOpen className="w-3 h-3" />
@@ -205,6 +206,7 @@ export default function ChatMessage({ message }) {
                 {message.citations.map((citation, idx) => (
                   <div key={idx} className="text-xs text-gray-400 bg-gray-800/50 p-2 rounded">
                     {citation.title && <div className="font-medium text-gray-300">{citation.title}</div>}
+                    }
                     {citation.pmid && (
                       <a 
                         href={`https://pubmed.ncbi.nlm.nih.gov/${citation.pmid}/`}
