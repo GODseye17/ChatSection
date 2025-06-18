@@ -127,7 +127,7 @@ export default function ChatMessage({ message }) {
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-purple-400">Vivum AI</span>
           {message.isError && <Badge variant="destructive" className="text-xs">Error</Badge>}
-          }
+          
         </div>
         
         <Card className={cn(
