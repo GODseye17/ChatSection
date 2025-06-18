@@ -38,7 +38,7 @@ export default function ChatMessageList({ messages }) {
           type: 'date',
           date: messageDate,
           isToday: messageDate === new Date().toDateString(),
-          id: `date-${messageDate}-${idx}` // Unique ID for date separators
+          id: `date-${messageDate}-${idx}`
         });
       }
       
@@ -52,7 +52,7 @@ export default function ChatMessageList({ messages }) {
 
   return (
     <div className="relative h-full flex flex-col">
-      {/* Messages container with native scroll */}
+      {/* Messages container */}
       <div 
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto scroll-smooth"
@@ -62,16 +62,16 @@ export default function ChatMessageList({ messages }) {
           scrollbarColor: 'rgb(75 85 99) transparent'
         }}
       >
-        <div className="py-8">
+        <div className="pb-8">
           {groupedMessages.length === 0 ? (
             <div className="flex items-center justify-center h-full min-h-[400px]">
               <div className="text-center space-y-2">
                 <p className="text-gray-500">No messages yet</p>
-                <p className="text-sm text-gray-600">Start by searching for research articles</p>
+                <p className="text-sm text-gray-600">Ask a question about the research</p>
               </div>
             </div>
           ) : (
-            <div className="space-y-6 px-4 pb-4">
+            <div className="space-y-6 px-4 pb-4 pt-8">
               {groupedMessages.map((item) => {
                 if (item.type === 'date') {
                   return (
@@ -90,7 +90,7 @@ export default function ChatMessageList({ messages }) {
                     key={item.id}
                     className={cn(
                       "transition-all duration-300",
-                      `animate-in fade-in slide-in-from-bottom-3`
+                      "animate-in fade-in slide-in-from-bottom-3"
                     )}
                     style={{
                       animationDelay: `${Math.min(item.idx * 50, 300)}ms`,
@@ -107,7 +107,7 @@ export default function ChatMessageList({ messages }) {
         </div>
       </div>
 
-      {/* Custom scrollbar styles for webkit browsers */}
+      {/* Custom scrollbar styles */}
       <style jsx>{`
         div::-webkit-scrollbar {
           width: 6px;

@@ -8,7 +8,7 @@ import Sidebar from './component/layout/Sidebar';
 import Header from './component/layout/Header';
 import SourcesCanvas from './component/canvas/SourcesCanvas';
 import SystemStatus from './component/layout/SystemStatus';
-import { AlertCircle, CheckCircle, Loader2, Zap, Sparkles } from 'lucide-react';
+import { AlertCircle, CheckCircle, Loader2, Sparkles } from 'lucide-react';
 import { Badge } from './component/ui/badge';
 
 export default function VivumApp() {
@@ -30,7 +30,7 @@ export default function VivumApp() {
   
   // Advanced search
   const [useMultiTopic, setUseMultiTopic] = useState(false);
-  const [topics, setTopics] = useState(['', '']); // Initialize with 2 empty fields
+  const [topics, setTopics] = useState(['', '']);
   const [operator, setOperator] = useState('AND');
   const [showSystemStatus, setShowSystemStatus] = useState(false);
   
@@ -54,12 +54,11 @@ export default function VivumApp() {
   const cleanupTimeoutRef = useRef(null);
 
   // ============================================
-  // INITIALIZATION & HEALTH CHECKS
+  // INITIALIZATION
   // ============================================
 
   useEffect(() => {
     const initializeApp = async () => {
-      // Check system health in parallel with other operations
       await checkSystemHealth();
     };
 
@@ -69,21 +68,14 @@ export default function VivumApp() {
   const checkSystemHealth = async () => {
     setIsCheckingHealth(true);
     try {
-      const [health, cleanup] = await Promise.all([
-        apiService.checkSystemHealth(),
-        apiService.getCleanupStatus()
-      ]);
+      const health = await apiService.checkSystemHealth();
 
-      setSystemHealth({ ...health, cleanup });
+      setSystemHealth(health);
       setApiStatus({
         model: health.models,
         supabase: health.supabase
       });
 
-      // Show warning if system not fully operational
-      if (!health.server || !health.database || !health.models) {
-        console.warn('System health check:', health);
-      }
     } catch (error) {
       console.error('Health check failed:', error);
       setApiStatus({ model: false, supabase: false });
@@ -93,16 +85,15 @@ export default function VivumApp() {
   };
 
   // ============================================
-  // SEARCH WITH ALL FEATURES - FIXED VERSION
+  // SEARCH AND FETCH ARTICLES
   // ============================================
 
   const handleFetchArticles = async (options = {}) => {
-    // Ensure options is always an object, never null
     if (!options || typeof options !== 'object') {
       options = {};
     }
 
-    // Handle both regular calls and advanced query calls
+    // Handle filters
     const filters = options.advanced_query === undefined ? options : null;
     const isAdvancedQuery = options && options.advanced_query !== undefined;
     
@@ -111,8 +102,7 @@ export default function VivumApp() {
     setLoading(true);
     setSearchProgress({ status: 'initiating', message: 'Starting search...' });
     
-    // Clear previous data
-    setArticles([]);
+    // Clear previous data - don't clear articles yet
     setChatMessages([]);
     setConversationId(null);
     apiService.currentConversationId = null;
@@ -128,9 +118,9 @@ export default function VivumApp() {
         if (queryTransformation.is_transformed) {
           setSearchProgress({
             status: 'transforming',
-            message: `Query transformed: "${queryTransformation.transformed_query}"`
+            message: 'Query optimized for medical search'
           });
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
 
@@ -143,8 +133,8 @@ export default function VivumApp() {
         onStatusUpdate: (progress) => {
           setSearchProgress(progress);
           
-          // Update topic status for chat
-          if (progress.status === 'completed' || progress.status === 'ready') {
+          // Update topic status
+          if (progress.status === 'completed') {
             setTopicStatus('ready');
           } else if (progress.status.startsWith('error')) {
             setTopicStatus('error');
@@ -173,9 +163,39 @@ export default function VivumApp() {
       setCurrentTopicId(result.topicId);
       apiService.currentTopicId = result.topicId;
 
-      // Get articles immediately after completion
-      const articlesData = await apiService.getArticles(result.topicId);
-      setArticles(articlesData.articles || []);
+      // Wait a bit to ensure processing is complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Get articles - retry if needed
+      let articlesData = null;
+      let retries = 0;
+      const maxRetries = 3;
+      
+      while (retries < maxRetries) {
+        try {
+          articlesData = await apiService.getArticles(result.topicId);
+          console.log(`Articles fetch attempt ${retries + 1}:`, articlesData);
+          
+          if (articlesData && articlesData.articles && articlesData.articles.length > 0) {
+            break; // Success
+          }
+          
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          retries++;
+        } catch (error) {
+          console.error(`Articles fetch error on attempt ${retries + 1}:`, error);
+          retries++;
+        }
+      }
+      
+      // Extract articles from the response
+      const fetchedArticles = articlesData?.articles || [];
+      console.log('Final number of articles:', fetchedArticles.length);
+      
+      // Only clear old articles after we have new ones
+      setArticles(fetchedArticles);
+      console.log('Articles state updated with:', fetchedArticles.length, 'articles');
       
       // Update conversation history
       const searchTopic = isAdvancedQuery && options.advanced_query
@@ -187,32 +207,34 @@ export default function VivumApp() {
         source: selectedSource,
         timestamp: new Date(),
         topicId: result.topicId,
-        articleCount: articlesData.articles?.length || 0
+        articleCount: fetchedArticles.length
       }, ...prev.slice(0, 9)]);
 
       // Switch to chat view
       setIsSearchView(false);
       
-      // Save search to recent (for single topic searches)
-      if (!isAdvancedQuery && !useMultiTopic && searchQuery.trim()) {
-        try {
-          const saved = localStorage.getItem('vivum_recent_searches');
-          const recent = saved ? JSON.parse(saved) : [];
-          const updated = [searchQuery, ...recent.filter(s => s !== searchQuery)].slice(0, 10);
-          localStorage.setItem('vivum_recent_searches', JSON.stringify(updated));
-        } catch (e) {
-          console.error('Failed to save recent search:', e);
-        }
+      // Show success message with correct article count
+      if (fetchedArticles.length > 0) {
+        setChatMessages([{
+          type: 'system',
+          text: `Found ${fetchedArticles.length} articles. You can now ask questions about the research!`,
+          timestamp: new Date()
+        }]);
+      } else {
+        // Handle case where no articles were found
+        setChatMessages([{
+          type: 'system',
+          text: 'Search completed but no articles were found. The AI may still be able to answer questions based on its training.',
+          timestamp: new Date(),
+          isError: false
+        }]);
+        
+        // Log for debugging
+        console.warn('No articles returned from API for topic:', result.topicId);
+        console.log('API response was:', articlesData);
       }
 
-      // Show success message
-      setChatMessages([{
-        type: 'system',
-        text: `Found ${articlesData.articles?.length || 0} articles. You can now ask questions about the research!`,
-        timestamp: new Date()
-      }]);
-
-      // Schedule cleanup after 1 hour of inactivity
+      // Schedule cleanup
       scheduleCleanup(result.topicId);
 
     } catch (error) {
@@ -232,7 +254,7 @@ export default function VivumApp() {
   };
 
   // ============================================
-  // CHAT WITH CONVERSATION SUPPORT
+  // CHAT
   // ============================================
 
   const handleSendMessage = async () => {
@@ -264,12 +286,12 @@ export default function VivumApp() {
         conversationId
       );
 
-      // Update conversation ID for follow-ups
+      // Update conversation ID
       if (response.conversation_id && !conversationId) {
         setConversationId(response.conversation_id);
       }
 
-      // Replace loading message with actual response
+      // Replace loading message with response
       setChatMessages(prev => 
         prev.map(msg => 
           msg.id === loadingMessage.id
@@ -303,11 +325,10 @@ export default function VivumApp() {
   };
 
   // ============================================
-  // CLEANUP MANAGEMENT
+  // CLEANUP
   // ============================================
 
   const scheduleCleanup = (topicId) => {
-    // Clear existing timeout
     if (cleanupTimeoutRef.current) {
       clearTimeout(cleanupTimeoutRef.current);
     }
@@ -323,42 +344,44 @@ export default function VivumApp() {
     }, 60 * 60 * 1000); // 1 hour
   };
 
-  const handleManualCleanup = async () => {
-    if (!currentTopicId) return;
-    
-    if (confirm('This will clear all current data. Continue?')) {
-      try {
-        await apiService.cleanupTopic(currentTopicId);
-        // Reset state
-        setArticles([]);
-        setChatMessages([]);
-        setCurrentTopicId(null);
-        setConversationId(null);
-        setTopicStatus('idle');
-        setIsSearchView(true);
-        
-        // Clear cleanup timeout
-        if (cleanupTimeoutRef.current) {
-          clearTimeout(cleanupTimeoutRef.current);
-        }
-      } catch (error) {
-        console.error('Manual cleanup failed:', error);
-      }
-    }
-  };
-
   // Cleanup on unmount
   useEffect(() => {
+    // Add debug functions to window for testing
+    if (process.env.NODE_ENV === 'development') {
+      window.debugVivum = {
+        articles,
+        topicId: currentTopicId,
+        refreshArticles: async () => {
+          if (!currentTopicId) {
+            console.log('No topic ID set');
+            return;
+          }
+          console.log('Manually fetching articles for topic:', currentTopicId);
+          try {
+            const data = await apiService.getArticles(currentTopicId);
+            console.log('Manual fetch result:', data);
+            setArticles(data.articles || []);
+            return data;
+          } catch (error) {
+            console.error('Manual fetch failed:', error);
+          }
+        }
+      };
+    }
+
     return () => {
-      // Stop monitoring if active
       apiService.stopMonitoring();
       
-      // Clear cleanup timeout
       if (cleanupTimeoutRef.current) {
         clearTimeout(cleanupTimeoutRef.current);
       }
+      
+      // Clean up debug
+      if (window.debugVivum) {
+        delete window.debugVivum;
+      }
     };
-  }, []);
+  }, [articles, currentTopicId]);
 
   // ============================================
   // UI HELPERS
@@ -368,20 +391,23 @@ export default function VivumApp() {
     setDarkMode(!darkMode);
   };
 
-  const onSelectConversation = (conversation) => {
-    // Restore conversation
+  const onSelectConversation = async (conversation) => {
     setCurrentTopicId(conversation.topicId);
     apiService.currentTopicId = conversation.topicId;
     setSearchQuery(conversation.topic);
     setIsSearchView(false);
+    setTopicStatus('processing');
     
-    // Load articles for this topic
-    apiService.getArticles(conversation.topicId)
-      .then(data => {
-        setArticles(data.articles || []);
-        setTopicStatus('ready');
-      })
-      .catch(console.error);
+    // Load articles
+    try {
+      const data = await apiService.getArticles(conversation.topicId);
+      console.log('Loaded articles for conversation:', data);
+      setArticles(data.articles || []);
+      setTopicStatus('ready');
+    } catch (error) {
+      console.error('Failed to load articles:', error);
+      setTopicStatus('error');
+    }
   };
 
   // ============================================
@@ -418,11 +444,6 @@ export default function VivumApp() {
                 <Badge variant={systemHealth.models ? "default" : "destructive"} className="text-xs">
                   AI: {systemHealth.models ? '✓' : '✗'}
                 </Badge>
-                {systemHealth.tasks > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    Tasks: {systemHealth.tasks}
-                  </Badge>
-                )}
               </div>
               <button
                 onClick={() => setShowSystemStatus(true)}
@@ -466,7 +487,7 @@ export default function VivumApp() {
                   loading={loading}
                   showFilters={showFilters}
                   setShowFilters={setShowFilters}
-                  // Multi-topic search props
+                  // Multi-topic search
                   useMultiTopic={useMultiTopic}
                   setUseMultiTopic={setUseMultiTopic}
                   topics={topics}
@@ -475,12 +496,11 @@ export default function VivumApp() {
                   setOperator={setOperator}
                 />
                 
-                {/* Search Progress Overlay */}
+                {/* Search Progress */}
                 {searchProgress && (
                   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
                     <div className="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-gray-800 shadow-2xl">
                       <div className="text-center">
-                        {/* Animated icon */}
                         <div className="relative inline-flex items-center justify-center w-20 h-20 mb-6">
                           <div className="absolute inset-0 bg-purple-600/20 rounded-full animate-ping"></div>
                           <div className="relative bg-gradient-to-br from-purple-600 to-purple-700 rounded-full p-4">
@@ -496,13 +516,11 @@ export default function VivumApp() {
                           <div className="mb-6">
                             <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
                               <div 
-                                className="bg-gradient-to-r from-purple-600 to-purple-500 h-full rounded-full transition-all duration-500 relative overflow-hidden"
+                                className="bg-gradient-to-r from-purple-600 to-purple-500 h-full rounded-full transition-all duration-500"
                                 style={{ 
                                   width: `${(searchProgress.attempts / searchProgress.maxAttempts) * 100}%` 
                                 }}
-                              >
-                                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                              </div>
+                              />
                             </div>
                             <p className="text-xs text-gray-500 mt-2">
                               Step {searchProgress.attempts} of {searchProgress.maxAttempts}
@@ -510,14 +528,14 @@ export default function VivumApp() {
                           </div>
                         )}
                         
-                        {/* Query transformation display */}
+                        {/* Query transformation */}
                         {transformedQuery && transformedQuery.is_transformed && (
                           <div className="mb-6 p-4 bg-purple-600/10 rounded-xl border border-purple-600/20">
                             <div className="flex items-center gap-2 mb-2">
                               <Sparkles className="w-4 h-4 text-purple-400" />
                               <p className="text-sm font-medium text-purple-300">Query Optimized</p>
                             </div>
-                            <p className="text-sm text-purple-200 italic">&quot;{transformedQuery.transformed_query}&quot;</p>
+                            <p className="text-sm text-purple-200 italic">For medical search</p>
                           </div>
                         )}
                         
@@ -560,16 +578,6 @@ export default function VivumApp() {
             isOpen={showSystemStatus}
             onClose={() => setShowSystemStatus(false)}
           />
-
-          {/* Cleanup Button (for testing) */}
-          {process.env.NODE_ENV === 'development' && currentTopicId && (
-            <button
-              onClick={handleManualCleanup}
-              className="fixed bottom-4 left-4 px-3 py-1 bg-red-500/10 text-red-400 text-xs rounded-lg border border-red-500/20 hover:bg-red-500/20"
-            >
-              Cleanup Topic
-            </button>
-          )}
         </div>
       </div>
     </div>

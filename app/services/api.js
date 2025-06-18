@@ -1,5 +1,5 @@
 // app/services/api.js
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ad-vivum-backend-production.up.railway.app';
+const API_BASE_URL = 'https://ad-vivum-backend-production.up.railway.app';
 
 export class VivumAPI {
   constructor() {
@@ -22,7 +22,7 @@ export class VivumAPI {
     };
 
     try {
-      // Run all health checks in parallel for speed
+      // Run health checks in parallel
       const [health, modelStatus, ping, supabase] = await Promise.allSettled([
         fetch(`${API_BASE_URL}/health`),
         fetch(`${API_BASE_URL}/model-status`),
@@ -64,7 +64,7 @@ export class VivumAPI {
 
   async getCleanupStatus() {
     try {
-      const response = await fetch(`${API_BASE_URL}/cleanup/status`);
+      const response = await fetch(`${API_BASE_URL}/cleanup-status`);
       if (!response.ok) return null;
       return await response.json();
     } catch (error) {
@@ -99,7 +99,7 @@ export class VivumAPI {
   }
 
   // ============================================
-  // ARTICLE FETCHING WITH MONITORING
+  // ARTICLE FETCHING
   // ============================================
 
   async fetchArticles(options = {}) {
@@ -173,7 +173,7 @@ export class VivumAPI {
   async monitorFetchProgress(topicId, onStatusUpdate) {
     return new Promise((resolve, reject) => {
       let attempts = 0;
-      const maxAttempts = 120; // 4 minutes max
+      const maxAttempts = 60; // 2 minutes max
 
       this.pollingInterval = setInterval(async () => {
         attempts++;
@@ -187,6 +187,8 @@ export class VivumAPI {
           
           const statusData = await statusResponse.json();
           const status = statusData.status;
+          
+          console.log(`Status check ${attempts}:`, status); // Debug log
 
           // Callback for UI updates
           if (onStatusUpdate) {
@@ -199,12 +201,16 @@ export class VivumAPI {
             });
           }
 
-          // Check completion
-          if (status === 'completed' || status === 'ready') {
+          // Check completion - wait for 'completed' status specifically
+          if (status === 'completed') {
             clearInterval(this.pollingInterval);
             this.pollingInterval = null;
-            resolve({ status: 'completed', topicId });
-          } else if (status.startsWith('error') || status === 'failed' || status === 'timeout') {
+            
+            // Add a small delay to ensure backend has finished writing data
+            setTimeout(() => {
+              resolve({ status: 'completed', topicId });
+            }, 500);
+          } else if (status.startsWith('error') || status === 'failed') {
             clearInterval(this.pollingInterval);
             this.pollingInterval = null;
             reject(new Error(`Fetch failed: ${status}`));
@@ -225,15 +231,11 @@ export class VivumAPI {
 
   getStatusMessage(status) {
     const messages = {
-      'searching': 'Searching for articles...',
       'processing': 'Processing articles...',
-      'creating_embeddings': 'Creating embeddings for RAG...',
       'completed': 'Processing complete!',
-      'ready': 'Ready for questions!',
-      'failed': 'Processing failed',
-      'timeout': 'Processing timed out'
+      'failed': 'Processing failed'
     };
-    return messages[status] || status;
+    return messages[status] || 'Processing...';
   }
 
   stopMonitoring() {
@@ -247,7 +249,7 @@ export class VivumAPI {
   // ARTICLE RETRIEVAL
   // ============================================
 
-  async getArticles(topicId = null, limit = 20, offset = 0) {
+  async getArticles(topicId = null, limit = 100, offset = 0) {
     const id = topicId || this.currentTopicId;
     if (!id) throw new Error('No topic ID provided');
 
@@ -256,35 +258,22 @@ export class VivumAPI {
         `${API_BASE_URL}/topic/${id}/articles?limit=${limit}&offset=${offset}`
       );
 
-      if (!response.ok) throw new Error('Failed to get articles');
-      return await response.json();
+      if (!response.ok) {
+        console.error('Failed to get articles:', response.status);
+        throw new Error('Failed to get articles');
+      }
+      
+      const data = await response.json();
+      console.log('API getArticles response:', data); // Debug log
+      return data;
     } catch (error) {
       console.error('Get articles error:', error);
       throw error;
     }
   }
 
-  async getAllArticles(topicId = null) {
-    const id = topicId || this.currentTopicId;
-    if (!id) throw new Error('No topic ID provided');
-
-    const allArticles = [];
-    let offset = 0;
-    const limit = 100;
-    let hasMore = true;
-
-    while (hasMore) {
-      const data = await this.getArticles(id, limit, offset);
-      allArticles.push(...data.articles);
-      hasMore = data.pagination?.has_more || false;
-      offset += limit;
-    }
-
-    return allArticles;
-  }
-
   // ============================================
-  // RAG CHAT FUNCTIONALITY
+  // RAG CHAT
   // ============================================
 
   async query(question, topicId = null, conversationId = null) {
@@ -328,31 +317,12 @@ export class VivumAPI {
   }
 
   // ============================================
-  // FILTER TESTING
-  // ============================================
-
-  async testFilters(request) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/test-filters`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(request)
-      });
-
-      return await response.json();
-    } catch (error) {
-      console.error('Filter test error:', error);
-      return { error: error.message };
-    }
-  }
-
-  // ============================================
-  // CLEANUP MANAGEMENT
+  // CLEANUP
   // ============================================
 
   async cleanupTopic(topicId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/topic/${topicId}/cleanup`, {
+      const response = await fetch(`${API_BASE_URL}/cleanup-topic/${topicId}`, {
         method: 'DELETE'
       });
 
@@ -366,7 +336,7 @@ export class VivumAPI {
 
   async cleanupOldTopics(daysOld = 7) {
     try {
-      const response = await fetch(`${API_BASE_URL}/cleanup/old-topics?days_old=${daysOld}`, {
+      const response = await fetch(`${API_BASE_URL}/cleanup-old?days=${daysOld}`, {
         method: 'POST'
       });
 
@@ -379,7 +349,7 @@ export class VivumAPI {
   }
 
   // ============================================
-  // PERFORMANCE TESTING
+  // PERFORMANCE
   // ============================================
 
   async testPerformance() {
@@ -397,15 +367,10 @@ export class VivumAPI {
 // Create singleton instance
 export const apiService = new VivumAPI();
 
+// For debugging in development
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  window.apiService = apiService;
+}
+
 // For backward compatibility
-export default {
-  ...apiService,
-  fetchTopicData: (topic, source, filters) => 
-    apiService.fetchArticles({ topic, filters, create_embeddings: true }),
-  checkTopicStatus: (topicId) => 
-    fetch(`${API_BASE_URL}/topic/${topicId}/status`).then(r => r.json()),
-  fetchTopicArticles: (topicId) => 
-    apiService.getArticles(topicId).then(data => data.articles),
-  sendQuery: (query, topicId) => 
-    apiService.query(query, topicId)
-};
+export default apiService;

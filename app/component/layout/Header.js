@@ -4,6 +4,7 @@ import { Menu, X, Sun, Moon, BookOpen, Activity } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { cn } from '@/app/lib/utils';
 
 export default function Header({ 
   sidebarOpen, 
@@ -17,6 +18,10 @@ export default function Header({
   articles,
   onShowSystemStatus
 }) {
+  // Ensure articles is an array for counting
+  const articleCount = Array.isArray(articles) ? articles.length : 0;
+  console.log('Header - Articles:', articles, 'Count:', articleCount); // Debug log
+
   return (
     <header className="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-30">
       <div className="flex items-center gap-3">
@@ -48,20 +53,24 @@ export default function Header({
           </TooltipContent>
         </Tooltip>
 
-        {!isSearchView && articles.length > 0 && (
+        {/* Sources Button - Show when not in search view and we have articles */}
+        {!isSearchView && articleCount > 0 && (
           <Button
-            onClick={() => setShowSources(true)}
-            variant="secondary"
+            onClick={() => setShowSources(!showSources)}
+            variant={showSources ? "default" : "secondary"}
             size="sm"
-            className="gap-2 relative"
+            className={cn(
+              "gap-2 relative transition-all",
+              showSources && "bg-purple-600 hover:bg-purple-700"
+            )}
           >
             <BookOpen className="w-4 h-4" />
             Sources
             <Badge 
-              variant="default" 
-              className="ml-1 px-1.5 py-0 text-xs bg-purple-600 hover:bg-purple-600"
+              variant={showSources ? "secondary" : "default"}
+              className="ml-1 px-1.5 py-0 text-xs min-w-[20px] text-center"
             >
-              {articles.length}
+              {articleCount}
             </Badge>
           </Button>
         )}
