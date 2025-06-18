@@ -8,10 +8,16 @@ import Sidebar from './component/layout/Sidebar';
 import Header from './component/layout/Header';
 import SourcesCanvas from './component/canvas/SourcesCanvas';
 import SystemStatus from './component/layout/SystemStatus';
+import BetaActivation from './component/auth/ BetaActivation';
+import SessionWarning from './component/auth/SessionWarning';
 import { AlertCircle, CheckCircle, Loader2, Sparkles } from 'lucide-react';
 import { Badge } from './component/ui/badge';
 
 export default function VivumApp() {
+  // Beta activation state
+  const [isActivated, setIsActivated] = useState(false);
+  const [isCheckingActivation, setIsCheckingActivation] = useState(true);
+
   // System health
   const [systemHealth, setSystemHealth] = useState(null);
   const [isCheckingHealth, setIsCheckingHealth] = useState(true);
@@ -54,16 +60,44 @@ export default function VivumApp() {
   const cleanupTimeoutRef = useRef(null);
 
   // ============================================
-  // INITIALIZATION
+  // BETA ACTIVATION CHECK
   // ============================================
 
   useEffect(() => {
-    const initializeApp = async () => {
-      await checkSystemHealth();
+    const checkActivationStatus = () => {
+      setIsCheckingActivation(true);
+      
+      // Check if user is already activated in current session
+      const isActivated = sessionStorage.getItem('vivum_beta_activated');
+      
+      if (isActivated === 'true') {
+        setIsActivated(true);
+        // Initialize app after activation check
+        initializeApp();
+      } else {
+        setIsActivated(false);
+        setIsCheckingHealth(false); // Skip health check if not activated
+      }
+      
+      setIsCheckingActivation(false);
     };
 
-    initializeApp();
+    checkActivationStatus();
   }, []);
+
+  const handleActivationSuccess = () => {
+    setIsActivated(true);
+    // Initialize app after successful activation
+    initializeApp();
+  };
+
+  // ============================================
+  // INITIALIZATION
+  // ============================================
+
+  const initializeApp = async () => {
+    await checkSystemHealth();
+  };
 
   const checkSystemHealth = async () => {
     setIsCheckingHealth(true);
@@ -442,6 +476,23 @@ export default function VivumApp() {
   // RENDER
   // ============================================
 
+  // Show beta activation if not activated
+  if (isCheckingActivation) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-purple-500 animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Checking activation status...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isActivated) {
+    return <BetaActivation onActivationSuccess={handleActivationSuccess} />;
+  }
+
+  // Show loading while checking health after activation
   if (isCheckingHealth) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -456,6 +507,9 @@ export default function VivumApp() {
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+        {/* Session Warning */}
+        <SessionWarning />
+
         {/* System Status Bar */}
         {systemHealth && (!systemHealth.server || !systemHealth.database || !systemHealth.models) && (
           <div className="bg-yellow-500/10 border-b border-yellow-500/20 px-4 py-2">
