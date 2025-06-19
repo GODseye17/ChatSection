@@ -23,7 +23,7 @@ const processPubMedLinks = (text) => {
     return `([PMID: ${id}](https://pubmed.ncbi.nlm.nih.gov/${id}/))`;
   });
   
-  // Replace PMIDs in table cells
+  // Replace PMIDs in table cell
   processedText = processedText.replace(/\|\s*(\d{7,9})\s*\|/g, (match, id) => {
     return `| [${id}](https://pubmed.ncbi.nlm.nih.gov/${id}/) |`;
   });
