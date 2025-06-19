@@ -136,20 +136,22 @@ export default function VivumApp() {
 
     try {
       // Transform query if single topic search
-      let queryTransformation = null;
-      if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
-        queryTransformation = await apiService.transformQuery(searchQuery);
-        setTransformedQuery(queryTransformation);
-        
-        // Show transformation briefly
-        if (queryTransformation.is_transformed) {
-          setSearchProgress({
-            status: 'transforming',
-            message: 'Query optimized for medical search'
-          });
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-      }
+      // Transform query if single topic search
+let queryTransformation = null;
+if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
+  queryTransformation = await apiService.transformQuery(searchQuery);
+  console.log('📝 Query transformation result:', queryTransformation); // Debug log
+  setTransformedQuery(queryTransformation);
+  
+  // Show transformation briefly
+  if (queryTransformation && queryTransformation.is_transformed) {
+    setSearchProgress({
+      status: 'transforming',
+      message: 'Query optimized for medical search'
+    });
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Increased delay to show transformation
+  }
+}
 
       // Prepare fetch options
       const fetchOptions = {
@@ -575,15 +577,27 @@ export default function VivumApp() {
                         )}
                         
                         {/* Query transformation */}
-                        {transformedQuery && transformedQuery.is_transformed && (
-                          <div className="mb-6 p-4 bg-purple-600/10 rounded-xl border border-purple-600/20">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Sparkles className="w-4 h-4 text-purple-400" />
-                              <p className="text-sm font-medium text-purple-300">Query Optimized</p>
-                            </div>
-                            <p className="text-sm text-purple-200 italic">For medical search</p>
-                          </div>
-                        )}
+                        {/* Query transformation */}
+{transformedQuery && transformedQuery.is_transformed && (
+  <div className="mb-6 p-4 bg-purple-600/10 rounded-xl border border-purple-600/20">
+    <div className="flex items-center gap-2 mb-3">
+      <Sparkles className="w-4 h-4 text-purple-400" />
+      <p className="text-sm font-medium text-purple-300">Query Optimized</p>
+    </div>
+    <div className="space-y-2 text-left">
+      <div>
+        <p className="text-xs text-purple-400/70 uppercase tracking-wider mb-1">Original:</p>
+        <p className="text-sm text-purple-200/80">{transformedQuery.original_query}</p>
+      </div>
+      <div>
+        <p className="text-xs text-purple-400/70 uppercase tracking-wider mb-1">Optimized for PubMed:</p>
+        <p className="text-sm text-purple-200 font-mono bg-purple-600/10 p-2 rounded border border-purple-600/20">
+          {transformedQuery.transformed_query}
+        </p>
+      </div>
+    </div>
+  </div>
+)}
                         
                         <button
                           onClick={() => {

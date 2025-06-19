@@ -77,26 +77,30 @@ export class VivumAPI {
   // QUERY TRANSFORMATION
   // ============================================
 
-  async transformQuery(query) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/transform-query`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
-      });
+async transformQuery(query) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/transform-query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    });
 
-      if (!response.ok) throw new Error('Transform failed');
-      return await response.json();
-    } catch (error) {
-      console.error('Query transform error:', error);
-      return {
-        original_query: query,
-        transformed_query: query,
-        is_transformed: false,
-        explanation: 'Transformation failed'
-      };
-    }
+    if (!response.ok) throw new Error('Transform failed');
+    
+    const data = await response.json();
+    console.log('🔄 Query transformation response:', data); // Debug log
+    
+    return data;
+  } catch (error) {
+    console.error('Query transform error:', error);
+    return {
+      original_query: query,
+      transformed_query: query,
+      is_transformed: false,
+      explanation: 'Transformation failed'
+    };
   }
+}
 
   // ============================================
   // ARTICLE FETCHING
