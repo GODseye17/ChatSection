@@ -40,8 +40,8 @@
   --bg-secondary: #f8f9fa;
   --bg-tertiary: #f1f5f9;
   --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
   --border-light: #e5e7eb;
   --border-medium: #d1d5db;
   --border-focus: #3b82f6;
@@ -88,6 +88,12 @@ body {
   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
               color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   line-height: 1.6;
+}
+
+/* Light theme body override */
+[data-theme="light"] body {
+  background: #ffffff !important;
+  color: #1f2937 !important;
 }
 
 /* ============================================ */
@@ -185,24 +191,82 @@ body {
   color: var(--text-muted) !important;
 }
 
+/* ============================================ */
+/* CRITICAL BUTTON FIXES */
+/* ============================================ */
+
+/* Fix all button visibility in light theme */
+[data-theme="light"] button,
 [data-theme="light"] .search-button,
-[data-theme="light"] .bg-gradient-to-r.from-purple-600.to-purple-500 {
-  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%) !important;
-  height: 52px !important;
-  padding: 0 32px !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
+[data-theme="light"] .bg-gradient-to-r.from-purple-600.to-purple-500,
+[data-theme="light"] .bg-gradient-to-r.from-blue-600.to-blue-500 {
   color: white !important;
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%) !important;
   border: none !important;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  padding: 12px 24px !important;
+  min-height: 44px !important;
 }
 
+[data-theme="light"] button:hover,
 [data-theme="light"] .search-button:hover,
-[data-theme="light"] .hover\:from-purple-700.hover\:to-purple-600:hover {
+[data-theme="light"] .hover\:from-purple-700.hover\:to-purple-600:hover,
+[data-theme="light"] .hover\:from-blue-700.hover\:to-blue-600:hover {
   background: linear-gradient(135deg, var(--accent-blue-hover) 0%, #1d4ed8 100%) !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
+  color: white !important;
+}
+
+/* Outline buttons */
+[data-theme="light"] button[variant="outline"],
+[data-theme="light"] .border-gray-700,
+[data-theme="light"] .border-gray-800 {
+  background: var(--bg-primary) !important;
+  border: 2px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-light) !important;
+}
+
+[data-theme="light"] button[variant="outline"]:hover,
+[data-theme="light"] .border-gray-700:hover,
+[data-theme="light"] .hover\:border-gray-700:hover {
+  border-color: var(--accent-blue) !important;
+  background: rgba(59, 130, 246, 0.05) !important;
+  color: var(--accent-blue) !important;
+  transform: translateY(-1px);
+}
+
+/* Ghost buttons */
+[data-theme="light"] button[variant="ghost"],
+[data-theme="light"] .hover\:bg-gray-800:hover,
+[data-theme="light"] .hover\:bg-gray-700:hover,
+[data-theme="light"] .hover\:bg-gray-100:hover {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border: 1px solid transparent !important;
+}
+
+[data-theme="light"] button[variant="ghost"]:hover {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-light);
+}
+
+/* Secondary buttons */
+[data-theme="light"] button[variant="secondary"] {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+[data-theme="light"] button[variant="secondary"]:hover {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-medium) !important;
 }
 
 /* ============================================ */
@@ -250,38 +314,6 @@ body {
   background: var(--bg-secondary) !important;
   border: 1px solid var(--border-light) !important;
   border-radius: 8px !important;
-}
-
-/* ============================================ */
-/* ENHANCED BUTTON STYLING */
-/* ============================================ */
-
-[data-theme="light"] button {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
-}
-
-[data-theme="light"] .hover\:bg-gray-800:hover,
-[data-theme="light"] .hover\:bg-gray-700:hover,
-[data-theme="light"] .hover\:bg-gray-100:hover {
-  background: var(--bg-tertiary) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-light);
-}
-
-[data-theme="light"] button:active {
-  transform: translateY(0);
-}
-
-/* Outline buttons */
-[data-theme="light"] .border-gray-700,
-[data-theme="light"] .border-gray-800 {
-  border-color: var(--border-light) !important;
-}
-
-[data-theme="light"] .border-gray-700:hover,
-[data-theme="light"] .hover\:border-gray-700:hover {
-  border-color: var(--border-medium) !important;
 }
 
 /* ============================================ */

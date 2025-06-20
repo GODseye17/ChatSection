@@ -315,8 +315,12 @@ export default function SearchView({
                         onClick={() => setShowFilters(!showFilters)}
                         className={cn(
                           "gap-2 transition-all duration-300 hover:scale-105 transform px-6 py-3",
-                          "border-2 rounded-xl font-medium",
-                          showFilters && "border-purple-600 bg-purple-600/10 text-purple-400",
+                          "border-2 rounded-xl font-medium text-base",
+                          "bg-white text-gray-900 border-gray-300 hover:border-blue-500 hover:bg-blue-50",
+                          "dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:border-purple-500",
+                          "[data-theme='light'] &:bg-white [data-theme='light'] &:text-gray-900 [data-theme='light'] &:border-gray-300",
+                          "[data-theme='light'] &:hover:border-blue-500 [data-theme='light'] &:hover:bg-blue-50",
+                          showFilters && "border-blue-600 bg-blue-600/10 text-blue-600",
                           showFilters && "dark:border-purple-600 dark:bg-purple-600/10 dark:text-purple-400",
                           showFilters && "[data-theme='light'] &:border-blue-600 [data-theme='light'] &:bg-blue-600/10 [data-theme='light'] &:text-blue-600"
                         )}
@@ -326,7 +330,7 @@ export default function SearchView({
                         {activeFilterCount() > 0 && (
                           <Badge variant="secondary" className={cn(
                             "ml-1 transition-all duration-300 px-2 py-1",
-                            "bg-purple-600 text-white dark:bg-purple-600",
+                            "bg-blue-600 text-white dark:bg-purple-600",
                             "[data-theme='light'] &:bg-blue-600"
                           )}>
                             {activeFilterCount()}
@@ -339,8 +343,10 @@ export default function SearchView({
                         onClick={() => setUseMultiTopic(!useMultiTopic)}
                         className={cn(
                           "gap-2 transition-all duration-300 hover:scale-105 transform px-6 py-3",
-                          "rounded-xl font-medium",
-                          "[data-theme='light'] &:hover:bg-gray-100"
+                          "rounded-xl font-medium text-base",
+                          "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
+                          "dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100",
+                          "[data-theme='light'] &:text-gray-700 [data-theme='light'] &:hover:bg-gray-100 [data-theme='light'] &:hover:text-gray-900"
                         )}
                       >
                         Advanced Search
@@ -353,11 +359,12 @@ export default function SearchView({
                       size="lg"
                       className={cn(
                         "gap-3 min-w-[180px] transition-all duration-300 hover:scale-105 transform",
-                        "bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600",
+                        "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600",
                         "dark:from-purple-600 dark:to-purple-500 dark:hover:from-purple-700 dark:hover:to-purple-600",
                         "[data-theme='light'] &:from-blue-600 [data-theme='light'] &:to-blue-500",
                         "[data-theme='light'] &:hover:from-blue-700 [data-theme='light'] &:hover:to-blue-600",
-                        "shadow-lg hover:shadow-xl px-8 py-4 rounded-xl font-semibold text-lg"
+                        "shadow-lg hover:shadow-xl px-8 py-4 rounded-xl font-semibold text-lg",
+                        "text-white border-none"
                       )}
                     >
                       <Search className="w-5 h-5" />
@@ -399,8 +406,8 @@ export default function SearchView({
                           className={cn(
                             "px-4 py-2 text-sm rounded-lg transition-all duration-300 hover:scale-105 transform font-medium",
                             operator === op
-                              ? "bg-purple-600 text-white shadow-lg dark:bg-purple-600 [data-theme='light'] &:bg-blue-600"
-                              : "bg-gray-800 text-gray-400 hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 [data-theme='light'] &:bg-gray-100 [data-theme='light'] &:text-gray-600 [data-theme='light'] &:hover:bg-gray-200"
+                              ? "bg-blue-600 text-white shadow-lg dark:bg-purple-600 [data-theme='light'] &:bg-blue-600"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 [data-theme='light'] &:bg-gray-100 [data-theme='light'] &:text-gray-700 [data-theme='light'] &:hover:bg-gray-200"
                           )}
                         >
                           {op}
@@ -421,10 +428,10 @@ export default function SearchView({
                           placeholder={`Research term ${index + 1}`}
                           className={cn(
                             "flex-1 px-4 py-3 rounded-xl text-sm transition-all duration-300 font-medium",
-                            "bg-gray-800 border-2 border-gray-700 text-gray-100 placeholder-gray-500",
-                            "focus:outline-none focus:ring-2 focus:ring-purple-500",
+                            "bg-white border-2 border-gray-300 text-gray-900 placeholder-gray-400",
+                            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
                             "dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500",
-                            "dark:focus:ring-purple-500",
+                            "dark:focus:ring-purple-500 dark:focus:border-purple-500",
                             "[data-theme='light'] &:bg-white [data-theme='light'] &:border-gray-300",
                             "[data-theme='light'] &:text-gray-900 [data-theme='light'] &:placeholder-gray-400",
                             "[data-theme='light'] &:focus:ring-blue-500 [data-theme='light'] &:focus:border-blue-500",
@@ -436,7 +443,12 @@ export default function SearchView({
                             variant="ghost"
                             size="sm"
                             onClick={() => setTopics(topics.filter((_, i) => i !== index))}
-                            className="transition-all duration-300 hover:scale-110 transform px-3 py-2 rounded-lg"
+                            className={cn(
+                              "transition-all duration-300 hover:scale-110 transform px-3 py-2 rounded-lg",
+                              "text-gray-700 hover:bg-gray-100 hover:text-red-600",
+                              "dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-red-400",
+                              "[data-theme='light'] &:text-gray-700 [data-theme='light'] &:hover:bg-gray-100 [data-theme='light'] &:hover:text-red-600"
+                            )}
                           >
                             Remove
                           </Button>
@@ -449,7 +461,13 @@ export default function SearchView({
                       size="sm"
                       onClick={() => setTopics([...topics, ''])}
                       disabled={topics.length >= 5}
-                      className="transition-all duration-300 hover:scale-105 transform px-6 py-3 rounded-xl font-medium"
+                      className={cn(
+                        "transition-all duration-300 hover:scale-105 transform px-6 py-3 rounded-xl font-medium",
+                        "bg-white text-gray-900 border-gray-300 hover:border-blue-500 hover:bg-blue-50",
+                        "dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:border-purple-500",
+                        "[data-theme='light'] &:bg-white [data-theme='light'] &:text-gray-900 [data-theme='light'] &:border-gray-300",
+                        "[data-theme='light'] &:hover:border-blue-500 [data-theme='light'] &:hover:bg-blue-50"
+                      )}
                     >
                       Add Research Term
                     </Button>
