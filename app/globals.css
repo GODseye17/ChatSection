@@ -141,71 +141,314 @@ body {
 }
 
 /* ============================================ */
-/* CRITICAL BUTTON FIXES - BLUE THEME FOR LIGHT MODE */
+/* PROFESSIONAL BUTTON SYSTEM - CONSISTENT ACROSS THEMES */
 /* ============================================ */
 
-/* Primary buttons - Blue for light theme */
-[data-theme="light"] button,
-[data-theme="light"] .bg-gradient-to-r.from-purple-600.to-purple-500,
-[data-theme="light"] .bg-gradient-to-r.from-blue-600.to-blue-500 {
-  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%) !important;
+/* Base button styles - consistent foundation */
+button {
+  font-weight: 600 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 0.75rem !important; /* Consistent rounded corners */
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============================================ */
+/* PRIMARY BUTTONS - DYNAMIC THEME COLORS */
+/* ============================================ */
+
+/* Primary buttons - Purple for dark theme, Blue for light theme */
+button:not([variant]),
+button[variant="default"],
+.bg-gradient-to-r.from-purple-600.to-purple-500,
+.bg-gradient-to-r.from-blue-600.to-blue-500,
+.bg-purple-600,
+.bg-blue-600 {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
   color: white !important;
   border: none !important;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35) !important;
   font-weight: 600 !important;
+  position: relative;
+  overflow: hidden;
 }
 
-[data-theme="light"] button:hover,
-[data-theme="light"] .bg-gradient-to-r.from-purple-600.to-purple-500:hover,
-[data-theme="light"] .bg-gradient-to-r.from-blue-600.to-blue-500:hover {
-  background: linear-gradient(135deg, var(--accent-blue-hover) 0%, #1d4ed8 100%) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
+/* Light theme primary buttons - Blue gradient */
+[data-theme="light"] button:not([variant]),
+[data-theme="light"] button[variant="default"],
+[data-theme="light"] .bg-gradient-to-r.from-purple-600.to-purple-500,
+[data-theme="light"] .bg-gradient-to-r.from-blue-600.to-blue-500,
+[data-theme="light"] .bg-purple-600,
+[data-theme="light"] .bg-blue-600 {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35) !important;
+}
+
+/* Primary button hover states */
+button:not([variant]):hover,
+button[variant="default"]:hover,
+.bg-gradient-to-r.from-purple-600.to-purple-500:hover,
+.bg-gradient-to-r.from-blue-600.to-blue-500:hover,
+.bg-purple-600:hover,
+.bg-blue-600:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.45) !important;
   color: white !important;
 }
 
-/* Outline buttons */
+/* Light theme primary button hover */
+[data-theme="light"] button:not([variant]):hover,
+[data-theme="light"] button[variant="default"]:hover,
+[data-theme="light"] .bg-gradient-to-r.from-purple-600.to-purple-500:hover,
+[data-theme="light"] .bg-gradient-to-r.from-blue-600.to-blue-500:hover,
+[data-theme="light"] .bg-purple-600:hover,
+[data-theme="light"] .bg-blue-600:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45) !important;
+  color: white !important;
+}
+
+/* Primary button active states */
+button:not([variant]):active,
+button[variant="default"]:active {
+  transform: translateY(0) scale(1) !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
+}
+
+[data-theme="light"] button:not([variant]):active,
+[data-theme="light"] button[variant="default"]:active {
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* ============================================ */
+/* OUTLINE BUTTONS - CONSISTENT STYLING */
+/* ============================================ */
+
+button[variant="outline"],
+.border-gray-700,
+.border-gray-800 {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 2px solid rgba(139, 92, 246, 0.3) !important;
+  color: #a78bfa !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Light theme outline buttons */
 [data-theme="light"] button[variant="outline"],
 [data-theme="light"] .border-gray-700,
 [data-theme="light"] .border-gray-800 {
-  background: var(--bg-card) !important;
-  border: 2px solid var(--border-light) !important;
-  color: var(--text-primary) !important;
-  box-shadow: var(--shadow-light) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 2px solid rgba(59, 130, 246, 0.3) !important;
+  color: #3b82f6 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Outline button hover states */
+button[variant="outline"]:hover {
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  background: rgba(139, 92, 246, 0.1) !important;
+  color: #c4b5fd !important;
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2) !important;
 }
 
 [data-theme="light"] button[variant="outline"]:hover {
-  border-color: var(--accent-blue) !important;
-  background: rgba(59, 130, 246, 0.05) !important;
-  color: var(--accent-blue) !important;
-  transform: translateY(-1px);
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  background: rgba(59, 130, 246, 0.08) !important;
+  color: #2563eb !important;
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* Ghost buttons */
+/* ============================================ */
+/* GHOST BUTTONS - SUBTLE INTERACTIONS */
+/* ============================================ */
+
+button[variant="ghost"] {
+  background: transparent !important;
+  color: #d1d5db !important;
+  border: 1px solid transparent !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
 [data-theme="light"] button[variant="ghost"] {
   background: transparent !important;
-  color: var(--text-primary) !important;
+  color: #374151 !important;
   border: 1px solid transparent !important;
 }
 
-[data-theme="light"] button[variant="ghost"]:hover {
-  background: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-light);
+button[variant="ghost"]:hover {
+  background: rgba(139, 92, 246, 0.1) !important;
+  color: #e5e7eb !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15) !important;
+  border-color: rgba(139, 92, 246, 0.2) !important;
 }
 
-/* Secondary buttons */
+[data-theme="light"] button[variant="ghost"]:hover {
+  background: rgba(59, 130, 246, 0.08) !important;
+  color: #1f2937 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+/* ============================================ */
+/* SECONDARY BUTTONS - NEUTRAL STYLING */
+/* ============================================ */
+
+button[variant="secondary"] {
+  background: rgba(55, 65, 81, 0.8) !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  backdrop-filter: blur(8px);
+}
+
 [data-theme="light"] button[variant="secondary"] {
-  background: var(--bg-secondary) !important;
-  color: var(--text-primary) !important;
-  border: 1px solid var(--border-light) !important;
+  background: rgba(243, 244, 246, 0.9) !important;
+  color: #374151 !important;
+  border: 1px solid rgba(209, 213, 219, 0.8) !important;
+}
+
+button[variant="secondary"]:hover {
+  background: rgba(75, 85, 99, 0.9) !important;
+  border-color: rgba(107, 114, 128, 0.7) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 [data-theme="light"] button[variant="secondary"]:hover {
-  background: var(--bg-tertiary) !important;
-  border-color: var(--border-medium) !important;
+  background: rgba(229, 231, 235, 0.9) !important;
+  border-color: rgba(156, 163, 175, 0.8) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ============================================ */
+/* SPECIAL SEARCH BUTTON - DYNAMIC BACKGROUND */
+/* ============================================ */
+
+/* Search button gets special treatment with dynamic colors */
+.search-button,
+button:has(.w-5.h-5) {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.025em !important;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="light"] .search-button,
+[data-theme="light"] button:has(.w-5.h-5) {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* Search button hover with enhanced effects */
+.search-button:hover,
+button:has(.w-5.h-5):hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+  transform: translateY(-3px) scale(1.05) !important;
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.5) !important;
+  color: white !important;
+}
+
+[data-theme="light"] .search-button:hover,
+[data-theme="light"] button:has(.w-5.h-5):hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  transform: translateY(-3px) scale(1.05) !important;
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5) !important;
+  color: white !important;
+}
+
+/* Search button active state */
+.search-button:active,
+button:has(.w-5.h-5):active {
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4) !important;
+}
+
+[data-theme="light"] .search-button:active,
+[data-theme="light"] button:has(.w-5.h-5):active {
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* ============================================ */
+/* FILTER BUTTON - CONSISTENT WITH THEME */
+/* ============================================ */
+
+/* Filter button styling */
+.filter-button,
+button:has(.w-4.h-4):not(:has(.w-5.h-5)) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 2px solid rgba(139, 92, 246, 0.3) !important;
+  color: #a78bfa !important;
+  backdrop-filter: blur(12px);
+  font-weight: 600 !important;
+}
+
+[data-theme="light"] .filter-button,
+[data-theme="light"] button:has(.w-4.h-4):not(:has(.w-5.h-5)) {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 2px solid rgba(59, 130, 246, 0.3) !important;
+  color: #3b82f6 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.filter-button:hover,
+button:has(.w-4.h-4):not(:has(.w-5.h-5)):hover {
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  background: rgba(139, 92, 246, 0.15) !important;
+  color: #c4b5fd !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.25) !important;
+}
+
+[data-theme="light"] .filter-button:hover,
+[data-theme="light"] button:has(.w-4.h-4):not(:has(.w-5.h-5)):hover {
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  background: rgba(59, 130, 246, 0.12) !important;
+  color: #2563eb !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* ============================================ */
+/* BUTTON DISABLED STATES */
+/* ============================================ */
+
+button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+/* ============================================ */
+/* BUTTON FOCUS STATES - ACCESSIBILITY */
+/* ============================================ */
+
+button:focus-visible {
+  outline: 2px solid #8b5cf6 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2) !important;
+}
+
+[data-theme="light"] button:focus-visible {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
 }
 
 /* ============================================ */
@@ -339,12 +582,6 @@ body {
 
 [data-theme="light"] .focus\:border-purple-500:focus {
   border-color: var(--border-focus) !important;
-}
-
-[data-theme="light"] button:focus-visible {
-  outline: 2px solid var(--accent-blue) !important;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
 }
 
 /* ============================================ */
@@ -651,6 +888,11 @@ body {
   [data-theme="light"] .floating-orb {
     width: 200px;
     height: 200px;
+  }
+  
+  /* Mobile button adjustments */
+  button {
+    min-height: 44px !important; /* iOS touch target */
   }
 }
 
