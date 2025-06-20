@@ -260,7 +260,7 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
   );
 };
 
-// Enhanced dropdown component
+// Enhanced dropdown component with better styling
 const FilterDropdown = ({ label, value, options, onChange, defaultValue, disabled }) => {
   return (
     <div className="space-y-2">
@@ -270,7 +270,17 @@ const FilterDropdown = ({ label, value, options, onChange, defaultValue, disable
           value={value || defaultValue}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
-          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 appearance-none cursor-pointer transition-all hover:border-purple-400 dark:hover:border-purple-600 font-medium"
+          className={cn(
+            "w-full px-4 py-3 rounded-lg text-sm font-medium transition-all cursor-pointer",
+            "bg-white dark:bg-gray-800",
+            "border border-gray-300 dark:border-gray-700",
+            "text-gray-900 dark:text-gray-100",
+            "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500",
+            "hover:border-purple-400 dark:hover:border-purple-600",
+            "hover:shadow-sm",
+            "appearance-none",
+            "disabled:opacity-50 disabled:cursor-not-allowed"
+          )}
         >
           {options.map(option => (
             <option key={option.value} value={option.value}>
@@ -284,7 +294,7 @@ const FilterDropdown = ({ label, value, options, onChange, defaultValue, disable
   );
 };
 
-// Enhanced multi-select component with fixed z-index
+// Enhanced multi-select component with fixed z-index and better styling
 const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -318,25 +328,51 @@ const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           disabled={disabled}
-          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 flex items-center justify-between transition-all hover:border-purple-400 dark:hover:border-purple-600 font-medium"
+          className={cn(
+            "w-full px-4 py-3 rounded-lg text-sm font-medium transition-all",
+            "bg-white dark:bg-gray-800",
+            "border border-gray-300 dark:border-gray-700",
+            "text-gray-900 dark:text-gray-100",
+            "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500",
+            "hover:border-purple-400 dark:hover:border-purple-600",
+            "hover:shadow-sm",
+            "flex items-center justify-between",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
+            isOpen && "border-purple-500 ring-2 ring-purple-500/20"
+          )}
         >
-          <span className="truncate">
+          <span className="truncate text-left">
             {selected.length === 0 ? 'Any type' : `${selected.length} selected`}
           </span>
-          <ChevronDown className={cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-180")} />
+          <ChevronDown className={cn(
+            "w-4 h-4 transition-transform duration-200 text-gray-500 dark:text-gray-500", 
+            isOpen && "rotate-180"
+          )} />
         </button>
         
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl z-[100] max-h-48 overflow-y-auto">
+          <div className={cn(
+            "absolute top-full left-0 right-0 mt-1 rounded-lg shadow-xl z-[100] max-h-48 overflow-y-auto",
+            "bg-white dark:bg-gray-800",
+            "border border-gray-300 dark:border-gray-700",
+            "backdrop-blur-sm"
+          )}>
             {options.map(option => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => toggleOption(option.value)}
-                className="w-full px-4 py-3 text-left text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                className={cn(
+                  "w-full px-4 py-3 text-left text-sm font-medium transition-colors",
+                  "text-gray-900 dark:text-gray-100",
+                  "hover:bg-gray-50 dark:hover:bg-gray-700",
+                  "flex items-center gap-3",
+                  "first:rounded-t-lg last:rounded-b-lg"
+                )}
               >
                 <div className={cn(
-                  "w-4 h-4 border-2 border-gray-400 dark:border-gray-600 rounded flex items-center justify-center transition-all",
+                  "w-4 h-4 border-2 rounded flex items-center justify-center transition-all",
+                  "border-gray-400 dark:border-gray-600",
                   selected.includes(option.value) && "bg-purple-600 border-purple-600"
                 )}>
                   {selected.includes(option.value) && (
@@ -345,7 +381,7 @@ const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
                     </svg>
                   )}
                 </div>
-                <span className="font-medium">{option.label}</span>
+                <span>{option.label}</span>
               </button>
             ))}
           </div>
@@ -511,7 +547,7 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
               onClick={clearFilters}
               variant="ghost"
               size="sm"
-              className="gap-2 text-gray-400 hover:text-gray-200"
+              className="gap-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-lg px-3 py-2"
             >
               <RotateCcw className="w-4 h-4" />
               Reset
@@ -560,9 +596,15 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
           <Button
             onClick={() => setShowAdvanced(!showAdvanced)}
             variant="ghost"
-            className="w-full justify-between text-gray-300 hover:text-gray-100"
+            className={cn(
+              "w-full justify-between text-gray-300 hover:text-gray-100 hover:bg-gray-800/50 rounded-lg px-4 py-3 font-medium transition-all",
+              showAdvanced && "bg-gray-800/30"
+            )}
           >
-            <span className="font-medium">Advanced Filters</span>
+            <span className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Advanced Filters
+            </span>
             {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </Button>
         </div>
@@ -606,7 +648,7 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
 
             {/* Custom Query */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300 block">
+              <label className="text-sm font-medium text-gray-300 block uppercase tracking-wider">
                 Custom {selectedSource === 'pubmed' ? 'PubMed' : 'Scopus'} Query
               </label>
               <input
@@ -614,9 +656,9 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
                 placeholder={`e.g., ${selectedSource === 'pubmed' ? 'author[au] OR mesh[mh]' : 'TITLE-ABS-KEY(keyword)'}`}
                 value={filters.custom_filters || ''}
                 onChange={(e) => updateFilter('custom_filters', e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all font-medium"
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-500">
                 Advanced users: Use {selectedSource === 'pubmed' ? 'PubMed' : 'Scopus'} search syntax
               </p>
             </div>
