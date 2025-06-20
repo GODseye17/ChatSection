@@ -284,9 +284,24 @@ const FilterDropdown = ({ label, value, options, onChange, defaultValue, disable
   );
 };
 
-// Enhanced multi-select component
+// Enhanced multi-select component with fixed z-index
 const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const toggleOption = (value) => {
     const newSelected = selected.includes(value)
@@ -296,7 +311,7 @@ const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 relative" ref={dropdownRef}>
       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block uppercase tracking-wider">{label}</label>
       <div className="relative">
         <button
@@ -312,13 +327,13 @@ const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
         </button>
         
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl z-[100] max-h-48 overflow-y-auto">
             {options.map(option => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => toggleOption(option.value)}
-                className="w-full px-4 py-3 text-left text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors"
+                className="w-full px-4 py-3 text-left text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors first:rounded-t-lg last:rounded-b-lg"
               >
                 <div className={cn(
                   "w-4 h-4 border-2 border-gray-400 dark:border-gray-600 rounded flex items-center justify-center transition-all",
@@ -474,33 +489,32 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
   ];
 
   return (
-    <Card className="border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/50 backdrop-blur-sm shadow-lg">
-      <div className="p-8 space-y-8">
+    <Card className="border-gray-800 bg-gray-900/30 backdrop-blur border-gray-800">
+      <div className="p-6 space-y-6">
         {/* Enhanced Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-2 bg-purple-100 dark:bg-purple-600/10 rounded-lg border border-purple-200 dark:border-purple-600/20">
-              <Filter className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-600/10 rounded-lg border border-purple-600/20">
+              <Filter className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Advanced Filters</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Refine your search with precision controls</p>
+              <h3 className="text-lg font-semibold text-gray-100">Filters</h3>
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="bg-purple-600/20 text-purple-400 border-purple-600/30 mt-1">
+                  {activeFilterCount} active
+                </Badge>
+              )}
             </div>
-            {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-600/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-600/30 px-3 py-1">
-                {activeFilterCount} active
-              </Badge>
-            )}
           </div>
           {activeFilterCount > 0 && (
             <Button
               onClick={clearFilters}
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 border-gray-300 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-600"
+              className="gap-2 text-gray-400 hover:text-gray-200"
             >
               <RotateCcw className="w-4 h-4" />
-              Reset All
+              Reset
             </Button>
           )}
         </div>
@@ -527,13 +541,11 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
         </div>
 
         {/* Publication Date Slider */}
-        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-          <DateRangeSlider
-            startYear={startYear}
-            endYear={endYear}
-            onRangeChange={handleDateRangeChange}
-          />
-        </div>
+        <DateRangeSlider
+          startYear={startYear}
+          endYear={endYear}
+          onRangeChange={handleDateRangeChange}
+        />
 
         {/* Article Types */}
         <MultiSelect
@@ -544,24 +556,20 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
         />
 
         {/* Advanced Filters Toggle */}
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
+        <div className="border-t border-gray-800 pt-4">
           <Button
             onClick={() => setShowAdvanced(!showAdvanced)}
             variant="ghost"
-            className="w-full justify-between text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 p-4 rounded-lg"
+            className="w-full justify-between text-gray-300 hover:text-gray-100"
           >
-            <div className="flex items-center gap-3">
-              <Settings className="w-5 h-5" />
-              <span className="font-semibold">Advanced Options</span>
-              <Sparkles className="w-4 h-4 text-purple-500" />
-            </div>
-            {showAdvanced ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            <span className="font-medium">Advanced Filters</span>
+            {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </Button>
         </div>
 
         {/* Advanced Filters */}
         {showAdvanced && (
-          <div className="space-y-6 animate-in slide-in-from-top-2 duration-200 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+          <div className="space-y-6 animate-in slide-in-from-top-2 duration-200">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Species Filter */}
               <MultiSelect
@@ -597,20 +605,19 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
             </div>
 
             {/* Custom Query */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block uppercase tracking-wider">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300 block">
                 Custom {selectedSource === 'pubmed' ? 'PubMed' : 'Scopus'} Query
               </label>
-              <textarea
+              <input
+                type="text"
                 placeholder={`e.g., ${selectedSource === 'pubmed' ? 'author[au] OR mesh[mh]' : 'TITLE-ABS-KEY(keyword)'}`}
                 value={filters.custom_filters || ''}
                 onChange={(e) => updateFilter('custom_filters', e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none font-mono"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               />
-              <p className="text-xs text-gray-600 dark:text-gray-500 flex items-center gap-2">
-                <Sparkles className="w-3 h-3" />
-                Advanced users: Use {selectedSource === 'pubmed' ? 'PubMed' : 'Scopus'} search syntax for precise queries
+              <p className="text-xs text-gray-500">
+                Advanced users: Use {selectedSource === 'pubmed' ? 'PubMed' : 'Scopus'} search syntax
               </p>
             </div>
           </div>
