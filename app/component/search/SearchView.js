@@ -1,6 +1,6 @@
 // app/component/search/SearchView.js
 import React, { useEffect, useState } from 'react';
-import { Search, Sparkles, Filter, TrendingUp, Clock, Star, Zap, ChevronRight } from 'lucide-react';
+import { Search, Sparkles, Filter, TrendingUp, Clock, Star, Zap } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -150,131 +150,55 @@ export default function SearchView({
     return count;
   };
 
-  // Professional trending topics with real medical research examples
+  // Trending topics - REVERTED TO ORIGINAL SIMPLE STYLE
   const trendingTopics = [
-    { 
-      label: "Long COVID neurological effects", 
-      icon: TrendingUp,
-      description: "Latest research on persistent neurological symptoms"
-    },
-    { 
-      label: "mRNA vaccine mechanisms", 
-      icon: Zap,
-      description: "Understanding how mRNA vaccines work"
-    },
-    { 
-      label: "AI in medical diagnosis", 
-      icon: Star,
-      description: "Machine learning applications in healthcare"
-    },
-    { 
-      label: "CRISPR gene therapy advances", 
-      icon: Clock,
-      description: "Recent breakthroughs in gene editing"
-    }
+    { label: "COVID-19 Long Term Effects", icon: TrendingUp },
+    { label: "AI in Medical Diagnosis", icon: Zap },
+    { label: "Gene Therapy Advances", icon: Star },
+    { label: "Mental Health Treatments", icon: Clock }
   ];
 
-  // Professional recent searches
+  // Recent searches - REVERTED TO ORIGINAL SIMPLE STYLE
   const recentSearches = [
-    {
-      query: "diabetes prevention strategies",
-      description: "Type 2 diabetes prevention methods",
-      time: "2 hours ago"
-    },
-    {
-      query: "cancer immunotherapy",
-      description: "Immune system cancer treatments",
-      time: "1 day ago"
-    },
-    {
-      query: "alzheimer's disease biomarkers",
-      description: "Early detection markers for dementia",
-      time: "3 days ago"
-    }
+    "diabetes prevention strategies",
+    "cancer immunotherapy",
+    "alzheimer's disease biomarkers"
   ];
 
   return (
-    <div className={cn(
-      "h-[calc(100vh-4rem)] flex flex-col overflow-hidden transition-all duration-300",
-      "bg-gradient-to-b from-gray-950 to-gray-900",
-      "dark:from-gray-950 dark:to-gray-900"
-    )}>
-      {/* Professional animated background */}
+    <div className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden bg-gradient-to-b from-gray-950 to-gray-900">
+      {/* Elegant animated background */}
       <div className="search-background fixed inset-0 overflow-hidden pointer-events-none opacity-30"></div>
       
-      {/* Main content with professional spacing */}
+      {/* Main content */}
       <div className="flex-1 overflow-y-auto relative z-10">
         <div className="min-h-full p-6 md:p-12">
-          <div className="w-full max-w-6xl mx-auto">
+          <div className="w-full max-w-7xl mx-auto">
             
-            {/* Professional Hero Section */}
-            <div className={cn(
-              "text-center mb-16 animate-in fade-in duration-700",
-              "transform transition-all duration-500"
-            )}>
-              {/* Professional badge */}
-              <div className={cn(
-                "inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 border transition-all duration-300",
-                "bg-purple-600/10 border-purple-600/20 dark:bg-purple-600/10 dark:border-purple-600/20",
-                "[data-theme='light'] &:bg-blue-600/10 [data-theme='light'] &:border-blue-600/20",
-                "hover:scale-105 transform"
-              )}>
-                <Sparkles className={cn(
-                  "w-4 h-4 transition-colors duration-300",
-                  "text-purple-400 dark:text-purple-400",
-                  "[data-theme='light'] &:text-blue-500"
-                )} />
-                <span className={cn(
-                  "text-sm font-medium transition-colors duration-300",
-                  "text-purple-300 dark:text-purple-300",
-                  "[data-theme='light'] &:text-blue-600"
-                )}>
-                  AI-Powered Medical Research
-                </span>
+            {/* Hero Section */}
+            <div className="text-center mb-12 animate-in fade-in duration-700">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600/10 rounded-full mb-6 border border-purple-600/20">
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-300">AI-Powered Medical Research</span>
               </div>
               
-              {/* Professional main title */}
-              <h1 className={cn(
-                "text-5xl md:text-7xl font-bold mb-6 transition-all duration-500",
-                "bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent",
-                "dark:from-white dark:to-gray-400",
-                "[data-theme='light'] &:from-gray-900 [data-theme='light'] &:to-gray-600",
-                "hover:scale-105 transform",
-                "leading-tight tracking-tight"
-              )}>
+              <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                 Vivum Research
               </h1>
               
-              {/* Professional tagline */}
-              <p className={cn(
-                "text-xl md:text-2xl max-w-3xl mx-auto transition-colors duration-300 leading-relaxed",
-                "text-gray-400 dark:text-gray-400",
-                "[data-theme='light'] &:text-gray-600",
-                "font-light"
-              )}>
+              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
                 Discover insights from millions of medical papers instantly
               </p>
             </div>
 
-            {/* Professional Search Section */}
-            <div className="max-w-5xl mx-auto mb-16 animate-in slide-in-from-bottom-5 duration-700">
-              <Card className={cn(
-                "p-8 md:p-12 backdrop-blur-xl border shadow-2xl transition-all duration-300",
-                "bg-gray-900/50 border-gray-800 dark:bg-gray-900/50 dark:border-gray-800",
-                "[data-theme='light'] &:bg-white/95 [data-theme='light'] &:border-gray-200",
-                "[data-theme='light'] &:shadow-xl",
-                "hover:shadow-3xl hover:scale-[1.01] transform",
-                "rounded-2xl"
-              )}>
-                <div className="space-y-8">
-                  {/* Professional Search Input */}
-                  <div className="relative group">
-                    <div className={cn(
-                      "absolute left-5 top-1/2 -translate-y-1/2 transition-colors duration-300 z-10",
-                      "text-gray-500 dark:text-gray-500",
-                      "[data-theme='light'] &:text-gray-400"
-                    )}>
-                      <Search className="w-6 h-6" />
+            {/* Search Section */}
+            <div className="max-w-4xl mx-auto mb-12 animate-in slide-in-from-bottom-5 duration-700">
+              <Card className="p-8 bg-gray-900/50 backdrop-blur-xl border-gray-800 shadow-2xl">
+                <div className="space-y-6">
+                  {/* Search Input */}
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                      <Search className="w-5 h-5" />
                     </div>
                     <input
                       type="text"
@@ -286,53 +210,25 @@ export default function SearchView({
                       }}
                       onKeyPress={handleKeyPress}
                       placeholder="Search medical research..."
-                      className={cn(
-                        "w-full pl-16 pr-6 py-5 rounded-2xl text-lg transition-all duration-300",
-                        "bg-gray-800/50 border-2 border-gray-700 text-gray-100 placeholder-gray-500",
-                        "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500",
-                        "dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500",
-                        "dark:focus:ring-purple-500 dark:focus:border-purple-500",
-                        "[data-theme='light'] &:bg-white [data-theme='light'] &:border-gray-300",
-                        "[data-theme='light'] &:text-gray-900 [data-theme='light'] &:placeholder-gray-400",
-                        "[data-theme='light'] &:focus:ring-blue-500 [data-theme='light'] &:focus:border-blue-500",
-                        "hover:shadow-lg group-hover:scale-[1.005] transform",
-                        "font-medium"
-                      )}
+                      className="w-full pl-12 pr-4 py-4 bg-gray-800/50 border border-gray-700 rounded-xl text-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
                     />
-                    {/* Professional animated border */}
-                    <div className={cn(
-                      "absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none",
-                      "bg-gradient-to-r from-purple-500/10 to-purple-600/10 dark:from-purple-500/10 dark:to-purple-600/10",
-                      "[data-theme='light'] &:from-blue-500/10 [data-theme='light'] &:to-blue-600/10"
-                    )} />
                   </div>
 
-                  {/* Professional Quick Actions */}
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div className="flex items-center gap-4 flex-wrap">
+                  {/* Quick Actions */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
                       <Button
                         variant="outline"
                         onClick={() => setShowFilters(!showFilters)}
                         className={cn(
-                          "gap-2 transition-all duration-300 hover:scale-105 transform px-6 py-3",
-                          "border-2 rounded-xl font-medium text-base",
-                          "bg-white text-gray-900 border-gray-300 hover:border-blue-500 hover:bg-blue-50",
-                          "dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:border-purple-500",
-                          "[data-theme='light'] &:bg-white [data-theme='light'] &:text-gray-900 [data-theme='light'] &:border-gray-300",
-                          "[data-theme='light'] &:hover:border-blue-500 [data-theme='light'] &:hover:bg-blue-50",
-                          showFilters && "border-blue-600 bg-blue-600/10 text-blue-600",
-                          showFilters && "dark:border-purple-600 dark:bg-purple-600/10 dark:text-purple-400",
-                          showFilters && "[data-theme='light'] &:border-blue-600 [data-theme='light'] &:bg-blue-600/10 [data-theme='light'] &:text-blue-600"
+                          "gap-2",
+                          showFilters && "border-purple-600 bg-purple-600/10 text-purple-400"
                         )}
                       >
                         <Filter className="w-4 h-4" />
                         Filters
                         {activeFilterCount() > 0 && (
-                          <Badge variant="secondary" className={cn(
-                            "ml-1 transition-all duration-300 px-2 py-1",
-                            "bg-blue-600 text-white dark:bg-purple-600",
-                            "[data-theme='light'] &:bg-blue-600"
-                          )}>
+                          <Badge variant="secondary" className="ml-1 bg-purple-600">
                             {activeFilterCount()}
                           </Badge>
                         )}
@@ -341,31 +237,19 @@ export default function SearchView({
                       <Button
                         variant="ghost"
                         onClick={() => setUseMultiTopic(!useMultiTopic)}
-                        className={cn(
-                          "gap-2 transition-all duration-300 hover:scale-105 transform px-6 py-3",
-                          "rounded-xl font-medium text-base",
-                          "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
-                          "dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100",
-                          "[data-theme='light'] &:text-gray-700 [data-theme='light'] &:hover:bg-gray-100 [data-theme='light'] &:hover:text-gray-900"
-                        )}
+                        className="gap-2"
                       >
-                        Advanced Search
+                        Advanced
                       </Button>
                     </div>
 
+                    {/* FIXED SEARCH BUTTON - Removed pointer-events-none and added proper click handler */}
                     <Button
                       onClick={handleSearch}
                       disabled={loading || (!searchQuery.trim() && !useMultiTopic)}
                       size="lg"
-                      className={cn(
-                        "gap-3 min-w-[180px] transition-all duration-300 hover:scale-105 transform",
-                        "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600",
-                        "dark:from-purple-600 dark:to-purple-500 dark:hover:from-purple-700 dark:hover:to-purple-600",
-                        "[data-theme='light'] &:from-blue-600 [data-theme='light'] &:to-blue-500",
-                        "[data-theme='light'] &:hover:from-blue-700 [data-theme='light'] &:hover:to-blue-600",
-                        "shadow-lg hover:shadow-xl px-8 py-4 rounded-xl font-semibold text-lg",
-                        "text-white border-none"
-                      )}
+                      className="gap-2 min-w-[150px] bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white border-none cursor-pointer"
+                      type="button"
                     >
                       <Search className="w-5 h-5" />
                       Search
@@ -374,40 +258,22 @@ export default function SearchView({
                 </div>
               </Card>
 
-              {/* Professional Boolean Search Mode */}
+              {/* Boolean Search Mode */}
               {useMultiTopic && (
-                <Card className={cn(
-                  "mt-6 p-8 backdrop-blur-xl border animate-in slide-in-from-top-3 transition-all duration-300",
-                  "bg-gray-900/50 border-gray-800 dark:bg-gray-900/50 dark:border-gray-800",
-                  "[data-theme='light'] &:bg-white/95 [data-theme='light'] &:border-gray-200",
-                  "hover:shadow-lg transform hover:scale-[1.005]",
-                  "rounded-2xl"
-                )}>
-                  <h3 className={cn(
-                    "text-xl font-semibold mb-6 transition-colors duration-300",
-                    "text-gray-100 dark:text-gray-100",
-                    "[data-theme='light'] &:text-gray-900"
-                  )}>
-                    Advanced Boolean Search
-                  </h3>
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-4 flex-wrap">
-                      <span className={cn(
-                        "text-sm font-medium transition-colors duration-300",
-                        "text-gray-400 dark:text-gray-400",
-                        "[data-theme='light'] &:text-gray-600"
-                      )}>
-                        Combine terms with:
-                      </span>
+                <Card className="mt-4 p-6 bg-gray-900/50 backdrop-blur-xl border-gray-800 animate-in slide-in-from-top-3">
+                  <h3 className="text-lg font-semibold mb-4">Advanced Search</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-gray-400">Combine with:</span>
                       {['AND', 'OR', 'NOT'].map(op => (
                         <button
                           key={op}
                           onClick={() => setOperator(op)}
                           className={cn(
-                            "px-4 py-2 text-sm rounded-lg transition-all duration-300 hover:scale-105 transform font-medium",
+                            "px-3 py-1 text-sm rounded-lg transition-all",
                             operator === op
-                              ? "bg-blue-600 text-white shadow-lg dark:bg-purple-600 [data-theme='light'] &:bg-blue-600"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 [data-theme='light'] &:bg-gray-100 [data-theme='light'] &:text-gray-700 [data-theme='light'] &:hover:bg-gray-200"
+                              ? "bg-purple-600 text-white"
+                              : "bg-gray-800 text-gray-400 hover:bg-gray-700"
                           )}
                         >
                           {op}
@@ -416,7 +282,7 @@ export default function SearchView({
                     </div>
                     
                     {topics.map((topic, index) => (
-                      <div key={index} className="flex items-center gap-3">
+                      <div key={index} className="flex items-center gap-2">
                         <input
                           type="text"
                           value={topic}
@@ -425,30 +291,14 @@ export default function SearchView({
                             newTopics[index] = e.target.value;
                             setTopics(newTopics);
                           }}
-                          placeholder={`Research term ${index + 1}`}
-                          className={cn(
-                            "flex-1 px-4 py-3 rounded-xl text-sm transition-all duration-300 font-medium",
-                            "bg-white border-2 border-gray-300 text-gray-900 placeholder-gray-400",
-                            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
-                            "dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500",
-                            "dark:focus:ring-purple-500 dark:focus:border-purple-500",
-                            "[data-theme='light'] &:bg-white [data-theme='light'] &:border-gray-300",
-                            "[data-theme='light'] &:text-gray-900 [data-theme='light'] &:placeholder-gray-400",
-                            "[data-theme='light'] &:focus:ring-blue-500 [data-theme='light'] &:focus:border-blue-500",
-                            "hover:shadow-md focus:scale-[1.01] transform"
-                          )}
+                          placeholder={`Term ${index + 1}`}
+                          className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                         {topics.length > 1 && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setTopics(topics.filter((_, i) => i !== index))}
-                            className={cn(
-                              "transition-all duration-300 hover:scale-110 transform px-3 py-2 rounded-lg",
-                              "text-gray-700 hover:bg-gray-100 hover:text-red-600",
-                              "dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-red-400",
-                              "[data-theme='light'] &:text-gray-700 [data-theme='light'] &:hover:bg-gray-100 [data-theme='light'] &:hover:text-red-600"
-                            )}
                           >
                             Remove
                           </Button>
@@ -461,24 +311,17 @@ export default function SearchView({
                       size="sm"
                       onClick={() => setTopics([...topics, ''])}
                       disabled={topics.length >= 5}
-                      className={cn(
-                        "transition-all duration-300 hover:scale-105 transform px-6 py-3 rounded-xl font-medium",
-                        "bg-white text-gray-900 border-gray-300 hover:border-blue-500 hover:bg-blue-50",
-                        "dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:border-purple-500",
-                        "[data-theme='light'] &:bg-white [data-theme='light'] &:text-gray-900 [data-theme='light'] &:border-gray-300",
-                        "[data-theme='light'] &:hover:border-blue-500 [data-theme='light'] &:hover:bg-blue-50"
-                      )}
                     >
-                      Add Research Term
+                      Add Term
                     </Button>
                   </div>
                 </Card>
               )}
             </div>
 
-            {/* Professional Filters Panel */}
+            {/* Filters Panel */}
             {showFilters && (
-              <div className="max-w-5xl mx-auto mb-12 animate-in slide-in-from-top-3 duration-300">
+              <div className="max-w-4xl mx-auto mb-8 animate-in slide-in-from-top-3 duration-300">
                 <FilterPanel 
                   filters={filters}
                   setFilters={setFilters}
@@ -487,134 +330,47 @@ export default function SearchView({
               </div>
             )}
 
-            {/* Professional Content Grid */}
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {/* Professional Trending Research */}
-              <Card className={cn(
-                "p-8 backdrop-blur border transition-all duration-300 hover:scale-[1.02] transform",
-                "bg-gray-900/30 border-gray-800 dark:bg-gray-900/30 dark:border-gray-800",
-                "[data-theme='light'] &:bg-white/80 [data-theme='light'] &:border-gray-200",
-                "hover:shadow-lg rounded-2xl"
-              )}>
-                <h3 className={cn(
-                  "text-xl font-semibold mb-6 flex items-center gap-3 transition-colors duration-300",
-                  "text-gray-100 dark:text-gray-100",
-                  "[data-theme='light'] &:text-gray-900"
-                )}>
-                  <TrendingUp className={cn(
-                    "w-6 h-6 transition-colors duration-300",
-                    "text-purple-400 dark:text-purple-400",
-                    "[data-theme='light'] &:text-blue-500"
-                  )} />
+            {/* REVERTED Trending & Recent - ORIGINAL SIMPLE STYLE */}
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* Trending Research - ORIGINAL STYLE */}
+              <Card className="p-6 bg-gray-900/30 backdrop-blur border-gray-800">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-purple-400" />
                   Trending Research
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {trendingTopics.map((topic, idx) => (
                     <button
                       key={idx}
                       onClick={() => setSearchQuery(topic.label)}
-                      className={cn(
-                        "w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 text-left group",
-                        "bg-gray-800/50 hover:bg-gray-800 dark:bg-gray-800/50 dark:hover:bg-gray-800",
-                        "[data-theme='light'] &:bg-gray-50 [data-theme='light'] &:hover:bg-gray-100",
-                        "hover:scale-[1.02] transform hover:shadow-md border border-transparent hover:border-gray-700",
-                        "[data-theme='light'] &:hover:border-gray-200"
-                      )}
+                      className="w-full flex items-center gap-3 p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-left group"
                     >
-                      <div className={cn(
-                        "p-2 rounded-lg transition-colors duration-300",
-                        "bg-purple-600/20 text-purple-400 group-hover:bg-purple-600/30",
-                        "[data-theme='light'] &:bg-blue-600/20 [data-theme='light'] &:text-blue-500 [data-theme='light'] &:group-hover:bg-blue-600/30"
-                      )}>
-                        <topic.icon className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className={cn(
-                          "font-medium transition-colors duration-300 mb-1",
-                          "text-gray-300 group-hover:text-gray-100",
-                          "dark:text-gray-300 dark:group-hover:text-gray-100",
-                          "[data-theme='light'] &:text-gray-700 [data-theme='light'] &:group-hover:text-gray-900"
-                        )}>
-                          {topic.label}
-                        </div>
-                        <div className={cn(
-                          "text-xs transition-colors duration-300",
-                          "text-gray-500 group-hover:text-gray-400",
-                          "[data-theme='light'] &:text-gray-500 [data-theme='light'] &:group-hover:text-gray-600"
-                        )}>
-                          {topic.description}
-                        </div>
-                      </div>
-                      <ChevronRight className={cn(
-                        "w-4 h-4 transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1",
-                        "text-gray-500 group-hover:text-purple-400",
-                        "[data-theme='light'] &:group-hover:text-blue-500"
-                      )} />
+                      <topic.icon className="w-4 h-4 text-gray-500 group-hover:text-purple-400" />
+                      <span className="text-sm text-gray-300 group-hover:text-gray-100">
+                        {topic.label}
+                      </span>
                     </button>
                   ))}
                 </div>
               </Card>
 
-              {/* Professional Recent Searches */}
-              <Card className={cn(
-                "p-8 backdrop-blur border transition-all duration-300 hover:scale-[1.02] transform",
-                "bg-gray-900/30 border-gray-800 dark:bg-gray-900/30 dark:border-gray-800",
-                "[data-theme='light'] &:bg-white/80 [data-theme='light'] &:border-gray-200",
-                "hover:shadow-lg rounded-2xl"
-              )}>
-                <h3 className={cn(
-                  "text-xl font-semibold mb-6 flex items-center gap-3 transition-colors duration-300",
-                  "text-gray-100 dark:text-gray-100",
-                  "[data-theme='light'] &:text-gray-900"
-                )}>
-                  <Clock className={cn(
-                    "w-6 h-6 transition-colors duration-300",
-                    "text-purple-400 dark:text-purple-400",
-                    "[data-theme='light'] &:text-blue-500"
-                  )} />
+              {/* Recent Searches - ORIGINAL STYLE */}
+              <Card className="p-6 bg-gray-900/30 backdrop-blur border-gray-800">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-purple-400" />
                   Recent Searches
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {recentSearches.map((search, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setSearchQuery(search.query)}
-                      className={cn(
-                        "w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 text-left group",
-                        "bg-gray-800/50 hover:bg-gray-800 dark:bg-gray-800/50 dark:hover:bg-gray-800",
-                        "[data-theme='light'] &:bg-gray-50 [data-theme='light'] &:hover:bg-gray-100",
-                        "hover:scale-[1.02] transform hover:shadow-md border border-transparent hover:border-gray-700",
-                        "[data-theme='light'] &:hover:border-gray-200"
-                      )}
+                      onClick={() => setSearchQuery(search)}
+                      className="w-full flex items-center gap-3 p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-left group"
                     >
-                      <div className={cn(
-                        "w-3 h-3 rounded-full transition-colors duration-300",
-                        "bg-gray-600 group-hover:bg-purple-400",
-                        "dark:bg-gray-600 dark:group-hover:bg-purple-400",
-                        "[data-theme='light'] &:bg-gray-400 [data-theme='light'] &:group-hover:bg-blue-500"
-                      )} />
-                      <div className="flex-1 min-w-0">
-                        <div className={cn(
-                          "font-medium transition-colors duration-300 mb-1",
-                          "text-gray-300 group-hover:text-gray-100",
-                          "dark:text-gray-300 dark:group-hover:text-gray-100",
-                          "[data-theme='light'] &:text-gray-700 [data-theme='light'] &:group-hover:text-gray-900"
-                        )}>
-                          {search.query}
-                        </div>
-                        <div className={cn(
-                          "text-xs transition-colors duration-300",
-                          "text-gray-500 group-hover:text-gray-400",
-                          "[data-theme='light'] &:text-gray-500 [data-theme='light'] &:group-hover:text-gray-600"
-                        )}>
-                          {search.description} • {search.time}
-                        </div>
-                      </div>
-                      <ChevronRight className={cn(
-                        "w-4 h-4 transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1",
-                        "text-gray-500 group-hover:text-purple-400",
-                        "[data-theme='light'] &:group-hover:text-blue-500"
-                      )} />
+                      <div className="w-2 h-2 bg-gray-600 rounded-full group-hover:bg-purple-400" />
+                      <span className="text-sm text-gray-300 group-hover:text-gray-100">
+                        {search}
+                      </span>
                     </button>
                   ))}
                 </div>

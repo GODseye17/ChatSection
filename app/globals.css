@@ -151,6 +151,8 @@ button {
   border-radius: 0.75rem !important; /* Consistent rounded corners */
   position: relative;
   overflow: hidden;
+  cursor: pointer !important; /* Ensure all buttons are clickable */
+  pointer-events: auto !important; /* Override any pointer-events-none */
 }
 
 /* ============================================ */
@@ -171,6 +173,8 @@ button[variant="default"],
   font-weight: 600 !important;
   position: relative;
   overflow: hidden;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 /* Light theme primary buttons - Blue gradient */
@@ -184,6 +188,8 @@ button[variant="default"],
   color: white !important;
   border: none !important;
   box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 /* Primary button hover states */
@@ -197,6 +203,7 @@ button[variant="default"]:hover,
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow: 0 8px 25px rgba(139, 92, 246, 0.45) !important;
   color: white !important;
+  cursor: pointer !important;
 }
 
 /* Light theme primary button hover */
@@ -210,6 +217,7 @@ button[variant="default"]:hover,
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45) !important;
   color: white !important;
+  cursor: pointer !important;
 }
 
 /* Primary button active states */
@@ -217,11 +225,13 @@ button:not([variant]):active,
 button[variant="default"]:active {
   transform: translateY(0) scale(1) !important;
   box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
+  cursor: pointer !important;
 }
 
 [data-theme="light"] button:not([variant]):active,
 [data-theme="light"] button[variant="default"]:active {
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+  cursor: pointer !important;
 }
 
 /* ============================================ */
@@ -236,6 +246,8 @@ button[variant="outline"],
   color: #a78bfa !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
   backdrop-filter: blur(8px);
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 /* Light theme outline buttons */
@@ -246,6 +258,8 @@ button[variant="outline"],
   border: 2px solid rgba(59, 130, 246, 0.3) !important;
   color: #3b82f6 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 /* Outline button hover states */
@@ -255,6 +269,7 @@ button[variant="outline"]:hover {
   color: #c4b5fd !important;
   transform: translateY(-1px) scale(1.02) !important;
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2) !important;
+  cursor: pointer !important;
 }
 
 [data-theme="light"] button[variant="outline"]:hover {
@@ -263,6 +278,7 @@ button[variant="outline"]:hover {
   color: #2563eb !important;
   transform: translateY(-1px) scale(1.02) !important;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+  cursor: pointer !important;
 }
 
 /* ============================================ */
@@ -274,12 +290,16 @@ button[variant="ghost"] {
   color: #d1d5db !important;
   border: 1px solid transparent !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 [data-theme="light"] button[variant="ghost"] {
   background: transparent !important;
   color: #374151 !important;
   border: 1px solid transparent !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 button[variant="ghost"]:hover {
@@ -288,6 +308,7 @@ button[variant="ghost"]:hover {
   transform: translateY(-1px) !important;
   box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15) !important;
   border-color: rgba(139, 92, 246, 0.2) !important;
+  cursor: pointer !important;
 }
 
 [data-theme="light"] button[variant="ghost"]:hover {
@@ -296,6 +317,7 @@ button[variant="ghost"]:hover {
   transform: translateY(-1px) !important;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15) !important;
   border-color: rgba(59, 130, 246, 0.2) !important;
+  cursor: pointer !important;
 }
 
 /* ============================================ */
@@ -307,12 +329,16 @@ button[variant="secondary"] {
   color: #e5e7eb !important;
   border: 1px solid rgba(75, 85, 99, 0.5) !important;
   backdrop-filter: blur(8px);
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 [data-theme="light"] button[variant="secondary"] {
   background: rgba(243, 244, 246, 0.9) !important;
   color: #374151 !important;
   border: 1px solid rgba(209, 213, 219, 0.8) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 button[variant="secondary"]:hover {
@@ -320,6 +346,7 @@ button[variant="secondary"]:hover {
   border-color: rgba(107, 114, 128, 0.7) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  cursor: pointer !important;
 }
 
 [data-theme="light"] button[variant="secondary"]:hover {
@@ -327,6 +354,7 @@ button[variant="secondary"]:hover {
   border-color: rgba(156, 163, 175, 0.8) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  cursor: pointer !important;
 }
 
 /* ============================================ */
@@ -344,6 +372,8 @@ button:has(.w-5.h-5) {
   letter-spacing: 0.025em !important;
   position: relative;
   overflow: hidden;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 [data-theme="light"] .search-button,
@@ -352,6 +382,8 @@ button:has(.w-5.h-5) {
   color: white !important;
   border: none !important;
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 /* Search button hover with enhanced effects */
@@ -361,6 +393,7 @@ button:has(.w-5.h-5):hover {
   transform: translateY(-3px) scale(1.05) !important;
   box-shadow: 0 12px 30px rgba(139, 92, 246, 0.5) !important;
   color: white !important;
+  cursor: pointer !important;
 }
 
 [data-theme="light"] .search-button:hover,
@@ -369,6 +402,7 @@ button:has(.w-5.h-5):hover {
   transform: translateY(-3px) scale(1.05) !important;
   box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5) !important;
   color: white !important;
+  cursor: pointer !important;
 }
 
 /* Search button active state */
@@ -376,11 +410,13 @@ button:has(.w-5.h-5):hover {
 button:has(.w-5.h-5):active {
   transform: translateY(-1px) scale(1.02) !important;
   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4) !important;
+  cursor: pointer !important;
 }
 
 [data-theme="light"] .search-button:active,
 [data-theme="light"] button:has(.w-5.h-5):active {
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+  cursor: pointer !important;
 }
 
 /* ============================================ */
@@ -395,6 +431,8 @@ button:has(.w-4.h-4):not(:has(.w-5.h-5)) {
   color: #a78bfa !important;
   backdrop-filter: blur(12px);
   font-weight: 600 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 [data-theme="light"] .filter-button,
@@ -403,6 +441,8 @@ button:has(.w-4.h-4):not(:has(.w-5.h-5)) {
   border: 2px solid rgba(59, 130, 246, 0.3) !important;
   color: #3b82f6 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 .filter-button:hover,
@@ -412,6 +452,7 @@ button:has(.w-4.h-4):not(:has(.w-5.h-5)):hover {
   color: #c4b5fd !important;
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow: 0 6px 16px rgba(139, 92, 246, 0.25) !important;
+  cursor: pointer !important;
 }
 
 [data-theme="light"] .filter-button:hover,
@@ -421,6 +462,7 @@ button:has(.w-4.h-4):not(:has(.w-5.h-5)):hover {
   color: #2563eb !important;
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25) !important;
+  cursor: pointer !important;
 }
 
 /* ============================================ */
