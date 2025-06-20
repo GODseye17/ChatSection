@@ -71,7 +71,7 @@ export default function Header({
           </TooltipContent>
         </Tooltip>
 
-        {/* Professional Sources Button */}
+        {/* Professional Sources Button - Purple theme */}
         {!isSearchView && (
           <Button
             onClick={() => setShowSources(!showSources)}
@@ -80,7 +80,7 @@ export default function Header({
             className={cn(
               "gap-3 relative transition-all duration-300 px-4 py-2 rounded-lg font-medium",
               "hover:scale-105 active:scale-95",
-              showSources && "bg-blue-600 hover:bg-blue-700 shadow-lg dark:bg-purple-600 dark:hover:bg-purple-700",
+              showSources && "bg-purple-600 hover:bg-purple-700 shadow-lg",
               !showSources && "bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700",
               !showSources && "[data-theme='light'] &:bg-gray-100 [data-theme='light'] &:hover:bg-gray-200",
               articleCount === 0 && "opacity-50 cursor-not-allowed"
@@ -96,8 +96,8 @@ export default function Header({
                 "px-2 py-0.5 text-xs min-w-[24px] text-center transition-all duration-300 rounded-md",
                 articleCount === 0 && "bg-gray-400 text-gray-600 dark:bg-gray-600 dark:text-gray-400",
                 showSources && "bg-white/20 text-white",
-                !showSources && "bg-blue-100 text-blue-800 dark:bg-purple-100 dark:text-purple-800",
-                !showSources && "[data-theme='light'] &:bg-blue-100 [data-theme='light'] &:text-blue-800"
+                !showSources && "bg-purple-100 text-purple-800 dark:bg-purple-100 dark:text-purple-800",
+                !showSources && "[data-theme='light'] &:bg-purple-100 [data-theme='light'] &:text-purple-800"
               )}
             >
               {articleCount}
@@ -105,16 +105,16 @@ export default function Header({
           </Button>
         )}
         
-        {/* Professional New Search Button */}
+        {/* Professional New Search Button - Purple theme */}
         <Button
           onClick={() => setIsSearchView(true)}
           variant="ghost"
           size="sm"
           className={cn(
             "transition-all duration-300 px-4 py-2 rounded-lg font-medium",
-            "text-blue-600 hover:text-blue-700 hover:bg-blue-50",
+            "text-purple-600 hover:text-purple-700 hover:bg-purple-50",
             "dark:text-purple-400 dark:hover:text-purple-300 dark:hover:bg-purple-950",
-            "[data-theme='light'] &:text-blue-600 [data-theme='light'] &:hover:text-blue-700 [data-theme='light'] &:hover:bg-blue-50",
+            "[data-theme='light'] &:text-purple-600 [data-theme='light'] &:hover:text-purple-700 [data-theme='light'] &:hover:bg-purple-50",
             "hover:scale-105 active:scale-95"
           )}
         >

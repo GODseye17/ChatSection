@@ -30,12 +30,12 @@
   --radius: 0.5rem;
 }
 
-/* Professional Light Theme Variables - Adjusted for darker background */
+/* Professional Light Theme Variables - Purple accent system */
 [data-theme="light"] {
   --background: #f8f9fa;
   --foreground: #1f2937;
   
-  /* Professional light theme color system with darker background */
+  /* Professional light theme color system with purple accents */
   --bg-primary: #f8f9fa; /* Slightly darker than pure white */
   --bg-secondary: #f1f3f4; /* Light gray background */
   --bg-tertiary: #e9ecef; /* Darker gray for contrast */
@@ -43,34 +43,35 @@
   --text-primary: #1f2937;
   --text-secondary: #374151;
   --text-muted: #6b7280;
-  --text-accent: #3b82f6; /* Blue accent for light theme */
+  --text-accent: #8b5cf6; /* Purple accent for light theme */
   --border-light: #e5e7eb;
   --border-medium: #d1d5db;
-  --border-focus: #3b82f6; /* Blue focus for light theme */
-  --accent-blue: #3b82f6;
-  --accent-blue-hover: #2563eb;
+  --border-focus: #8b5cf6; /* Purple focus for light theme */
+  --accent-purple: #8b5cf6;
+  --accent-purple-hover: #7c3aed;
+  --accent-purple-light: #a78bfa;
   --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
   --shadow-large: 0 10px 25px rgba(0, 0, 0, 0.15);
   
-  /* shadcn variables for light mode */
+  /* shadcn variables for light mode - Purple theme */
   --card: 0 0% 100%;
   --card-foreground: 0 0% 3.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 3.9%;
-  --primary: 214 100% 59%; /* Blue for consistency */
+  --primary: 263 70% 50%; /* Purple for consistency */
   --primary-foreground: 0 0% 98%;
   --secondary: 210 40% 96%;
   --secondary-foreground: 0 0% 9%;
   --muted: 210 40% 96%;
   --muted-foreground: 0 0% 45.1%;
-  --accent: 214 100% 59%;
+  --accent: 263 70% 50%;
   --accent-foreground: 0 0% 9%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
-  --ring: 214 100% 59%;
+  --ring: 263 70% 50%;
   --radius: 0.75rem;
 }
 
@@ -156,10 +157,10 @@ button {
 }
 
 /* ============================================ */
-/* PRIMARY BUTTONS - DYNAMIC THEME COLORS */
+/* PRIMARY BUTTONS - PURPLE THEME COLORS */
 /* ============================================ */
 
-/* Primary buttons - Purple for dark theme, Blue for light theme */
+/* Primary buttons - Purple for both themes */
 button:not([variant]),
 button[variant="default"],
 .bg-gradient-to-r.from-purple-600.to-purple-500,
@@ -177,17 +178,17 @@ button[variant="default"],
   pointer-events: auto !important;
 }
 
-/* Light theme primary buttons - Blue gradient */
+/* Light theme primary buttons - Light purple gradient */
 [data-theme="light"] button:not([variant]),
 [data-theme="light"] button[variant="default"],
 [data-theme="light"] .bg-gradient-to-r.from-purple-600.to-purple-500,
 [data-theme="light"] .bg-gradient-to-r.from-blue-600.to-blue-500,
 [data-theme="light"] .bg-purple-600,
 [data-theme="light"] .bg-blue-600 {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%) !important;
   color: white !important;
   border: none !important;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(167, 139, 250, 0.35) !important;
   cursor: pointer !important;
   pointer-events: auto !important;
 }
@@ -213,9 +214,9 @@ button[variant="default"]:hover,
 [data-theme="light"] .bg-gradient-to-r.from-blue-600.to-blue-500:hover,
 [data-theme="light"] .bg-purple-600:hover,
 [data-theme="light"] .bg-blue-600:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
   transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45) !important;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.45) !important;
   color: white !important;
   cursor: pointer !important;
 }
@@ -230,7 +231,7 @@ button[variant="default"]:active {
 
 [data-theme="light"] button:not([variant]):active,
 [data-theme="light"] button[variant="default"]:active {
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
   cursor: pointer !important;
 }
 
@@ -255,8 +256,8 @@ button[variant="outline"],
 [data-theme="light"] .border-gray-700,
 [data-theme="light"] .border-gray-800 {
   background: rgba(255, 255, 255, 0.9) !important;
-  border: 2px solid rgba(59, 130, 246, 0.3) !important;
-  color: #3b82f6 !important;
+  border: 2px solid rgba(139, 92, 246, 0.3) !important;
+  color: #8b5cf6 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
   cursor: pointer !important;
   pointer-events: auto !important;
@@ -273,11 +274,11 @@ button[variant="outline"]:hover {
 }
 
 [data-theme="light"] button[variant="outline"]:hover {
-  border-color: rgba(59, 130, 246, 0.6) !important;
-  background: rgba(59, 130, 246, 0.08) !important;
-  color: #2563eb !important;
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  background: rgba(139, 92, 246, 0.08) !important;
+  color: #7c3aed !important;
   transform: translateY(-1px) scale(1.02) !important;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2) !important;
   cursor: pointer !important;
 }
 
@@ -312,11 +313,11 @@ button[variant="ghost"]:hover {
 }
 
 [data-theme="light"] button[variant="ghost"]:hover {
-  background: rgba(59, 130, 246, 0.08) !important;
+  background: rgba(139, 92, 246, 0.08) !important;
   color: #1f2937 !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15) !important;
-  border-color: rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15) !important;
+  border-color: rgba(139, 92, 246, 0.2) !important;
   cursor: pointer !important;
 }
 
@@ -378,10 +379,10 @@ button:has(.w-5.h-5) {
 
 [data-theme="light"] .search-button,
 [data-theme="light"] button:has(.w-5.h-5) {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%) !important;
   color: white !important;
   border: none !important;
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4) !important;
   cursor: pointer !important;
   pointer-events: auto !important;
 }
@@ -398,9 +399,9 @@ button:has(.w-5.h-5):hover {
 
 [data-theme="light"] .search-button:hover,
 [data-theme="light"] button:has(.w-5.h-5):hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
   transform: translateY(-3px) scale(1.05) !important;
-  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.5) !important;
   color: white !important;
   cursor: pointer !important;
 }
@@ -415,7 +416,7 @@ button:has(.w-5.h-5):active {
 
 [data-theme="light"] .search-button:active,
 [data-theme="light"] button:has(.w-5.h-5):active {
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4) !important;
   cursor: pointer !important;
 }
 
@@ -438,8 +439,8 @@ button:has(.w-4.h-4):not(:has(.w-5.h-5)) {
 [data-theme="light"] .filter-button,
 [data-theme="light"] button:has(.w-4.h-4):not(:has(.w-5.h-5)) {
   background: rgba(255, 255, 255, 0.95) !important;
-  border: 2px solid rgba(59, 130, 246, 0.3) !important;
-  color: #3b82f6 !important;
+  border: 2px solid rgba(139, 92, 246, 0.3) !important;
+  color: #8b5cf6 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
   cursor: pointer !important;
   pointer-events: auto !important;
@@ -457,11 +458,11 @@ button:has(.w-4.h-4):not(:has(.w-5.h-5)):hover {
 
 [data-theme="light"] .filter-button:hover,
 [data-theme="light"] button:has(.w-4.h-4):not(:has(.w-5.h-5)):hover {
-  border-color: rgba(59, 130, 246, 0.6) !important;
-  background: rgba(59, 130, 246, 0.12) !important;
-  color: #2563eb !important;
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  background: rgba(139, 92, 246, 0.12) !important;
+  color: #7c3aed !important;
   transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25) !important;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.25) !important;
   cursor: pointer !important;
 }
 
@@ -488,9 +489,9 @@ button:focus-visible {
 }
 
 [data-theme="light"] button:focus-visible {
-  outline: 2px solid #3b82f6 !important;
+  outline: 2px solid #8b5cf6 !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2) !important;
 }
 
 /* ============================================ */
@@ -512,7 +513,7 @@ button:focus-visible {
 [data-theme="light"] textarea:focus {
   border-color: var(--border-focus) !important;
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), var(--shadow-medium) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), var(--shadow-medium) !important;
   transform: translateY(-1px);
 }
 
@@ -561,7 +562,7 @@ button:focus-visible {
 }
 
 /* ============================================ */
-/* PROFESSIONAL COLOR SYSTEM - BLUE ACCENTS */
+/* PROFESSIONAL COLOR SYSTEM - PURPLE ACCENTS */
 /* ============================================ */
 
 /* Text colors with proper contrast */
@@ -581,45 +582,45 @@ button:focus-visible {
   color: var(--text-muted) !important;
 }
 
-/* Blue accent for light theme */
+/* Purple accent for light theme */
 [data-theme="light"] .text-purple-400,
 [data-theme="light"] .text-purple-300,
 [data-theme="light"] .text-purple-500 {
-  color: var(--accent-blue) !important;
+  color: var(--accent-purple) !important;
 }
 
 [data-theme="light"] .text-purple-600 {
-  color: var(--accent-blue-hover) !important;
+  color: var(--accent-purple-hover) !important;
 }
 
 [data-theme="light"] .bg-purple-600,
 [data-theme="light"] .bg-purple-700 {
-  background: var(--accent-blue) !important;
+  background: var(--accent-purple) !important;
 }
 
 [data-theme="light"] .bg-purple-600:hover,
 [data-theme="light"] .bg-purple-700:hover {
-  background: var(--accent-blue-hover) !important;
+  background: var(--accent-purple-hover) !important;
 }
 
 [data-theme="light"] .bg-purple-600\/10 {
-  background: rgba(59, 130, 246, 0.1) !important;
-  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  background: rgba(139, 92, 246, 0.1) !important;
+  border: 1px solid rgba(139, 92, 246, 0.2) !important;
 }
 
 [data-theme="light"] .border-purple-600,
 [data-theme="light"] .border-purple-600\/20,
 [data-theme="light"] .border-purple-600\/30 {
-  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
 }
 
 /* ============================================ */
-/* ENHANCED FOCUS STATES - BLUE THEME */
+/* ENHANCED FOCUS STATES - PURPLE THEME */
 /* ============================================ */
 
 [data-theme="light"] .focus\:ring-purple-500:focus {
-  --tw-ring-color: rgba(59, 130, 246, 0.3) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  --tw-ring-color: rgba(139, 92, 246, 0.3) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 [data-theme="light"] .focus\:border-purple-500:focus {
@@ -627,17 +628,17 @@ button:focus-visible {
 }
 
 /* ============================================ */
-/* PROFESSIONAL BADGE STYLING - BLUE THEME */
+/* PROFESSIONAL BADGE STYLING - PURPLE THEME */
 /* ============================================ */
 
 [data-theme="light"] .bg-purple-600\/10 {
-  background: rgba(59, 130, 246, 0.1) !important;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  color: var(--accent-blue) !important;
+  background: rgba(139, 92, 246, 0.1) !important;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--accent-purple) !important;
 }
 
 [data-theme="light"] .border-purple-600\/30 {
-  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
 }
 
 /* ============================================ */
@@ -663,11 +664,11 @@ button:focus-visible {
   }
 }
 
-/* Enhanced grid pattern for light theme - Blue accents */
+/* Enhanced grid pattern for light theme - Purple accents */
 [data-theme="light"] .grid-pattern {
   background-image: 
-    linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(139, 92, 246, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.06) 1px, transparent 1px);
   animation: grid-move-light 30s linear infinite;
 }
 
@@ -677,10 +678,10 @@ button:focus-visible {
   100% { transform: translate(50px, 50px) scale(1); opacity: 0.6; }
 }
 
-/* Professional particles for light theme - Blue accents */
+/* Professional particles for light theme - Purple accents */
 [data-theme="light"] .particle {
-  background: var(--accent-blue);
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+  background: var(--accent-purple);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
   width: 3px;
   height: 3px;
 }
@@ -709,9 +710,9 @@ button:focus-visible {
   }
 }
 
-/* Professional floating orbs - Blue accents */
+/* Professional floating orbs - Purple accents */
 [data-theme="light"] .floating-orb {
-  background: radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.08), transparent 70%);
+  background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.08), transparent 70%);
   filter: blur(60px);
   animation: float-orb-light 30s ease-in-out infinite;
 }
@@ -769,7 +770,7 @@ button:focus-visible {
 }
 
 /* ============================================ */
-/* ENHANCED SCROLLBAR - BLUE THEME */
+/* ENHANCED SCROLLBAR - PURPLE THEME */
 /* ============================================ */
 
 [data-theme="light"] ::-webkit-scrollbar {
@@ -782,19 +783,19 @@ button:focus-visible {
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(139, 92, 246, 0.3);
   border-radius: 4px;
-  border: 1px solid rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.1);
   transition: all 0.2s ease;
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.5);
+  background: rgba(139, 92, 246, 0.5);
   transform: scale(1.1);
 }
 
 [data-theme="light"] * {
-  scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
+  scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
 }
 
 /* ============================================ */
@@ -807,7 +808,7 @@ button:focus-visible {
 }
 
 /* ============================================ */
-/* ENHANCED PROSE STYLING - BLUE THEME */
+/* ENHANCED PROSE STYLING - PURPLE THEME */
 /* ============================================ */
 
 [data-theme="light"] .prose {
@@ -825,20 +826,20 @@ button:focus-visible {
 }
 
 [data-theme="light"] .prose a {
-  color: var(--accent-blue) !important;
+  color: var(--accent-purple) !important;
   text-decoration: underline;
-  text-decoration-color: rgba(59, 130, 246, 0.3);
+  text-decoration-color: rgba(139, 92, 246, 0.3);
   transition: all 0.2s ease;
 }
 
 [data-theme="light"] .prose a:hover {
-  color: var(--accent-blue-hover) !important;
-  text-decoration-color: rgba(37, 99, 235, 0.6);
+  color: var(--accent-purple-hover) !important;
+  text-decoration-color: rgba(124, 58, 237, 0.6);
   transform: translateY(-1px);
 }
 
 [data-theme="light"] .prose code {
-  color: var(--accent-blue) !important;
+  color: var(--accent-purple) !important;
   background-color: var(--bg-secondary) !important;
   border: 1px solid var(--border-light);
   border-radius: 4px;
@@ -854,9 +855,9 @@ button:focus-visible {
 }
 
 [data-theme="light"] .prose blockquote {
-  border-left: 4px solid var(--accent-blue);
+  border-left: 4px solid var(--accent-purple);
   color: var(--text-secondary) !important;
-  background: rgba(59, 130, 246, 0.05);
+  background: rgba(139, 92, 246, 0.05);
   padding: 1rem 1.5rem;
   border-radius: 0 8px 8px 0;
   margin: 1.5rem 0;
@@ -897,11 +898,11 @@ button:focus-visible {
 }
 
 /* ============================================ */
-/* ENHANCED TEXT SELECTION - BLUE THEME */
+/* ENHANCED TEXT SELECTION - PURPLE THEME */
 /* ============================================ */
 
 [data-theme="light"] ::selection {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(139, 92, 246, 0.2);
   color: var(--text-primary);
 }
 

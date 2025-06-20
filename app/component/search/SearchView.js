@@ -150,7 +150,7 @@ export default function SearchView({
     return count;
   };
 
-  // Trending topics - REVERTED TO ORIGINAL SIMPLE STYLE
+  // Trending topics - SIMPLE STYLE
   const trendingTopics = [
     { label: "COVID-19 Long Term Effects", icon: TrendingUp },
     { label: "AI in Medical Diagnosis", icon: Zap },
@@ -158,11 +158,11 @@ export default function SearchView({
     { label: "Mental Health Treatments", icon: Clock }
   ];
 
-  // Recent searches - REVERTED TO ORIGINAL SIMPLE STYLE
+  // Recent searches - SIMPLE STYLE (now matching trending style)
   const recentSearches = [
-    "diabetes prevention strategies",
-    "cancer immunotherapy",
-    "alzheimer's disease biomarkers"
+    { label: "diabetes prevention strategies", icon: Clock },
+    { label: "cancer immunotherapy", icon: Clock },
+    { label: "alzheimer's disease biomarkers", icon: Clock }
   ];
 
   return (
@@ -243,7 +243,6 @@ export default function SearchView({
                       </Button>
                     </div>
 
-                    {/* FIXED SEARCH BUTTON - Removed pointer-events-none and added proper click handler */}
                     <Button
                       onClick={handleSearch}
                       disabled={loading || (!searchQuery.trim() && !useMultiTopic)}
@@ -330,9 +329,9 @@ export default function SearchView({
               </div>
             )}
 
-            {/* REVERTED Trending & Recent - ORIGINAL SIMPLE STYLE */}
+            {/* Trending & Recent - BOTH USING SAME SIMPLE STYLE */}
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {/* Trending Research - ORIGINAL STYLE */}
+              {/* Trending Research - SIMPLE STYLE */}
               <Card className="p-6 bg-gray-900/30 backdrop-blur border-gray-800">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-purple-400" />
@@ -354,7 +353,7 @@ export default function SearchView({
                 </div>
               </Card>
 
-              {/* Recent Searches - ORIGINAL STYLE */}
+              {/* Recent Searches - NOW MATCHING TRENDING STYLE */}
               <Card className="p-6 bg-gray-900/30 backdrop-blur border-gray-800">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-purple-400" />
@@ -364,12 +363,12 @@ export default function SearchView({
                   {recentSearches.map((search, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setSearchQuery(search)}
+                      onClick={() => setSearchQuery(search.label)}
                       className="w-full flex items-center gap-3 p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-left group"
                     >
-                      <div className="w-2 h-2 bg-gray-600 rounded-full group-hover:bg-purple-400" />
+                      <search.icon className="w-4 h-4 text-gray-500 group-hover:text-purple-400" />
                       <span className="text-sm text-gray-300 group-hover:text-gray-100">
-                        {search}
+                        {search.label}
                       </span>
                     </button>
                   ))}
