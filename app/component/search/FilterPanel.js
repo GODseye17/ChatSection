@@ -1,8 +1,8 @@
 // app/component/search/FilterPanel.js
-// Complete updated file with improved dual-handle slider
+// Complete updated file with improved dual-handle slider and enhanced styling
 
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Calendar, Filter, RotateCcw } from 'lucide-react';
+import { ChevronDown, ChevronUp, Calendar, Filter, RotateCcw, Sparkles, Settings } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -116,12 +116,12 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-purple-400" />
-          <span className="text-sm font-medium text-gray-300">Publication Date Range</span>
+          <span className="text-sm font-medium text-gray-300 dark:text-gray-300">Publication Date Range</span>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1 bg-purple-600/10 border border-purple-600/20 rounded-full range-display">
-          <span className="text-sm font-medium text-purple-400">{range[0]}</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-600/10 border border-purple-600/20 rounded-full range-display">
+          <span className="text-sm font-semibold text-purple-400">{range[0]}</span>
           <span className="text-xs text-purple-400/70">—</span>
-          <span className="text-sm font-medium text-purple-400">{range[1]}</span>
+          <span className="text-sm font-semibold text-purple-400">{range[1]}</span>
         </div>
       </div>
       
@@ -130,12 +130,12 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
         {/* Slider track */}
         <div 
           ref={sliderRef}
-          className="relative h-3 bg-gray-800 rounded-full cursor-pointer group slider-track"
+          className="relative h-3 bg-gray-200 dark:bg-gray-800 rounded-full cursor-pointer group slider-track transition-all duration-200 hover:bg-gray-300 dark:hover:bg-gray-700"
           onClick={handleSliderClick}
         >
           {/* Selected range background */}
           <div 
-            className="absolute h-3 bg-gradient-to-r from-purple-600 to-purple-500 rounded-full transition-all duration-200 group-hover:from-purple-500 group-hover:to-purple-400 slider-range"
+            className="absolute h-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-200 group-hover:from-purple-400 group-hover:to-purple-500 slider-range shadow-sm"
             style={{
               left: `${yearToPercent(range[0])}%`,
               width: `${yearToPercent(range[1]) - yearToPercent(range[0])}%`
@@ -145,9 +145,9 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
           {/* Start handle */}
           <div 
             className={cn(
-              "absolute w-5 h-5 bg-white border-2 border-purple-600 rounded-full shadow-lg cursor-grab transition-all duration-200 transform -translate-y-1 -translate-x-1/2 slider-handle",
+              "absolute w-6 h-6 bg-white border-2 border-purple-600 rounded-full shadow-lg cursor-grab transition-all duration-200 transform -translate-y-1.5 -translate-x-1/2 slider-handle",
               isDragging.start && "cursor-grabbing scale-110 border-purple-500 shadow-xl dragging",
-              !disabled && "hover:scale-105 hover:border-purple-500"
+              !disabled && "hover:scale-105 hover:border-purple-500 hover:shadow-xl"
             )}
             style={{ left: `${yearToPercent(range[0])}%` }}
             onMouseDown={(e) => {
@@ -162,9 +162,9 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
           {/* End handle */}
           <div 
             className={cn(
-              "absolute w-5 h-5 bg-white border-2 border-purple-600 rounded-full shadow-lg cursor-grab transition-all duration-200 transform -translate-y-1 -translate-x-1/2 slider-handle",
+              "absolute w-6 h-6 bg-white border-2 border-purple-600 rounded-full shadow-lg cursor-grab transition-all duration-200 transform -translate-y-1.5 -translate-x-1/2 slider-handle",
               isDragging.end && "cursor-grabbing scale-110 border-purple-500 shadow-xl dragging",
-              !disabled && "hover:scale-105 hover:border-purple-500"
+              !disabled && "hover:scale-105 hover:border-purple-500 hover:shadow-xl"
             )}
             style={{ left: `${yearToPercent(range[1])}%` }}
             onMouseDown={(e) => {
@@ -178,15 +178,15 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
         </div>
         
         {/* Year markers */}
-        <div className="relative mt-2 h-4 year-markers">
+        <div className="relative mt-3 h-4 year-markers">
           {yearMarkers.map((year) => (
             <div
               key={year}
               className="absolute flex flex-col items-center transform -translate-x-1/2 year-marker"
               style={{ left: `${yearToPercent(year)}%` }}
             >
-              <div className="w-px h-2 bg-gray-600 tick" />
-              <span className="text-xs text-gray-500 mt-1 label">{year}</span>
+              <div className="w-px h-2 bg-gray-400 dark:bg-gray-600 tick" />
+              <span className="text-xs text-gray-500 dark:text-gray-500 mt-1 label font-medium">{year}</span>
             </div>
           ))}
         </div>
@@ -195,7 +195,7 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
       {/* Input fields */}
       <div className="flex items-center gap-4">
         <div className="flex-1 year-input">
-          <label className="text-xs text-gray-500 block mb-2 font-medium">From Year</label>
+          <label className="text-xs text-gray-600 dark:text-gray-500 block mb-2 font-medium uppercase tracking-wider">From Year</label>
           <div className="relative">
             <input
               type="number"
@@ -204,19 +204,19 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
               value={range[0]}
               onChange={(e) => handleStartChange(parseInt(e.target.value) || minYear)}
               disabled={disabled}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all pr-12"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all pr-12 font-medium"
               placeholder="1950"
             />
-            <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-500" />
           </div>
         </div>
         
         <div className="flex items-center justify-center mt-6">
-          <div className="w-8 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent" />
+          <div className="w-8 h-px bg-gradient-to-r from-transparent via-purple-400 to-transparent" />
         </div>
         
         <div className="flex-1 year-input">
-          <label className="text-xs text-gray-500 block mb-2 font-medium">To Year</label>
+          <label className="text-xs text-gray-600 dark:text-gray-500 block mb-2 font-medium uppercase tracking-wider">To Year</label>
           <div className="relative">
             <input
               type="number"
@@ -225,17 +225,17 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
               value={range[1]}
               onChange={(e) => handleEndChange(parseInt(e.target.value) || currentYear)}
               disabled={disabled}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all pr-12"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all pr-12 font-medium"
               placeholder={currentYear.toString()}
             />
-            <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-500" />
           </div>
         </div>
       </div>
 
       {/* Quick preset buttons */}
       <div className="flex flex-wrap gap-2 preset-buttons">
-        <span className="text-xs text-gray-500 mr-2 self-center">Quick presets:</span>
+        <span className="text-xs text-gray-600 dark:text-gray-500 mr-2 self-center font-medium">Quick presets:</span>
         {[
           { label: 'Last 5 years', start: currentYear - 5, end: currentYear },
           { label: 'Last 10 years', start: currentYear - 10, end: currentYear },
@@ -250,7 +250,7 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
               onRangeChange(newRange[0], newRange[1]);
             }}
             disabled={disabled}
-            className="px-3 py-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100 border border-gray-700 hover:border-gray-600 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed preset-button"
+            className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-300 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-600 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed preset-button font-medium"
           >
             {preset.label}
           </button>
@@ -260,28 +260,31 @@ const DateRangeSlider = ({ startYear, endYear, onRangeChange, disabled }) => {
   );
 };
 
-// Clean dropdown component
+// Enhanced dropdown component
 const FilterDropdown = ({ label, value, options, onChange, defaultValue, disabled }) => {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-300 block">{label}</label>
-      <select
-        value={value || defaultValue}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 appearance-none cursor-pointer"
-      >
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block uppercase tracking-wider">{label}</label>
+      <div className="relative">
+        <select
+          value={value || defaultValue}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 appearance-none cursor-pointer transition-all hover:border-purple-400 dark:hover:border-purple-600 font-medium"
+        >
+          {options.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-500 pointer-events-none" />
+      </div>
     </div>
   );
 };
 
-// Multi-select component
+// Enhanced multi-select component
 const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -294,31 +297,31 @@ const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-300 block">{label}</label>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block uppercase tracking-wider">{label}</label>
       <div className="relative">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           disabled={disabled}
-          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 flex items-center justify-between"
+          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 flex items-center justify-between transition-all hover:border-purple-400 dark:hover:border-purple-600 font-medium"
         >
           <span className="truncate">
             {selected.length === 0 ? 'Any type' : `${selected.length} selected`}
           </span>
-          <ChevronDown className={cn("w-4 h-4 transition-transform", isOpen && "rotate-180")} />
+          <ChevronDown className={cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-180")} />
         </button>
         
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50 max-h-48 overflow-y-auto">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
             {options.map(option => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => toggleOption(option.value)}
-                className="w-full px-3 py-2 text-left text-sm text-gray-100 hover:bg-gray-700 flex items-center gap-2"
+                className="w-full px-4 py-3 text-left text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors"
               >
                 <div className={cn(
-                  "w-4 h-4 border border-gray-600 rounded flex items-center justify-center",
+                  "w-4 h-4 border-2 border-gray-400 dark:border-gray-600 rounded flex items-center justify-center transition-all",
                   selected.includes(option.value) && "bg-purple-600 border-purple-600"
                 )}>
                   {selected.includes(option.value) && (
@@ -327,7 +330,7 @@ const MultiSelect = ({ label, options, selected, onChange, disabled }) => {
                     </svg>
                   )}
                 </div>
-                {option.label}
+                <span className="font-medium">{option.label}</span>
               </button>
             ))}
           </div>
@@ -471,15 +474,20 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
   ];
 
   return (
-    <Card className="border-gray-700 bg-gray-900/50 backdrop-blur-sm">
-      <div className="p-6 space-y-6">
-        {/* Header */}
+    <Card className="border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/50 backdrop-blur-sm shadow-lg">
+      <div className="p-8 space-y-8">
+        {/* Enhanced Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Filter className="w-5 h-5 text-purple-400" />
-            <h3 className="text-lg font-semibold text-gray-100">Filters</h3>
+          <div className="flex items-center gap-4">
+            <div className="p-2 bg-purple-100 dark:bg-purple-600/10 rounded-lg border border-purple-200 dark:border-purple-600/20">
+              <Filter className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Advanced Filters</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Refine your search with precision controls</p>
+            </div>
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="bg-purple-600/20 text-purple-400 border-purple-600/30">
+              <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-600/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-600/30 px-3 py-1">
                 {activeFilterCount} active
               </Badge>
             )}
@@ -487,12 +495,12 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
           {activeFilterCount > 0 && (
             <Button
               onClick={clearFilters}
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="text-gray-400 hover:text-gray-200"
+              className="gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 border-gray-300 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-600"
             >
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Reset
+              <RotateCcw className="w-4 h-4" />
+              Reset All
             </Button>
           )}
         </div>
@@ -519,11 +527,13 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
         </div>
 
         {/* Publication Date Slider */}
-        <DateRangeSlider
-          startYear={startYear}
-          endYear={endYear}
-          onRangeChange={handleDateRangeChange}
-        />
+        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+          <DateRangeSlider
+            startYear={startYear}
+            endYear={endYear}
+            onRangeChange={handleDateRangeChange}
+          />
+        </div>
 
         {/* Article Types */}
         <MultiSelect
@@ -534,20 +544,24 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
         />
 
         {/* Advanced Filters Toggle */}
-        <div className="border-t border-gray-800 pt-4">
+        <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
           <Button
             onClick={() => setShowAdvanced(!showAdvanced)}
             variant="ghost"
-            className="w-full justify-between text-gray-300 hover:text-gray-100"
+            className="w-full justify-between text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 p-4 rounded-lg"
           >
-            <span className="font-medium">Advanced Filters</span>
-            {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            <div className="flex items-center gap-3">
+              <Settings className="w-5 h-5" />
+              <span className="font-semibold">Advanced Options</span>
+              <Sparkles className="w-4 h-4 text-purple-500" />
+            </div>
+            {showAdvanced ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </Button>
         </div>
 
         {/* Advanced Filters */}
         {showAdvanced && (
-          <div className="space-y-6 animate-in slide-in-from-top-2 duration-200">
+          <div className="space-y-6 animate-in slide-in-from-top-2 duration-200 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Species Filter */}
               <MultiSelect
@@ -583,19 +597,20 @@ export default function FilterPanel({ filters, setFilters, selectedSource }) {
             </div>
 
             {/* Custom Query */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300 block">
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block uppercase tracking-wider">
                 Custom {selectedSource === 'pubmed' ? 'PubMed' : 'Scopus'} Query
               </label>
-              <input
-                type="text"
+              <textarea
                 placeholder={`e.g., ${selectedSource === 'pubmed' ? 'author[au] OR mesh[mh]' : 'TITLE-ABS-KEY(keyword)'}`}
                 value={filters.custom_filters || ''}
                 onChange={(e) => updateFilter('custom_filters', e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                rows={3}
+                className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none font-mono"
               />
-              <p className="text-xs text-gray-500">
-                Advanced users: Use {selectedSource === 'pubmed' ? 'PubMed' : 'Scopus'} search syntax
+              <p className="text-xs text-gray-600 dark:text-gray-500 flex items-center gap-2">
+                <Sparkles className="w-3 h-3" />
+                Advanced users: Use {selectedSource === 'pubmed' ? 'PubMed' : 'Scopus'} search syntax for precise queries
               </p>
             </div>
           </div>
