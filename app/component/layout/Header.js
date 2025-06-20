@@ -1,16 +1,17 @@
 // app/component/layout/Header.js
 import React from 'react';
-import { Menu, X, Sun, Moon, BookOpen, Activity } from 'lucide-react';
+import { Menu, X, BookOpen, Activity } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { ThemeToggle } from '../ui/theme-toggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { cn } from '@/app/lib/utils';
 
 export default function Header({ 
   sidebarOpen, 
   setSidebarOpen, 
-  darkMode, 
-  toggleDarkMode, 
+  theme,
+  toggleTheme,
   isSearchView, 
   setIsSearchView,
   showSources,
@@ -23,19 +24,29 @@ export default function Header({
   console.log('Header render - Articles count:', articleCount, 'isSearchView:', isSearchView, 'articles:', articles); // Debug log
 
   return (
-    <header className="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-30">
+    <header className={cn(
+      "h-16 border-b flex items-center justify-between px-6 sticky top-0 z-30 transition-colors duration-200",
+      "border-gray-200 bg-white/80 backdrop-blur-sm",
+      "dark:border-gray-800 dark:bg-gray-900/80"
+    )}>
       <div className="flex items-center gap-3">
         <Button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           variant="ghost"
           size="icon"
-          className="hover:bg-gray-800"
+          className={cn(
+            "transition-colors duration-200",
+            "hover:bg-gray-100 dark:hover:bg-gray-800"
+          )}
         >
           {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
       </div>
       
       <div className="flex items-center gap-3">
+        {/* Theme Toggle */}
+        <ThemeToggle theme={theme} onToggle={toggleTheme} />
+
         {/* System Status Button */}
         <Tooltip>
           <TooltipTrigger asChild>
@@ -43,7 +54,10 @@ export default function Header({
               onClick={onShowSystemStatus}
               variant="ghost"
               size="icon"
-              className="hover:bg-gray-800"
+              className={cn(
+                "transition-colors duration-200",
+                "hover:bg-gray-100 dark:hover:bg-gray-800"
+              )}
             >
               <Activity className="w-5 h-5" />
             </Button>
@@ -60,8 +74,8 @@ export default function Header({
             variant={showSources ? "default" : "secondary"}
             size="sm"
             className={cn(
-              "gap-2 relative transition-all",
-              showSources && "bg-purple-600 hover:bg-purple-700",
+              "gap-2 relative transition-all duration-200",
+              showSources && "bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700",
               articleCount === 0 && "opacity-50 cursor-not-allowed"
             )}
             disabled={articleCount === 0}
@@ -72,8 +86,9 @@ export default function Header({
             <Badge 
               variant={showSources ? "secondary" : "default"}
               className={cn(
-                "ml-1 px-1.5 py-0 text-xs min-w-[20px] text-center",
-                articleCount === 0 && "bg-gray-600 text-gray-400"
+                "ml-1 px-1.5 py-0 text-xs min-w-[20px] text-center transition-colors duration-200",
+                articleCount === 0 && "bg-gray-400 text-gray-600 dark:bg-gray-600 dark:text-gray-400",
+                !showSources && "bg-blue-100 text-blue-800 dark:bg-purple-100 dark:text-purple-800"
               )}
             >
               {articleCount}
@@ -85,18 +100,13 @@ export default function Header({
           onClick={() => setIsSearchView(true)}
           variant="ghost"
           size="sm"
-          className="text-purple-400 hover:text-purple-300"
+          className={cn(
+            "transition-colors duration-200",
+            "text-blue-600 hover:text-blue-700 hover:bg-blue-50",
+            "dark:text-purple-400 dark:hover:text-purple-300 dark:hover:bg-purple-950"
+          )}
         >
           New Search
-        </Button>
-        
-        <Button
-          onClick={toggleDarkMode}
-          variant="ghost"
-          size="icon"
-          className="hover:bg-gray-800"
-        >
-          {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </Button>
       </div>
     </header>

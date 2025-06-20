@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { apiService } from './services/api';
+import { useTheme } from './hooks/useTheme';
 import SearchView from './component/search/SearchView';
 import ChatView from './component/chat/ChatView';
 import Sidebar from './component/layout/Sidebar';
@@ -14,6 +15,9 @@ import { AlertCircle, CheckCircle, Loader2, Sparkles } from 'lucide-react';
 import { Badge } from './component/ui/badge';
 
 export default function VivumApp() {
+  // Theme management
+  const { theme, toggleTheme } = useTheme();
+
   // Beta activation state
   const [isBetaActivated, setIsBetaActivated] = useState(false);
   const [isCheckingActivation, setIsCheckingActivation] = useState(true);
@@ -53,7 +57,6 @@ export default function VivumApp() {
   // UI state
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showSources, setShowSources] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
   const [conversationHistory, setConversationHistory] = useState([]);
 
   // Refs for cleanup
@@ -136,22 +139,21 @@ export default function VivumApp() {
 
     try {
       // Transform query if single topic search
-      // Transform query if single topic search
-let queryTransformation = null;
-if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
-  queryTransformation = await apiService.transformQuery(searchQuery);
-  console.log('📝 Query transformation result:', queryTransformation); // Debug log
-  setTransformedQuery(queryTransformation);
-  
-  // Show transformation briefly
-  if (queryTransformation && queryTransformation.is_transformed) {
-    setSearchProgress({
-      status: 'transforming',
-      message: 'Query optimized for medical search'
-    });
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Increased delay to show transformation
-  }
-}
+      let queryTransformation = null;
+      if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
+        queryTransformation = await apiService.transformQuery(searchQuery);
+        console.log('📝 Query transformation result:', queryTransformation); // Debug log
+        setTransformedQuery(queryTransformation);
+        
+        // Show transformation briefly
+        if (queryTransformation && queryTransformation.is_transformed) {
+          setSearchProgress({
+            status: 'transforming',
+            message: 'Query optimized for medical search'
+          });
+          await new Promise(resolve => setTimeout(resolve, 1500)); // Increased delay to show transformation
+        }
+      }
 
       // Prepare fetch options
       const fetchOptions = {
@@ -416,10 +418,6 @@ if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
   // UI HELPERS
   // ============================================
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
   const onSelectConversation = async (conversation) => {
     setCurrentTopicId(conversation.topicId);
     apiService.currentTopicId = conversation.topicId;
@@ -471,175 +469,172 @@ if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
   }
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-        {/* Session Warning */}
-        <SessionWarning />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 theme-transition">
+      {/* Session Warning */}
+      <SessionWarning />
 
-        {/* System Status Bar */}
-        {systemHealth && (!systemHealth.server || !systemHealth.database || !systemHealth.models) && (
-          <div className="bg-yellow-500/10 border-b border-yellow-500/20 px-4 py-2">
-            <div className="flex items-center justify-between max-w-7xl mx-auto">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-yellow-500" />
-                <span className="text-sm">System Status:</span>
-                <Badge variant={systemHealth.server ? "default" : "destructive"} className="text-xs">
-                  Server: {systemHealth.server ? '✓' : '✗'}
-                </Badge>
-                <Badge variant={systemHealth.database ? "default" : "destructive"} className="text-xs">
-                  DB: {systemHealth.database ? '✓' : '✗'}
-                </Badge>
-                <Badge variant={systemHealth.models ? "default" : "destructive"} className="text-xs">
-                  AI: {systemHealth.models ? '✓' : '✗'}
-                </Badge>
-              </div>
-              <button
-                onClick={() => setShowSystemStatus(true)}
-                className="text-xs text-yellow-500 hover:text-yellow-400"
-              >
-                Details
-              </button>
+      {/* System Status Bar */}
+      {systemHealth && (!systemHealth.server || !systemHealth.database || !systemHealth.models) && (
+        <div className="bg-yellow-500/10 border-b border-yellow-500/20 px-4 py-2">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-yellow-500" />
+              <span className="text-sm">System Status:</span>
+              <Badge variant={systemHealth.server ? "default" : "destructive"} className="text-xs">
+                Server: {systemHealth.server ? '✓' : '✗'}
+              </Badge>
+              <Badge variant={systemHealth.database ? "default" : "destructive"} className="text-xs">
+                DB: {systemHealth.database ? '✓' : '✗'}
+              </Badge>
+              <Badge variant={systemHealth.models ? "default" : "destructive"} className="text-xs">
+                AI: {systemHealth.models ? '✓' : '✗'}
+              </Badge>
             </div>
+            <button
+              onClick={() => setShowSystemStatus(true)}
+              className="text-xs text-yellow-500 hover:text-yellow-400"
+            >
+              Details
+            </button>
           </div>
-        )}
+        </div>
+      )}
 
-        <Sidebar
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        conversationHistory={conversationHistory}
+        onSelectConversation={onSelectConversation}
+      />
+
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
+        <Header
           sidebarOpen={sidebarOpen}
-          conversationHistory={conversationHistory}
-          onSelectConversation={onSelectConversation}
+          setSidebarOpen={setSidebarOpen}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          isSearchView={isSearchView}
+          setIsSearchView={setIsSearchView}
+          showSources={showSources}
+          setShowSources={setShowSources}
+          articles={articles}
+          onShowSystemStatus={() => setShowSystemStatus(true)}
         />
 
-        <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
-          <Header
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-            darkMode={darkMode}
-            toggleDarkMode={toggleDarkMode}
-            isSearchView={isSearchView}
-            setIsSearchView={setIsSearchView}
-            showSources={showSources}
-            setShowSources={setShowSources}
-            articles={articles}
-            onShowSystemStatus={() => setShowSystemStatus(true)}
-          />
-
-          <main className="h-[calc(100vh-4rem)]">
-            {isSearchView ? (
-              <>
-                <SearchView
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  selectedSource={selectedSource}
-                  setSelectedSource={setSelectedSource}
-                  handleFetchArticles={handleFetchArticles}
-                  loading={loading}
-                  showFilters={showFilters}
-                  setShowFilters={setShowFilters}
-                  // Multi-topic search
-                  useMultiTopic={useMultiTopic}
-                  setUseMultiTopic={setUseMultiTopic}
-                  topics={topics}
-                  setTopics={setTopics}
-                  operator={operator}
-                  setOperator={setOperator}
-                />
-                
-                {/* Search Progress */}
-                {searchProgress && (
-                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-                    <div className="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-gray-800 shadow-2xl">
-                      <div className="text-center">
-                        <div className="relative inline-flex items-center justify-center w-20 h-20 mb-6">
-                          <div className="absolute inset-0 bg-purple-600/20 rounded-full animate-ping"></div>
-                          <div className="relative bg-gradient-to-br from-purple-600 to-purple-700 rounded-full p-4">
-                            <Loader2 className="w-12 h-12 text-white animate-spin" />
+        <main className="h-[calc(100vh-4rem)]">
+          {isSearchView ? (
+            <>
+              <SearchView
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                selectedSource={selectedSource}
+                setSelectedSource={setSelectedSource}
+                handleFetchArticles={handleFetchArticles}
+                loading={loading}
+                showFilters={showFilters}
+                setShowFilters={setShowFilters}
+                // Multi-topic search
+                useMultiTopic={useMultiTopic}
+                setUseMultiTopic={setUseMultiTopic}
+                topics={topics}
+                setTopics={setTopics}
+                operator={operator}
+                setOperator={setOperator}
+              />
+              
+              {/* Search Progress */}
+              {searchProgress && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+                  <div className="bg-gray-900 dark:bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-gray-800 dark:border-gray-800 shadow-2xl">
+                    <div className="text-center">
+                      <div className="relative inline-flex items-center justify-center w-20 h-20 mb-6">
+                        <div className="absolute inset-0 bg-purple-600/20 dark:bg-purple-600/20 rounded-full animate-ping"></div>
+                        <div className="relative bg-gradient-to-br from-blue-600 to-blue-700 dark:from-purple-600 dark:to-purple-700 rounded-full p-4">
+                          <Loader2 className="w-12 h-12 text-white animate-spin" />
+                        </div>
+                      </div>
+                      
+                      <h3 className="text-2xl font-semibold mb-2 text-gray-100 dark:text-gray-100">Processing Research</h3>
+                      <p className="text-gray-400 dark:text-gray-400 mb-6">{searchProgress.message}</p>
+                      
+                      {/* Progress bar */}
+                      {searchProgress.attempts && searchProgress.maxAttempts && (
+                        <div className="mb-6">
+                          <div className="w-full bg-gray-800 dark:bg-gray-800 rounded-full h-3 overflow-hidden">
+                            <div 
+                              className="bg-gradient-to-r from-blue-600 to-blue-500 dark:from-purple-600 dark:to-purple-500 h-full rounded-full transition-all duration-500"
+                              style={{ 
+                                width: `${(searchProgress.attempts / searchProgress.maxAttempts) * 100}%` 
+                              }}
+                            />
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                            Step {searchProgress.attempts} of {searchProgress.maxAttempts}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Query transformation */}
+                      {transformedQuery && transformedQuery.is_transformed && (
+                        <div className="mb-6 p-4 bg-blue-600/10 dark:bg-purple-600/10 rounded-xl border border-blue-600/20 dark:border-purple-600/20">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="w-4 h-4 text-blue-400 dark:text-purple-400" />
+                            <p className="text-sm font-medium text-blue-300 dark:text-purple-300">Query Optimized</p>
+                          </div>
+                          <div className="space-y-2 text-left">
+                            <div>
+                              <p className="text-xs text-blue-400/70 dark:text-purple-400/70 uppercase tracking-wider mb-1">Original:</p>
+                              <p className="text-sm text-blue-200/80 dark:text-purple-200/80">{transformedQuery.original_query}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-blue-400/70 dark:text-purple-400/70 uppercase tracking-wider mb-1">Optimized for PubMed:</p>
+                              <p className="text-sm text-blue-200 dark:text-purple-200 font-mono bg-blue-600/10 dark:bg-purple-600/10 p-2 rounded border border-blue-600/20 dark:border-purple-600/20">
+                                {transformedQuery.transformed_query}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                        
-                        <h3 className="text-2xl font-semibold mb-2 text-gray-100">Processing Research</h3>
-                        <p className="text-gray-400 mb-6">{searchProgress.message}</p>
-                        
-                        {/* Progress bar */}
-                        {searchProgress.attempts && searchProgress.maxAttempts && (
-                          <div className="mb-6">
-                            <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
-                              <div 
-                                className="bg-gradient-to-r from-purple-600 to-purple-500 h-full rounded-full transition-all duration-500"
-                                style={{ 
-                                  width: `${(searchProgress.attempts / searchProgress.maxAttempts) * 100}%` 
-                                }}
-                              />
-                            </div>
-                            <p className="text-xs text-gray-500 mt-2">
-                              Step {searchProgress.attempts} of {searchProgress.maxAttempts}
-                            </p>
-                          </div>
-                        )}
-                        
-                        {/* Query transformation */}
-                        {/* Query transformation */}
-{transformedQuery && transformedQuery.is_transformed && (
-  <div className="mb-6 p-4 bg-purple-600/10 rounded-xl border border-purple-600/20">
-    <div className="flex items-center gap-2 mb-3">
-      <Sparkles className="w-4 h-4 text-purple-400" />
-      <p className="text-sm font-medium text-purple-300">Query Optimized</p>
-    </div>
-    <div className="space-y-2 text-left">
-      <div>
-        <p className="text-xs text-purple-400/70 uppercase tracking-wider mb-1">Original:</p>
-        <p className="text-sm text-purple-200/80">{transformedQuery.original_query}</p>
-      </div>
-      <div>
-        <p className="text-xs text-purple-400/70 uppercase tracking-wider mb-1">Optimized for PubMed:</p>
-        <p className="text-sm text-purple-200 font-mono bg-purple-600/10 p-2 rounded border border-purple-600/20">
-          {transformedQuery.transformed_query}
-        </p>
-      </div>
-    </div>
-  </div>
-)}
-                        
-                        <button
-                          onClick={() => {
-                            apiService.stopMonitoring();
-                            setSearchProgress(null);
-                            setLoading(false);
-                          }}
-                          className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
-                        >
-                          Cancel
-                        </button>
-                      </div>
+                      )}
+                      
+                      <button
+                        onClick={() => {
+                          apiService.stopMonitoring();
+                          setSearchProgress(null);
+                          setLoading(false);
+                        }}
+                        className="text-sm text-gray-400 dark:text-gray-400 hover:text-gray-300 dark:hover:text-gray-300 transition-colors"
+                      >
+                        Cancel
+                      </button>
                     </div>
                   </div>
-                )}
-              </>
-            ) : (
-              <ChatView
-                chatMessages={chatMessages}
-                chatInput={chatInput}
-                setChatInput={setChatInput}
-                handleSendMessage={handleSendMessage}
-                topicStatus={topicStatus}
-                setIsSearchView={setIsSearchView}
-                sidebarOpen={sidebarOpen}
-                currentTopic={searchQuery || (useMultiTopic ? topics.filter(t => t.trim()).join(` ${operator} `) : '')}
-                articles={articles}
-              />
-            )}
-          </main>
+                </div>
+              )}
+            </>
+          ) : (
+            <ChatView
+              chatMessages={chatMessages}
+              chatInput={chatInput}
+              setChatInput={setChatInput}
+              handleSendMessage={handleSendMessage}
+              topicStatus={topicStatus}
+              setIsSearchView={setIsSearchView}
+              sidebarOpen={sidebarOpen}
+              currentTopic={searchQuery || (useMultiTopic ? topics.filter(t => t.trim()).join(` ${operator} `) : '')}
+              articles={articles}
+            />
+          )}
+        </main>
 
-          <SourcesCanvas
-            articles={articles}
-            isOpen={showSources}
-            onClose={() => setShowSources(false)}
-          />
+        <SourcesCanvas
+          articles={articles}
+          isOpen={showSources}
+          onClose={() => setShowSources(false)}
+        />
 
-          <SystemStatus 
-            isOpen={showSystemStatus}
-            onClose={() => setShowSystemStatus(false)}
-          />
-        </div>
+        <SystemStatus 
+          isOpen={showSystemStatus}
+          onClose={() => setShowSystemStatus(false)}
+        />
       </div>
     </div>
   );
