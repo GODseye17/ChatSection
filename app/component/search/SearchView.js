@@ -1,6 +1,6 @@
 // app/component/search/SearchView.js
 import React, { useEffect, useState } from 'react';
-import { Search, Sparkles, Filter, TrendingUp, Clock, Star, Zap } from 'lucide-react';
+import { Search, Sparkles, Filter, TrendingUp, Clock, Star, Zap, ArrowUp} from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -166,12 +166,14 @@ export default function SearchView({
   ];
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden bg-gradient-to-b from-gray-950 to-gray-900">
+    <div className="min-h-screen flex flex-col overflow-hidden bg-white" style={{
+      backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
+      backgroundSize: '20px 20px'}}>
       {/* Elegant animated background */}
       <div className="search-background fixed inset-0 overflow-hidden pointer-events-none opacity-30"></div>
       
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto relative z-10">
+      <div className="flex-1 relative z-10">
         <div className="min-h-full p-6 md:p-12">
           <div className="w-full max-w-7xl mx-auto">
             
@@ -182,7 +184,7 @@ export default function SearchView({
                 <span className="text-sm font-medium text-purple-300">AI-Powered Medical Research</span>
               </div>
               
-              <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                 Vivum Research
               </h1>
               
@@ -193,73 +195,85 @@ export default function SearchView({
 
             {/* Search Section */}
             <div className="max-w-4xl mx-auto mb-12 animate-in slide-in-from-bottom-5 duration-700">
-              <Card className="p-8 bg-gray-900/50 backdrop-blur-xl border-gray-800 shadow-2xl">
-                <div className="space-y-6">
-                  {/* Search Input */}
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
-                      <Search className="w-5 h-5" />
-                    </div>
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setIsTyping(true);
-                        setTimeout(() => setIsTyping(false), 100);
-                      }}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Search medical research..."
-                      className="w-full pl-12 pr-4 py-4 bg-gray-800/50 border border-gray-700 rounded-xl text-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
-                    />
+              <div className="space-y-6">
+                {/* Unified Search Container */}
+                <div className="relative bg-gray-900/70 backdrop-blur-xl border border-gray-700 rounded-xl focus-within:ring-2 focus-within:ring-purple-500 transition-all shadow-2xl">
+                  {/* Search Icon */}
+                  <div className="absolute left-4 top-6 text-gray-400 pointer-events-none z-10">
+                    <Search className="mb-10 w-4 h-4" />
                   </div>
-
-                  {/* Quick Actions */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowFilters(!showFilters)}
-                        className={cn(
-                          "gap-2",
-                          showFilters && "border-purple-600 bg-purple-600/10 text-purple-400"
-                        )}
-                      >
-                        <Filter className="w-4 h-4" />
-                        Filters
-                        {activeFilterCount() > 0 && (
-                          <Badge variant="secondary" className="ml-1 bg-purple-600">
-                            {activeFilterCount()}
-                          </Badge>
-                        )}
-                      </Button>
+                  
+                  {/* Search Input */}
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsTyping(true);
+                      setTimeout(() => setIsTyping(false), 100);
+                    }}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Search medical research..."
+                    className="w-full bg-transparent text-white placeholder-gray-400 pl-12 pr-4 py-6 text-lg focus:outline-none border-0 rounded-t-xl"
+                  />
+                  
+                  {/* Controls Section */}
+                  <div className="flex items-center justify-between p-4 bg-transparent">{/* rest of controls */}
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowFilters(!showFilters)}
+                          className={cn(
+                            "gap-2 border-gray-600 text-gray-300 hover:bg-gray-700",
+                            showFilters && "border-purple-500 bg-purple-500/10 text-purple-400"
+                          )}
+                        >
+                          <Filter className="w-4 h-4" />
+                          Filters
+                          {activeFilterCount() > 0 && (
+                            <Badge variant="secondary" className="ml-1 bg-purple-600 text-white">
+                              {activeFilterCount()}
+                            </Badge>
+                          )}
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          onClick={() => setUseMultiTopic(!useMultiTopic)}
+                          className={cn(
+                            "gap-2 border-gray-600 text-gray-400 hover:bg-gray-700",
+                            useMultiTopic && "border-purple-500 bg-purple-500/10 text-purple-400"
+                          )}
+                        >
+                          Advanced
+                        </Button>
+                        
+                        <span className="text-sm text-gray-400">
+                          {isTyping ? 'Typing...' : `${searchQuery.length} characters`}
+                        </span>
+                      </div>
                       
                       <Button
-                        variant="ghost"
-                        onClick={() => setUseMultiTopic(!useMultiTopic)}
-                        className="gap-2"
+                        onClick={handleSearch}
+                        disabled={loading || (!searchQuery.trim() && !useMultiTopic)}
+                        className="w-11 h-11 rounded-full bg-white border-1 border-purple-500 hover:bg-purple-50 text-purple-600 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all"
                       >
-                        Advanced
+                        {loading ? (
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <ArrowUp className="w-20000 h-20000" />
+                          
+                        )}
                       </Button>
                     </div>
-
-                    <Button
-                      onClick={handleSearch}
-                      disabled={loading || (!searchQuery.trim() && !useMultiTopic)}
-                      size="lg"
-                      className="gap-2 min-w-[150px] bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600"
-                    >
-                      <Search className="w-5 h-5" />
-                      Search
-                    </Button>
                   </div>
                 </div>
-              </Card>
+              </div>
 
               {/* Boolean Search Mode */}
               {useMultiTopic && (
                 <Card className="mt-4 p-6 bg-gray-900/50 backdrop-blur-xl border-gray-800 animate-in slide-in-from-top-3">
-                  <h3 className="text-lg font-semibold mb-4">Advanced Search</h3>
+                  <h3 className="text-lg font-semibold mb-4 text-white">Advanced Search</h3>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-gray-400">Combine with:</span>
@@ -297,6 +311,7 @@ export default function SearchView({
                             variant="ghost"
                             size="sm"
                             onClick={() => setTopics(topics.filter((_, i) => i !== index))}
+                            className="text-gray-400 hover:text-white"
                           >
                             Remove
                           </Button>
@@ -309,6 +324,7 @@ export default function SearchView({
                       size="sm"
                       onClick={() => setTopics([...topics, ''])}
                       disabled={topics.length >= 5}
+                      className="border-gray-600 text-gray-300 hover:bg-gray-700"
                     >
                       Add Term
                     </Button>
@@ -332,7 +348,7 @@ export default function SearchView({
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {/* Trending Topics */}
               <Card className="p-6 bg-gray-900/30 backdrop-blur border-gray-800">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
                   <TrendingUp className="w-5 h-5 text-purple-400" />
                   Trending Research
                 </h3>
@@ -354,7 +370,7 @@ export default function SearchView({
 
               {/* Recent Searches */}
               <Card className="p-6 bg-gray-900/30 backdrop-blur border-gray-800">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
                   <Clock className="w-5 h-5 text-purple-400" />
                   Recent Searches
                 </h3>
@@ -377,6 +393,5 @@ export default function SearchView({
           </div>
         </div>
       </div>
-    </div>
   );
 }
