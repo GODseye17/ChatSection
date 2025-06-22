@@ -13,7 +13,8 @@ import {
   ChevronRight,
   BookOpen,
   Calendar,
-  Users
+  Users,
+  Menu
 } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 
@@ -71,19 +72,19 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
       <div className={cn(
-        "w-full md:w-[700px] h-full bg-gray-900 border-l border-gray-800 shadow-2xl",
+        "w-full sm:w-[90%] md:w-[700px] lg:w-[800px] h-full bg-gray-900 border-l border-gray-800 shadow-2xl",
         "animate-in slide-in-from-right duration-300"
       )}>
         <div className="h-full flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-800 bg-gray-900/95 backdrop-blur">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-600/10 rounded-lg border border-purple-600/20">
-                <BookOpen className="w-5 h-5 text-purple-400" />
+          {/* Header - responsive */}
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-800 bg-gray-900/95 backdrop-blur">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="p-2 bg-purple-600/10 rounded-lg border border-purple-600/20 flex-shrink-0">
+                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-100">Research Sources</h2>
-                <p className="text-sm text-gray-400">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-base sm:text-lg font-semibold text-gray-100 truncate">Research Sources</h2>
+                <p className="text-xs sm:text-sm text-gray-400">
                   {articleList.length} {articleList.length === 1 ? 'article' : 'articles'} available
                 </p>
               </div>
@@ -92,14 +93,14 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="hover:bg-gray-800 rounded-lg"
+              className="hover:bg-gray-800 rounded-lg flex-shrink-0"
             >
               <X className="h-5 w-5" />
             </Button>
           </div>
 
-          {/* Search Bar */}
-          <div className="p-4 border-b border-gray-800">
+          {/* Search Bar - responsive */}
+          <div className="p-3 sm:p-4 border-b border-gray-800">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <input
@@ -107,21 +108,21 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by title, abstract, or authors..."
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                className="w-full pl-10 pr-4 py-2 sm:py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
               />
             </div>
           </div>
 
-          {/* Articles List */}
+          {/* Articles List - responsive */}
           <div className="flex-1 overflow-y-auto">
-            <div className="p-4 space-y-3">
+            <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
               {filteredArticles.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileText className="w-8 h-8 text-gray-600" />
+                <div className="text-center py-12 sm:py-16">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-gray-600" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-300 mb-2">No articles found</h3>
-                  <p className="text-gray-500 text-sm max-w-sm mx-auto">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-300 mb-2">No articles found</h3>
+                  <p className="text-gray-500 text-sm max-w-sm mx-auto px-4">
                     {searchQuery 
                       ? `No articles match your search for "${searchQuery}"`
                       : articleList.length === 0 
@@ -138,7 +139,7 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
                     <Card
                       key={article.id || idx}
                       className={cn(
-                        "p-4 border-gray-700 hover:border-purple-600/50 cursor-pointer transition-all duration-200",
+                        "p-3 sm:p-4 border-gray-700 hover:border-purple-600/50 cursor-pointer transition-all duration-200",
                         "hover:shadow-lg hover:shadow-purple-600/10",
                         "animate-in fade-in slide-in-from-bottom-2",
                         isExpanded && "border-purple-600 bg-purple-600/5"
@@ -149,15 +150,15 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
                       }}
                       onClick={() => setSelectedArticle(isExpanded ? null : article.id)}
                     >
-                      <div className="space-y-3">
-                        {/* Title and metadata */}
+                      <div className="space-y-2 sm:space-y-3">
+                        {/* Title and metadata - responsive */}
                         <div>
-                          <h3 className="font-medium text-gray-100 line-clamp-2 pr-8">
+                          <h3 className="font-medium text-gray-100 text-sm sm:text-base leading-snug pr-6 sm:pr-8">
                             {article.title || 'Untitled Article'}
                           </h3>
                           
-                          {/* Metadata row */}
-                          <div className="flex items-center gap-3 mt-2">
+                          {/* Metadata row - responsive */}
+                          <div className="flex items-center gap-2 sm:gap-3 mt-2 flex-wrap">
                             {article.pubmed_id && (
                               <Badge variant="secondary" className="text-xs gap-1">
                                 PMID: {article.pubmed_id}
@@ -172,38 +173,38 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
                           </div>
                         </div>
 
-                        {/* Authors */}
+                        {/* Authors - responsive */}
                         {article.authors && (
-                          <div className="flex items-start gap-2 text-sm text-gray-400">
+                          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-400">
                             <Users className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                            <span className="line-clamp-1">
+                            <span className="line-clamp-2 sm:line-clamp-1 leading-relaxed">
                               {formatAuthors(article.authors)}
                             </span>
                           </div>
                         )}
 
-                        {/* Abstract Preview (when not expanded) */}
+                        {/* Abstract Preview (when not expanded) - responsive */}
                         {article.abstract && !isExpanded && (
-                          <p className="text-sm text-gray-400 line-clamp-2">
+                          <p className="text-xs sm:text-sm text-gray-400 line-clamp-2 sm:line-clamp-3 leading-relaxed">
                             {article.abstract}
                           </p>
                         )}
 
-                        {/* Expanded Content */}
+                        {/* Expanded Content - responsive */}
                         {isExpanded && (
-                          <div className="mt-4 pt-4 border-t border-gray-700 space-y-4 animate-in slide-in-from-top-2 duration-200">
+                          <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-700 space-y-3 sm:space-y-4 animate-in slide-in-from-top-2 duration-200">
                             {/* Full Abstract */}
                             {article.abstract && (
                               <div>
-                                <h4 className="text-sm font-medium text-gray-300 mb-2">Abstract</h4>
-                                <p className="text-sm text-gray-400 leading-relaxed">
+                                <h4 className="text-xs sm:text-sm font-medium text-gray-300 mb-2">Abstract</h4>
+                                <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
                                   {article.abstract}
                                 </p>
                               </div>
                             )}
 
-                            {/* Actions */}
-                            <div className="flex items-center gap-2 pt-2">
+                            {/* Actions - responsive */}
+                            <div className="flex items-center gap-2 pt-2 flex-wrap">
                               {article.url && (
                                 <Button
                                   variant="outline"
@@ -215,7 +216,8 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
                                   }}
                                 >
                                   <ExternalLink className="w-3 h-3" />
-                                  View on PubMed
+                                  <span className="hidden sm:inline">View on PubMed</span>
+                                  <span className="sm:hidden">PubMed</span>
                                 </Button>
                               )}
                               {article.pubmed_id && (
@@ -231,12 +233,12 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
                                   {copiedId === `pmid-${article.id}` ? (
                                     <>
                                       <Check className="w-3 h-3 text-green-500" />
-                                      <span className="text-green-500">Copied!</span>
+                                      <span className="text-green-500 hidden sm:inline">Copied!</span>
                                     </>
                                   ) : (
                                     <>
                                       <Copy className="w-3 h-3" />
-                                      Copy PMID
+                                      <span className="hidden sm:inline">Copy PMID</span>
                                     </>
                                   )}
                                 </Button>
@@ -245,8 +247,8 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
                           </div>
                         )}
 
-                        {/* Expand/Collapse Indicator */}
-                        <div className="absolute top-4 right-4">
+                        {/* Expand/Collapse Indicator - responsive */}
+                        <div className="absolute top-3 sm:top-4 right-3 sm:right-4">
                           <ChevronRight className={cn(
                             "w-4 h-4 text-gray-600 transition-transform duration-200",
                             isExpanded && "rotate-90"
@@ -260,10 +262,10 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="p-4 border-t border-gray-800 bg-gray-900/95 backdrop-blur">
+          {/* Footer - responsive */}
+          <div className="p-3 sm:p-4 border-t border-gray-800 bg-gray-900/95 backdrop-blur">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-400">
+              <div className="text-xs sm:text-sm text-gray-400">
                 {searchQuery && filteredArticles.length !== articleList.length ? (
                   <>
                     Showing {filteredArticles.length} of {articleList.length} articles
@@ -290,12 +292,13 @@ export default function SourcesCanvas({ articles, isOpen, onClose }) {
                   {copiedId === 'all' ? (
                     <>
                       <Check className="w-3 h-3 text-green-500" />
-                      <span className="text-green-500">Copied!</span>
+                      <span className="text-green-500 hidden sm:inline">Copied!</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-3 h-3" />
-                      Copy All References
+                      <span className="hidden sm:inline">Copy All References</span>
+                      <span className="sm:hidden">Copy All</span>
                     </>
                   )}
                 </Button>

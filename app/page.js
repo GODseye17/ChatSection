@@ -12,6 +12,7 @@ import BetaActivation from './component/auth/BetaActivation';
 import SessionWarning from './component/auth/SessionWarning';
 import { AlertCircle, CheckCircle, Loader2, Sparkles } from 'lucide-react';
 import { Badge } from './component/ui/badge';
+import EnhancedProcessingDialog from './component/common/EnhancedProcessingDialog';
 
 export default function VivumApp() {
   // Beta activation state
@@ -545,74 +546,20 @@ if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
                 />
                 
                 {/* Search Progress */}
-                {searchProgress && (
-                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-                    <div className="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-gray-800 shadow-2xl">
-                      <div className="text-center">
-                        <div className="relative inline-flex items-center justify-center w-20 h-20 mb-6">
-                          <div className="absolute inset-0 bg-purple-600/20 rounded-full animate-ping"></div>
-                          <div className="relative bg-gradient-to-br from-purple-600 to-purple-700 rounded-full p-4">
-                            <Loader2 className="w-12 h-12 text-white animate-spin" />
-                          </div>
-                        </div>
-                        
-                        <h3 className="text-2xl font-semibold mb-2 text-gray-100">Processing Research</h3>
-                        <p className="text-gray-400 mb-6">{searchProgress.message}</p>
-                        
-                        {/* Progress bar */}
-                        {searchProgress.attempts && searchProgress.maxAttempts && (
-                          <div className="mb-6">
-                            <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
-                              <div 
-                                className="bg-gradient-to-r from-purple-600 to-purple-500 h-full rounded-full transition-all duration-500"
-                                style={{ 
-                                  width: `${(searchProgress.attempts / searchProgress.maxAttempts) * 100}%` 
-                                }}
-                              />
-                            </div>
-                            <p className="text-xs text-gray-500 mt-2">
-                              Step {searchProgress.attempts} of {searchProgress.maxAttempts}
-                            </p>
-                          </div>
-                        )}
-                        
-                        {/* Query transformation */}
-                        {/* Query transformation */}
-{transformedQuery && transformedQuery.is_transformed && (
-  <div className="mb-6 p-4 bg-purple-600/10 rounded-xl border border-purple-600/20">
-    <div className="flex items-center gap-2 mb-3">
-      <Sparkles className="w-4 h-4 text-purple-400" />
-      <p className="text-sm font-medium text-purple-300">Query Optimized</p>
-    </div>
-    <div className="space-y-2 text-left">
-      <div>
-        <p className="text-xs text-purple-400/70 uppercase tracking-wider mb-1">Original:</p>
-        <p className="text-sm text-purple-200/80">{transformedQuery.original_query}</p>
-      </div>
-      <div>
-        <p className="text-xs text-purple-400/70 uppercase tracking-wider mb-1">Optimized for PubMed:</p>
-        <p className="text-sm text-purple-200 font-mono bg-purple-600/10 p-2 rounded border border-purple-600/20">
-          {transformedQuery.transformed_query}
-        </p>
-      </div>
-    </div>
-  </div>
+            {searchProgress && (
+  <EnhancedProcessingDialog
+    isVisible={!!searchProgress}
+    searchProgress={searchProgress}
+    transformedQuery={transformedQuery}
+    darkMode={darkMode} // Pass your existing darkMode state
+    onCancel={() => {
+      apiService.stopMonitoring();
+      setSearchProgress(null);
+      setLoading(false);
+      setTransformedQuery(null);
+    }}
+  />
 )}
-                        
-                        <button
-                          onClick={() => {
-                            apiService.stopMonitoring();
-                            setSearchProgress(null);
-                            setLoading(false);
-                          }}
-                          className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </>
             ) : (
               <ChatView

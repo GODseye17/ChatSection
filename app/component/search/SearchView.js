@@ -1,6 +1,6 @@
-// app/component/search/SearchView.js
+// app/component/search/SearchView.js - COMPLETE UPDATED FILE
 import React, { useEffect, useState } from 'react';
-import { Search, Sparkles, Filter, TrendingUp, Clock, Star, Zap, ArrowUp} from 'lucide-react';
+import { Search, Sparkles, Filter, TrendingUp, Clock, Star, Zap } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -219,7 +219,7 @@ export default function SearchView({
             {/* Search Section */}
             <div className="max-w-4xl mx-auto mb-12 animate-in slide-in-from-bottom-5 duration-700">
               <div className="space-y-6">
-                {/* Unified Search Container */}
+                {/* Enhanced Search Container with New Loading Button */}
                 <div className="relative bg-gray-900/70 backdrop-blur-xl border border-gray-700 rounded-xl focus-within:ring-2 focus-within:ring-purple-500 transition-all shadow-2xl">
                   {/* Search Icon */}
                   <div className="absolute left-4 top-6 text-gray-400 pointer-events-none z-10">
@@ -240,54 +240,131 @@ export default function SearchView({
                     className="w-full bg-transparent text-white placeholder-gray-400 pl-12 pr-4 py-6 text-lg focus:outline-none border-0 rounded-t-xl"
                   />
                   
-                  {/* Controls Section */}
+                  {/* Controls Section with Enhanced Loading Button */}
                   <div className="flex items-center justify-between p-4 bg-transparent">
-                      <div className="flex items-center gap-3">
-                        <Button
-                          variant="outline"
-                          onClick={() => setShowFilters(!showFilters)}
-                          className={cn(
-                            "gap-2 border-gray-600 text-gray-300 hover:bg-gray-700",
-                            showFilters && "border-purple-500 bg-purple-500/10 text-purple-400"
-                          )}
-                        >
-                          <Filter className="w-4 h-4" />
-                          Filters
-                          {activeFilterCount() > 0 && (
-                            <Badge variant="secondary" className="ml-1 bg-purple-600 text-white">
-                              {activeFilterCount()}
-                            </Badge>
-                          )}
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          onClick={() => setUseMultiTopic(!useMultiTopic)}
-                          className={cn(
-                            "gap-2 border-gray-600 text-gray-400 hover:bg-gray-700",
-                            useMultiTopic && "border-purple-500 bg-purple-500/10 text-purple-400"
-                          )}
-                        >
-                          Advanced
-                        </Button>
-                        
-                        <span className="text-sm text-gray-400">
-                          {isTyping ? 'Typing...' : `${searchQuery.length} characters`}
-                        </span>
-                      </div>
-                      
+                    <div className="flex items-center gap-3">
                       <Button
-                        onClick={handleSearch}
-                        disabled={loading || (!searchQuery.trim() && !useMultiTopic)}
-                        className="w-11 h-11 rounded-full bg-white border-1 border-purple-500 hover:bg-purple-50 text-purple-600 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all"
+                        variant="outline"
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={cn(
+                          "gap-2 border-gray-600 text-gray-300 hover:bg-gray-700",
+                          showFilters && "border-purple-500 bg-purple-500/10 text-purple-400"
+                        )}
                       >
-                        {loading ? (
-                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <ArrowUp className="w-20000 h-20000" />
-                          
+                        <Filter className="w-4 h-4" />
+                        Filters
+                        {activeFilterCount() > 0 && (
+                          <Badge variant="secondary" className="ml-1 bg-purple-600 text-white">
+                            {activeFilterCount()}
+                          </Badge>
                         )}
                       </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={() => setUseMultiTopic(!useMultiTopic)}
+                        className={cn(
+                          "gap-2 border-gray-600 text-gray-400 hover:bg-gray-700",
+                          useMultiTopic && "border-purple-500 bg-purple-500/10 text-purple-400"
+                        )}
+                      >
+                        Advanced
+                      </Button>
+                      
+                      <span className="text-sm text-gray-400">
+                        {isTyping ? 'Typing...' : `${searchQuery.length} characters`}
+                      </span>
+                    </div>
+                    
+                    {/* ENHANCED LOADING BUTTON */}
+                    <div className="relative">
+                      <button
+                        onClick={handleSearch}
+                        disabled={loading || (!searchQuery.trim() && !useMultiTopic)}
+                        className={cn(
+                          "search-button group relative overflow-hidden w-12 h-12 rounded-full",
+                          "font-semibold transition-all duration-300 ease-in-out",
+                          "flex items-center justify-center",
+                          "transform hover:scale-105 active:scale-95",
+                          "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
+                          "focus:ring-offset-gray-900 dark:focus:ring-offset-gray-950",
+                          // Light theme styles
+                          !loading && searchQuery.trim() ? [
+                            "bg-white text-purple-600 hover:bg-purple-50",
+                            "shadow-lg hover:shadow-xl border-2 border-purple-500",
+                            "dark:bg-gray-800 dark:text-purple-400",
+                            "dark:hover:bg-purple-900/20 dark:border-purple-400"
+                          ] : [
+                            "opacity-50 cursor-not-allowed bg-gray-600 text-gray-400",
+                            "dark:bg-gray-700 dark:text-gray-500"
+                          ]
+                        )}
+                      >
+                        {/* Background animation overlay for loading */}
+                        {loading && (
+                          <>
+                            {/* Spinning background */}
+                            <div className="absolute inset-0 rounded-full">
+                              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-400 dark:to-purple-500 opacity-20 animate-spin"></div>
+                            </div>
+                            
+                            {/* Pulsing overlay */}
+                            <div className="absolute inset-0 rounded-full bg-purple-500 dark:bg-purple-400 animate-pulse opacity-10"></div>
+                          </>
+                        )}
+                        
+                        {/* Hover effect shimmer */}
+                        {!loading && searchQuery.trim() && (
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-purple-300/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
+                        )}
+                        
+                        {/* Button content */}
+                        <div className="relative z-10 flex items-center justify-center">
+                          {loading ? (
+                            <div className="flex items-center justify-center">
+                              {/* Enhanced loading spinner */}
+                              <div className="relative w-6 h-6">
+                                {/* Outer ring */}
+                                <div className="absolute inset-0 border-2 border-purple-200 dark:border-purple-700 rounded-full opacity-30"></div>
+                                
+                                {/* Main spinning ring */}
+                                <div className="absolute inset-0 border-2 border-transparent border-t-purple-600 dark:border-t-purple-400 border-r-purple-600 dark:border-r-purple-400 rounded-full animate-spin"></div>
+                                
+                                {/* Inner spinning dot */}
+                                <div className="absolute top-1/2 left-1/2 w-1.5 h-1.5 bg-purple-600 dark:bg-purple-400 rounded-full transform -translate-x-1/2 -translate-y-1/2">
+                                  <div className="absolute inset-0 bg-purple-600 dark:bg-purple-400 rounded-full animate-ping"></div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <svg 
+                              className="w-6 h-6 transition-all duration-200 group-hover:-translate-y-0.5" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2.5} 
+                                d="M5 10l7-7m0 0l7 7m-7-7v18" 
+                              />
+                            </svg>
+                          )}
+                        </div>
+                        
+                        {/* Success ripple effect */}
+                        <div className="absolute inset-0 rounded-full bg-green-500 opacity-0 scale-0 transition-all duration-500 group-active:opacity-20 group-active:scale-110"></div>
+                      </button>
+                      
+                      {/* Loading status text */}
+                      {loading && (
+                        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                          <span className="text-xs text-purple-400 dark:text-purple-300 font-medium animate-pulse">
+                            Searching...
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -416,5 +493,6 @@ export default function SearchView({
           </div>
         </div>
       </div>
+    </div>
   );
 }
