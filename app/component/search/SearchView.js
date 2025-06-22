@@ -166,11 +166,34 @@ export default function SearchView({
   ];
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden bg-white" style={{
-      backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
-      backgroundSize: '20px 20px'}}>
-      {/* Elegant animated background */}
-      <div className="search-background fixed inset-0 overflow-hidden pointer-events-none opacity-30"></div>
+    <div className="min-h-screen flex flex-col overflow-hidden bg-gray-950">
+      {/* Light mode dot pattern */}
+      <div 
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(105, 91, 91, 0.3) 1px, transparent 1.5px)',
+          backgroundSize: '32px 32px'
+        }}
+      />
+      
+      {/* Dark mode dot pattern */}
+      <div 
+        className="fixed inset-0 pointer-events-none hidden dark:hidden"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
+        }}
+      />
+      
+      {/* Animated background effects */}
+      <div className="search-background fixed inset-0 overflow-hidden pointer-events-none">
+        {/* Additional floating particles */}
+        <div className="absolute inset-0 opacity-30">
+          {/* This will be populated by the useEffect */}
+        </div>
+        {/* Gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gray-950/10 to-gray-900/20 dark: block hidden" />
+      </div>
       
       {/* Main content */}
       <div className="flex-1 relative z-10">
@@ -218,7 +241,7 @@ export default function SearchView({
                   />
                   
                   {/* Controls Section */}
-                  <div className="flex items-center justify-between p-4 bg-transparent">{/* rest of controls */}
+                  <div className="flex items-center justify-between p-4 bg-transparent">
                       <div className="flex items-center gap-3">
                         <Button
                           variant="outline"
