@@ -4198,3 +4198,153 @@ select.focus\:ring-2.focus\:ring-purple-500:focus {
     }
   }
 }
+/* ========================================
+   ADDITIONAL SMOOTH TRANSITION STYLES
+   Add these to your app/globals.css file after the existing animation styles
+======================================== */
+
+/* Smooth step transitions */
+.transition-all {
+  transition-property: all !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 300ms !important;
+}
+
+.duration-200 {
+  transition-duration: 200ms !important;
+}
+
+.duration-300 {
+  transition-duration: 300ms !important;
+}
+
+.duration-500 {
+  transition-duration: 500ms !important;
+}
+
+/* Scale animations for steps */
+.scale-100 {
+  transform: scale(1) !important;
+}
+
+.scale-105 {
+  transform: scale(1.05) !important;
+}
+
+/* Enhanced bounce animation for arrow */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Smooth shine effect for progress bar */
+@keyframes shine {
+  0% {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* Opacity transitions */
+.opacity-50 {
+  opacity: 0.5 !important;
+}
+
+.opacity-100 {
+  opacity: 1 !important;
+}
+
+/* Custom scrollbar for transformed query */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* Light mode scrollbar */
+.custom-scrollbar:not(.dark *) {
+  scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+}
+
+.custom-scrollbar:not(.dark *)::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+}
+
+.custom-scrollbar:not(.dark *)::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.5);
+}
+
+/* Smooth color transitions for step progress */
+.transition-colors {
+  transition-property: background-color, border-color, color !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 150ms !important;
+}
+
+/* Enhanced hover states */
+.hover\:bg-gray-700:hover {
+  background-color: #374151 !important;
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: #f3f4f6 !important;
+}
+
+.hover\:text-gray-300:hover {
+  color: #d1d5db !important;
+}
+
+.hover\:text-gray-700:hover {
+  color: #374151 !important;
+}
+
+/* Ensure animations work in both themes */
+.dark .animate-bounce,
+.dark .animate-pulse,
+.dark .animate-shine {
+  animation-play-state: running !important;
+}
+
+/* Step completion animation */
+@keyframes checkmark {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(-45deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-checkmark {
+  animation: checkmark 0.3s ease-out forwards !important;
+}
