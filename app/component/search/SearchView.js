@@ -197,98 +197,66 @@ export default function SearchView({
       
       {/* Main content */}
       <div className="flex-1 relative z-10">
-        <div className="min-h-full p-6 md:p-12">
+        <div className="min-h-full p-4 sm:p-6 md:p-8 lg:p-12">
           <div className="w-full max-w-7xl mx-auto">
             
             {/* Hero Section */}
-            <div className="text-center mb-12 animate-in fade-in duration-700">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600/10 rounded-full mb-6 border border-purple-600/20">
-                <Sparkles className="w-4 h-4 text-purple-400" />
-                <span className="text-sm font-medium text-purple-300">AI-Powered Medical Research</span>
+            <div className="text-center mb-8 sm:mb-12 animate-in fade-in duration-700">
+              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-purple-600/10 rounded-full mb-4 sm:mb-6 border border-purple-600/20">
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-purple-400" />
+                <span className="text-xs sm:text-sm font-medium text-purple-300">AI-Powered Medical Research</span>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                 Vivum Research
               </h1>
               
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+              <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto px-4">
                 Discover insights from millions of medical papers instantly
               </p>
             </div>
 
             {/* Search Section */}
-            <div className="max-w-4xl mx-auto mb-12 animate-in slide-in-from-bottom-5 duration-700">
-              <div className="space-y-6">
-                {/* Enhanced Search Container with New Loading Button */}
+            <div className="max-w-4xl mx-auto mb-8 sm:mb-12 animate-in slide-in-from-bottom-5 duration-700">
+              <div className="space-y-4 sm:space-y-6">
+                {/* Enhanced Search Container with New Responsive Design */}
                 <div className="relative bg-gray-900/70 backdrop-blur-xl border border-gray-700 rounded-xl focus-within:ring-2 focus-within:ring-purple-500 transition-all shadow-2xl">
-                  {/* Search Icon */}
-                  <div className="absolute left-4 top-6 text-gray-400 pointer-events-none z-10">
-                    <Search className="mb-10 w-4 h-4" />
-                  </div>
                   
-                  {/* Search Input */}
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setIsTyping(true);
-                      setTimeout(() => setIsTyping(false), 100);
-                    }}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Search medical research..."
-                    className="w-full bg-transparent text-white placeholder-gray-400 pl-12 pr-4 py-6 text-lg focus:outline-none border-0 rounded-t-xl"
-                  />
-                  
-                  {/* Controls Section with Enhanced Loading Button */}
-                  <div className="flex items-center justify-between p-4 bg-transparent">
-                    <div className="flex items-center gap-3">
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowFilters(!showFilters)}
-                        className={cn(
-                          "gap-2 border-gray-600 text-gray-300 hover:bg-gray-700",
-                          showFilters && "border-purple-500 bg-purple-500/10 text-purple-400"
-                        )}
-                      >
-                        <Filter className="w-4 h-4" />
-                        Filters
-                        {activeFilterCount() > 0 && (
-                          <Badge variant="secondary" className="ml-1 bg-purple-600 text-white">
-                            {activeFilterCount()}
-                          </Badge>
-                        )}
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        onClick={() => setUseMultiTopic(!useMultiTopic)}
-                        className={cn(
-                          "gap-2 border-gray-600 text-gray-400 hover:bg-gray-700",
-                          useMultiTopic && "border-purple-500 bg-purple-500/10 text-purple-400"
-                        )}
-                      >
-                        Advanced
-                      </Button>
-                      
-                      <span className="text-sm text-gray-400">
-                        {isTyping ? 'Typing...' : `${searchQuery.length} characters`}
-                      </span>
+                  {/* Main Search Input Area */}
+                  <div className="flex items-center gap-3 p-3 sm:p-4">
+                    {/* Search Icon - Aligned with text */}
+                    <div className="flex-shrink-0 text-gray-400">
+                      <Search className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                     
-                    {/* ENHANCED LOADING BUTTON */}
-                    <div className="relative">
+                    {/* Search Input */}
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setIsTyping(true);
+                        setTimeout(() => setIsTyping(false), 100);
+                      }}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Search medical research..."
+                      className="flex-1 bg-transparent text-white placeholder-gray-400 text-base sm:text-lg focus:outline-none border-0"
+                    />
+                    
+                    {/* Search Button - Smaller and responsive */}
+                    <div className="flex-shrink-0">
                       <button
                         onClick={handleSearch}
                         disabled={loading || (!searchQuery.trim() && !useMultiTopic)}
                         className={cn(
-                          "search-button group relative overflow-hidden w-12 h-12 rounded-full",
+                          "search-button group relative overflow-hidden",
+                          "w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl",
                           "font-semibold transition-all duration-300 ease-in-out",
                           "flex items-center justify-center",
                           "transform hover:scale-105 active:scale-95",
                           "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
                           "focus:ring-offset-gray-900 dark:focus:ring-offset-gray-950",
-                          // Light theme styles
+                          // Theme-aware styles
                           !loading && searchQuery.trim() ? [
                             "bg-white text-purple-600 hover:bg-purple-50",
                             "shadow-lg hover:shadow-xl border-2 border-purple-500",
@@ -304,18 +272,18 @@ export default function SearchView({
                         {loading && (
                           <>
                             {/* Spinning background */}
-                            <div className="absolute inset-0 rounded-full">
-                              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-400 dark:to-purple-500 opacity-20 animate-spin"></div>
+                            <div className="absolute inset-0 rounded-lg sm:rounded-xl">
+                              <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-400 dark:to-purple-500 opacity-20 animate-spin"></div>
                             </div>
                             
                             {/* Pulsing overlay */}
-                            <div className="absolute inset-0 rounded-full bg-purple-500 dark:bg-purple-400 animate-pulse opacity-10"></div>
+                            <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-purple-500 dark:bg-purple-400 animate-pulse opacity-10"></div>
                           </>
                         )}
                         
                         {/* Hover effect shimmer */}
                         {!loading && searchQuery.trim() && (
-                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-purple-300/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
+                          <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-transparent via-purple-300/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
                         )}
                         
                         {/* Button content */}
@@ -323,7 +291,7 @@ export default function SearchView({
                           {loading ? (
                             <div className="flex items-center justify-center">
                               {/* Enhanced loading spinner */}
-                              <div className="relative w-6 h-6">
+                              <div className="relative w-5 h-5 sm:w-6 sm:h-6">
                                 {/* Outer ring */}
                                 <div className="absolute inset-0 border-2 border-purple-200 dark:border-purple-700 rounded-full opacity-30"></div>
                                 
@@ -331,14 +299,14 @@ export default function SearchView({
                                 <div className="absolute inset-0 border-2 border-transparent border-t-purple-600 dark:border-t-purple-400 border-r-purple-600 dark:border-r-purple-400 rounded-full animate-spin"></div>
                                 
                                 {/* Inner spinning dot */}
-                                <div className="absolute top-1/2 left-1/2 w-1.5 h-1.5 bg-purple-600 dark:bg-purple-400 rounded-full transform -translate-x-1/2 -translate-y-1/2">
+                                <div className="absolute top-1/2 left-1/2 w-1 h-1 sm:w-1.5 sm:h-1.5 bg-purple-600 dark:bg-purple-400 rounded-full transform -translate-x-1/2 -translate-y-1/2">
                                   <div className="absolute inset-0 bg-purple-600 dark:bg-purple-400 rounded-full animate-ping"></div>
                                 </div>
                               </div>
                             </div>
                           ) : (
                             <svg 
-                              className="w-6 h-6 transition-all duration-200 group-hover:-translate-y-0.5" 
+                              className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-200 group-hover:-translate-y-0.5" 
                               fill="none" 
                               stroke="currentColor" 
                               viewBox="0 0 24 24"
@@ -354,7 +322,7 @@ export default function SearchView({
                         </div>
                         
                         {/* Success ripple effect */}
-                        <div className="absolute inset-0 rounded-full bg-green-500 opacity-0 scale-0 transition-all duration-500 group-active:opacity-20 group-active:scale-110"></div>
+                        <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-green-500 opacity-0 scale-0 transition-all duration-500 group-active:opacity-20 group-active:scale-110"></div>
                       </button>
                       
                       {/* Loading status text */}
@@ -367,128 +335,172 @@ export default function SearchView({
                       )}
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Boolean Search Mode */}
-              {useMultiTopic && (
-                <Card className="mt-4 p-6 bg-gray-900/50 backdrop-blur-xl border-gray-800 animate-in slide-in-from-top-3">
-                  <h3 className="text-lg font-semibold mb-4 text-white">Advanced Search</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-gray-400">Combine with:</span>
-                      {['AND', 'OR', 'NOT'].map(op => (
-                        <button
-                          key={op}
-                          onClick={() => setOperator(op)}
-                          className={cn(
-                            "px-3 py-1 text-sm rounded-lg transition-all",
-                            operator === op
-                              ? "bg-purple-600 text-white"
-                              : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                          )}
-                        >
-                          {op}
-                        </button>
-                      ))}
+                  
+                  {/* Controls Section */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 pt-0 sm:pt-0 border-t border-gray-700/50 gap-3 sm:gap-0">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowFilters(!showFilters)}
+                        size="sm"
+                        className={cn(
+                          "gap-2 border-gray-600 text-gray-300 hover:bg-gray-700 text-xs sm:text-sm",
+                          showFilters && "border-purple-500 bg-purple-500/10 text-purple-400"
+                        )}
+                      >
+                        <Filter className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden xs:inline">Filters</span>
+                        {activeFilterCount() > 0 && (
+                          <Badge variant="secondary" className="ml-1 bg-purple-600 text-white text-xs">
+                            {activeFilterCount()}
+                          </Badge>
+                        )}
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={() => setUseMultiTopic(!useMultiTopic)}
+                        size="sm"
+                        className={cn(
+                          "gap-2 border-gray-600 text-gray-400 hover:bg-gray-700 text-xs sm:text-sm",
+                          useMultiTopic && "border-purple-500 bg-purple-500/10 text-purple-400"
+                        )}
+                      >
+                        <span className="hidden xs:inline">Advanced</span>
+                        <span className="xs:hidden">Adv</span>
+                      </Button>
                     </div>
                     
-                    {topics.map((topic, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={topic}
-                          onChange={(e) => {
-                            const newTopics = [...topics];
-                            newTopics[index] = e.target.value;
-                            setTopics(newTopics);
-                          }}
-                          placeholder={`Term ${index + 1}`}
-                          className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                        {topics.length > 1 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setTopics(topics.filter((_, i) => i !== index))}
-                            className="text-gray-400 hover:text-white"
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-400">
+                      {isTyping ? (
+                        <span className="text-purple-400">Typing...</span>
+                      ) : (
+                        <span>{searchQuery.length} characters</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Boolean Search Mode */}
+                {useMultiTopic && (
+                  <Card className="mt-4 p-4 sm:p-6 bg-gray-900/50 backdrop-blur-xl border-gray-800 animate-in slide-in-from-top-3">
+                    <h3 className="text-base sm:text-lg font-semibold mb-4 text-white">Advanced Search</h3>
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="text-sm text-gray-400">Combine with:</span>
+                        {['AND', 'OR', 'NOT'].map(op => (
+                          <button
+                            key={op}
+                            onClick={() => setOperator(op)}
+                            className={cn(
+                              "px-3 py-1 text-sm rounded-lg transition-all",
+                              operator === op
+                                ? "bg-purple-600 text-white"
+                                : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                            )}
                           >
-                            Remove
-                          </Button>
-                        )}
+                            {op}
+                          </button>
+                        ))}
                       </div>
+                      
+                      {topics.map((topic, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={topic}
+                            onChange={(e) => {
+                              const newTopics = [...topics];
+                              newTopics[index] = e.target.value;
+                              setTopics(newTopics);
+                            }}
+                            placeholder={`Term ${index + 1}`}
+                            className="flex-1 px-3 sm:px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
+                          />
+                          {topics.length > 1 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setTopics(topics.filter((_, i) => i !== index))}
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Remove
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setTopics([...topics, ''])}
+                        disabled={topics.length >= 5}
+                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                      >
+                        Add Term
+                      </Button>
+                    </div>
+                  </Card>
+                )}
+              </div>
+
+              {/* Filters Panel */}
+              {showFilters && (
+                <div className="max-w-4xl mx-auto mb-6 sm:mb-8 animate-in slide-in-from-top-3 duration-300">
+                  <FilterPanel 
+                    filters={filters}
+                    setFilters={setFilters}
+                    selectedSource={selectedSource}
+                  />
+                </div>
+              )}
+
+              {/* Trending & Recent */}
+              <div className="grid sm:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
+                {/* Trending Topics */}
+                <Card className="p-4 sm:p-6 bg-gray-900/30 backdrop-blur border-gray-800">
+                  <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                    Trending Research
+                  </h3>
+                  <div className="space-y-2 sm:space-y-3">
+                    {trendingTopics.map((topic, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSearchQuery(topic.label)}
+                        className="w-full flex items-center gap-3 p-2 sm:p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-left group"
+                      >
+                        <topic.icon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 group-hover:text-purple-400 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-gray-300 group-hover:text-gray-100">
+                          {topic.label}
+                        </span>
+                      </button>
                     ))}
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setTopics([...topics, ''])}
-                      disabled={topics.length >= 5}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                    >
-                      Add Term
-                    </Button>
                   </div>
                 </Card>
-              )}
-            </div>
 
-            {/* Filters Panel */}
-            {showFilters && (
-              <div className="max-w-4xl mx-auto mb-8 animate-in slide-in-from-top-3 duration-300">
-                <FilterPanel 
-                  filters={filters}
-                  setFilters={setFilters}
-                  selectedSource={selectedSource}
-                />
+                {/* Recent Searches */}
+                <Card className="p-4 sm:p-6 bg-gray-900/30 backdrop-blur border-gray-800">
+                  <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                    <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                    Recent Searches
+                  </h3>
+                  <div className="space-y-2 sm:space-y-3">
+                    {recentSearches.map((search, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSearchQuery(search)}
+                        className="w-full flex items-center gap-3 p-2 sm:p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-left group"
+                      >
+                        <div className="w-2 h-2 bg-gray-600 rounded-full group-hover:bg-purple-400 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-gray-300 group-hover:text-gray-100">
+                          {search}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </Card>
               </div>
-            )}
-
-            {/* Trending & Recent */}
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {/* Trending Topics */}
-              <Card className="p-6 bg-gray-900/30 backdrop-blur border-gray-800">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
-                  <TrendingUp className="w-5 h-5 text-purple-400" />
-                  Trending Research
-                </h3>
-                <div className="space-y-3">
-                  {trendingTopics.map((topic, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSearchQuery(topic.label)}
-                      className="w-full flex items-center gap-3 p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-left group"
-                    >
-                      <topic.icon className="w-4 h-4 text-gray-500 group-hover:text-purple-400" />
-                      <span className="text-sm text-gray-300 group-hover:text-gray-100">
-                        {topic.label}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </Card>
-
-              {/* Recent Searches */}
-              <Card className="p-6 bg-gray-900/30 backdrop-blur border-gray-800">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
-                  <Clock className="w-5 h-5 text-purple-400" />
-                  Recent Searches
-                </h3>
-                <div className="space-y-3">
-                  {recentSearches.map((search, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSearchQuery(search)}
-                      className="w-full flex items-center gap-3 p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-left group"
-                    >
-                      <div className="w-2 h-2 bg-gray-600 rounded-full group-hover:bg-purple-400" />
-                      <span className="text-sm text-gray-300 group-hover:text-gray-100">
-                        {search}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </Card>
             </div>
           </div>
         </div>

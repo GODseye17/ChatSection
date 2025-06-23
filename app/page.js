@@ -51,7 +51,7 @@ export default function VivumApp() {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   
-  // UI state
+  // UI state - Sidebar starts closed by default
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showSources, setShowSources] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
@@ -137,22 +137,21 @@ export default function VivumApp() {
 
     try {
       // Transform query if single topic search
-      // Transform query if single topic search
-let queryTransformation = null;
-if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
-  queryTransformation = await apiService.transformQuery(searchQuery);
-  console.log('📝 Query transformation result:', queryTransformation); // Debug log
-  setTransformedQuery(queryTransformation);
-  
-  // Show transformation briefly
-  if (queryTransformation && queryTransformation.is_transformed) {
-    setSearchProgress({
-      status: 'transforming',
-      message: 'Query optimized for medical search'
-    });
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Increased delay to show transformation
-  }
-}
+      let queryTransformation = null;
+      if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
+        queryTransformation = await apiService.transformQuery(searchQuery);
+        console.log('📝 Query transformation result:', queryTransformation); // Debug log
+        setTransformedQuery(queryTransformation);
+        
+        // Show transformation briefly
+        if (queryTransformation && queryTransformation.is_transformed) {
+          setSearchProgress({
+            status: 'transforming',
+            message: 'Query optimized for medical search'
+          });
+          await new Promise(resolve => setTimeout(resolve, 1500)); // Increased delay to show transformation
+        }
+      }
 
       // Prepare fetch options
       const fetchOptions = {
@@ -441,6 +440,28 @@ if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
   };
 
   // ============================================
+  // RESPONSIVE SIDEBAR HANDLER
+  // ============================================
+
+  // Close sidebar on mobile when clicking outside or after selection
+  useEffect(() => {
+    const handleResize = () => {
+      // Auto-close sidebar on mobile/tablet when resizing
+      if (window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      }
+    };
+
+    // Initial check - start with sidebar closed on mobile
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // ============================================
   // RENDER
   // ============================================
 
@@ -504,89 +525,97 @@ if (!useMultiTopic && searchQuery && !isAdvancedQuery) {
           </div>
         )}
 
-        <Sidebar
-          sidebarOpen={sidebarOpen}
-          conversationHistory={conversationHistory}
-          onSelectConversation={onSelectConversation}
-        />
-
-        <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
-          <Header
+        {/* Main Layout Container */}
+        <div className="relative flex h-screen overflow-hidden">
+          {/* Sidebar with responsive props */}
+          <Sidebar
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}
-            darkMode={darkMode}
-            toggleDarkMode={toggleDarkMode}
-            isSearchView={isSearchView}
-            setIsSearchView={setIsSearchView}
-            showSources={showSources}
-            setShowSources={setShowSources}
-            articles={articles}
-            onShowSystemStatus={() => setShowSystemStatus(true)}
+            conversationHistory={conversationHistory}
+            onSelectConversation={onSelectConversation}
           />
 
-          <main className="h-[calc(100vh-4rem)]">
-            {isSearchView ? (
-              <>
-                <SearchView
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  selectedSource={selectedSource}
-                  setSelectedSource={setSelectedSource}
-                  handleFetchArticles={handleFetchArticles}
-                  loading={loading}
-                  showFilters={showFilters}
-                  setShowFilters={setShowFilters}
-                  // Multi-topic search
-                  useMultiTopic={useMultiTopic}
-                  setUseMultiTopic={setUseMultiTopic}
-                  topics={topics}
-                  setTopics={setTopics}
-                  operator={operator}
-                  setOperator={setOperator}
+          {/* Main content area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <Header
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              darkMode={darkMode}
+              toggleDarkMode={toggleDarkMode}
+              isSearchView={isSearchView}
+              setIsSearchView={setIsSearchView}
+              showSources={showSources}
+              setShowSources={setShowSources}
+              articles={articles}
+              onShowSystemStatus={() => setShowSystemStatus(true)}
+            />
+
+            <main className="flex-1 overflow-hidden">
+              {isSearchView ? (
+                <>
+                  <SearchView
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    selectedSource={selectedSource}
+                    setSelectedSource={setSelectedSource}
+                    handleFetchArticles={handleFetchArticles}
+                    loading={loading}
+                    showFilters={showFilters}
+                    setShowFilters={setShowFilters}
+                    // Multi-topic search
+                    useMultiTopic={useMultiTopic}
+                    setUseMultiTopic={setUseMultiTopic}
+                    topics={topics}
+                    setTopics={setTopics}
+                    operator={operator}
+                    setOperator={setOperator}
+                  />
+                  
+                  {/* Search Progress */}
+                  {searchProgress && (
+                    <EnhancedProcessingDialog
+                      isVisible={!!searchProgress}
+                      searchProgress={searchProgress}
+                      transformedQuery={transformedQuery}
+                      darkMode={darkMode}
+                      onCancel={() => {
+                        apiService.stopMonitoring();
+                        setSearchProgress(null);
+                        setLoading(false);
+                        setTransformedQuery(null);
+                      }}
+                    />
+                  )}
+                </>
+              ) : (
+                <ChatView
+                  chatMessages={chatMessages}
+                  chatInput={chatInput}
+                  setChatInput={setChatInput}
+                  handleSendMessage={handleSendMessage}
+                  topicStatus={topicStatus}
+                  setIsSearchView={setIsSearchView}
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                  currentTopic={searchQuery || (useMultiTopic ? topics.filter(t => t.trim()).join(` ${operator} `) : '')}
+                  articles={articles}
                 />
-                
-                {/* Search Progress */}
-            {searchProgress && (
-  <EnhancedProcessingDialog
-    isVisible={!!searchProgress}
-    searchProgress={searchProgress}
-    transformedQuery={transformedQuery}
-    darkMode={darkMode} // Pass your existing darkMode state
-    onCancel={() => {
-      apiService.stopMonitoring();
-      setSearchProgress(null);
-      setLoading(false);
-      setTransformedQuery(null);
-    }}
-  />
-)}
-              </>
-            ) : (
-              <ChatView
-                chatMessages={chatMessages}
-                chatInput={chatInput}
-                setChatInput={setChatInput}
-                handleSendMessage={handleSendMessage}
-                topicStatus={topicStatus}
-                setIsSearchView={setIsSearchView}
-                sidebarOpen={sidebarOpen}
-                currentTopic={searchQuery || (useMultiTopic ? topics.filter(t => t.trim()).join(` ${operator} `) : '')}
-                articles={articles}
-              />
-            )}
-          </main>
-
-          <SourcesCanvas
-            articles={articles}
-            isOpen={showSources}
-            onClose={() => setShowSources(false)}
-          />
-
-          <SystemStatus 
-            isOpen={showSystemStatus}
-            onClose={() => setShowSystemStatus(false)}
-          />
+              )}
+            </main>
+          </div>
         </div>
+
+        {/* Modals and Overlays */}
+        <SourcesCanvas
+          articles={articles}
+          isOpen={showSources}
+          onClose={() => setShowSources(false)}
+        />
+
+        <SystemStatus 
+          isOpen={showSystemStatus}
+          onClose={() => setShowSystemStatus(false)}
+        />
       </div>
     </div>
   );

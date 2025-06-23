@@ -75,11 +75,6 @@ export default function BetaActivation({ onActivationSuccess }) {
       sessionStorage.setItem('vivum_activation_code', activationCode.trim().toUpperCase());
       sessionStorage.setItem('vivum_activation_date', new Date().toISOString());
       
-      // Also track total activations in localStorage for analytics (optional)
-      const totalActivations = parseInt(localStorage.getItem('vivum_total_activations') || '0') + 1;
-      localStorage.setItem('vivum_total_activations', totalActivations.toString());
-      localStorage.setItem('vivum_last_activation', new Date().toISOString());
-      
       setIsLoading(false);
       onActivationSuccess();
     } else {
@@ -144,16 +139,6 @@ export default function BetaActivation({ onActivationSuccess }) {
                       {/* Subtle overlay for depth */}
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-900/20 rounded-full"></div>
                     </div>
-
-                    {/* Option 2: Using regular img tag (if Image component doesn't work) */}
-                    {/* 
-                    <img 
-                      src="/assets/Vivum.png" 
-                      alt="Vivum Logo" 
-                      className="w-full h-full object-cover filter brightness-110 contrast-105" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-900/20 rounded-full"></div>
-                    */}
                   </div>
 
                   {/* Animated glow ring */}
@@ -264,27 +249,6 @@ export default function BetaActivation({ onActivationSuccess }) {
                     Contact Support
                   </a>
                 </p>
-                
-                {/* Show activation stats if available */}
-                {(() => {
-                  const totalActivations = localStorage.getItem('vivum_total_activations');
-                  const lastActivation = localStorage.getItem('vivum_last_activation');
-                  
-                  if (totalActivations && lastActivation) {
-                    const lastDate = new Date(lastActivation);
-                    const isToday = lastDate.toDateString() === new Date().toDateString();
-                    
-                    return (
-                      <div className="mt-2 p-2 bg-gray-800/50 rounded-lg">
-                        <p className="text-xs text-gray-400">
-                          {`${totalActivations} session${totalActivations !== '1' ? 's' : ''} activated`}
-                          {isToday && ' • Last: Today'}
-                        </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
               </div>
             </div>
           </Card>

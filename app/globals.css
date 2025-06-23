@@ -4348,3 +4348,775 @@ select.focus\:ring-2.focus\:ring-purple-500:focus {
 .animate-checkmark {
   animation: checkmark 0.3s ease-out forwards !important;
 }
+
+/* Add these additional styles to your app/globals.css file */
+
+/* ========================================
+   ENHANCED RESPONSIVE UTILITIES
+======================================== */
+
+/* Extra small breakpoint for very small phones */
+@media (max-width: 375px) {
+  .xs\:hidden {
+    display: none !important;
+  }
+  
+  .xs\:inline {
+    display: inline !important;
+  }
+  
+  .xs\:block {
+    display: block !important;
+  }
+  
+  .xs\:flex {
+    display: flex !important;
+  }
+}
+
+/* ========================================
+   SEARCH BAR RESPONSIVE ENHANCEMENTS
+======================================== */
+
+/* Enhanced search container with better borders */
+.search-container {
+  position: relative;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(24px);
+  border: 2px solid rgba(75, 85, 99, 0.3);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.search-container:focus-within {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+/* Light theme search container */
+:not(.dark) .search-container {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(209, 213, 219, 0.5);
+}
+
+:not(.dark) .search-container:focus-within {
+  border-color: rgba(124, 58, 237, 0.5);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+/* Search input enhancements */
+.search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  font-size: 16px; /* Prevents zoom on iOS */
+  width: 100%;
+  padding: 0;
+}
+
+.search-input::placeholder {
+  color: rgba(156, 163, 175, 0.7);
+}
+
+:not(.dark) .search-input::placeholder {
+  color: rgba(107, 114, 128, 0.7);
+}
+
+/* Search button responsive sizing */
+.search-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .search-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
+}
+
+/* ========================================
+   SIDEBAR MOBILE OPTIMIZATIONS
+======================================== */
+
+/* Better sidebar transitions */
+.sidebar {
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    transform: translateX(0);
+    position: relative;
+  }
+}
+
+/* Mobile sidebar overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.visible {
+  opacity: 1;
+}
+
+/* ========================================
+   RESPONSIVE TYPOGRAPHY SCALE
+======================================== */
+
+/* Mobile-first typography */
+.responsive-text-xs {
+  font-size: 10px;
+}
+
+.responsive-text-sm {
+  font-size: 12px;
+}
+
+.responsive-text-base {
+  font-size: 14px;
+}
+
+.responsive-text-lg {
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  .responsive-text-xs {
+    font-size: 12px;
+  }
+  
+  .responsive-text-sm {
+    font-size: 14px;
+  }
+  
+  .responsive-text-base {
+    font-size: 16px;
+  }
+  
+  .responsive-text-lg {
+    font-size: 18px;
+  }
+}
+
+/* ========================================
+   MOBILE TOUCH IMPROVEMENTS
+======================================== */
+
+/* Ensure minimum touch target size on mobile */
+@media (max-width: 1023px) {
+  .touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  button, 
+  .clickable,
+  .touch-target {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Better spacing for mobile buttons */
+  .mobile-button-spacing {
+    margin: 4px;
+    padding: 12px 16px;
+  }
+}
+
+/* ========================================
+   ENHANCED RESPONSIVE SPACING
+======================================== */
+
+/* Mobile-first spacing system */
+.responsive-p-3 {
+  padding: 12px;
+}
+
+.responsive-p-4 {
+  padding: 16px;
+}
+
+.responsive-p-6 {
+  padding: 20px;
+}
+
+@media (min-width: 640px) {
+  .responsive-p-3 {
+    padding: 12px;
+  }
+  
+  .responsive-p-4 {
+    padding: 16px;
+  }
+  
+  .responsive-p-6 {
+    padding: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-p-6 {
+    padding: 32px;
+  }
+}
+
+/* ========================================
+   CONVERSATION HISTORY MOBILE
+======================================== */
+
+/* Better conversation cards on mobile */
+.conversation-card {
+  padding: 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .conversation-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+}
+
+.conversation-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .conversation-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   MOBILE SAFE AREAS
+======================================== */
+
+/* Account for mobile safe areas */
+.mobile-safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.mobile-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.mobile-safe-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ========================================
+   ENHANCED SCROLLBARS FOR MOBILE
+======================================== */
+
+/* Better scrollbar for mobile webkit browsers */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+.mobile-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+.mobile-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mobile-scroll::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 2px;
+}
+
+.dark .mobile-scroll::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.4);
+}
+
+/* ========================================
+   MODAL AND OVERLAY IMPROVEMENTS
+======================================== */
+
+/* Better mobile modals */
+.mobile-modal {
+  margin: 16px;
+  max-height: calc(100vh - 32px);
+  width: calc(100vw - 32px);
+  max-width: none;
+}
+
+@media (min-width: 640px) {
+  .mobile-modal {
+    margin: auto;
+    max-height: 90vh;
+    width: auto;
+    max-width: 600px;
+  }
+}
+
+/* ========================================
+   LOADING STATES MOBILE
+======================================== */
+
+/* Better loading spinners on mobile */
+.mobile-spinner {
+  width: 20px;
+  height: 20px;
+}
+
+@media (min-width: 640px) {
+  .mobile-spinner {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ========================================
+   FORM INPUTS MOBILE
+======================================== */
+
+/* Better form inputs on mobile */
+.mobile-input {
+  font-size: 16px; /* Prevents zoom on iOS */
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid rgba(209, 213, 219, 0.3);
+  transition: all 0.2s ease;
+}
+
+.mobile-input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  outline: none;
+}
+
+.dark .mobile-input {
+  border-color: rgba(75, 85, 99, 0.3);
+  background: rgba(31, 41, 55, 0.5);
+  color: #f3f4f6;
+}
+
+.dark .mobile-input:focus {
+  border-color: rgba(167, 139, 250, 0.5);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+}
+
+/* ========================================
+   CHAT MESSAGE RESPONSIVE
+======================================== */
+
+/* Better chat message layout on mobile */
+.chat-message {
+  margin-bottom: 16px;
+  padding: 0 12px;
+}
+
+@media (min-width: 640px) {
+  .chat-message {
+    margin-bottom: 24px;
+    padding: 0 24px;
+  }
+}
+
+.chat-message-content {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (min-width: 640px) {
+  .chat-message-content {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+}
+
+/* ========================================
+   HEADER MOBILE IMPROVEMENTS
+======================================== */
+
+/* Better header on mobile */
+.mobile-header {
+  height: 56px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+}
+
+@media (min-width: 640px) {
+  .mobile-header {
+    height: 64px;
+    padding: 0 24px;
+  }
+}
+
+.dark .mobile-header {
+  border-bottom-color: rgba(75, 85, 99, 0.3);
+}
+
+/* ========================================
+   ANIMATION PERFORMANCE
+======================================== */
+
+/* Optimize animations for mobile */
+@media (max-width: 768px) {
+  .reduce-motion {
+    animation-duration: 0.3s !important;
+    transition-duration: 0.3s !important;
+  }
+  
+  /* Disable complex animations on low-end devices */
+  @media (prefers-reduced-motion: reduce) {
+    .complex-animation {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+/* ========================================
+   LANDSCAPE MOBILE ADJUSTMENTS
+======================================== */
+
+/* Better layout in landscape mode */
+@media (max-width: 768px) and (orientation: landscape) {
+  .landscape-adjust {
+    height: calc(100vh - 40px);
+  }
+  
+  .landscape-sidebar {
+    width: 280px;
+  }
+  
+  .landscape-content {
+    font-size: 14px;
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+======================================== */
+
+/* Better print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-friendly {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
+/* Add these styles to your app/globals.css file for proper sidebar behavior */
+
+/* ========================================
+   SIDEBAR LAYOUT IMPROVEMENTS
+======================================== */
+
+/* Ensure sidebar is hidden by default and only shows when toggled */
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 320px;
+  z-index: 50;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-container.open {
+  transform: translateX(0);
+}
+
+/* Desktop behavior - sidebar can be toggled */
+@media (min-width: 1024px) {
+  .sidebar-container {
+    position: relative;
+    transform: translateX(-100%);
+  }
+  
+  .sidebar-container.open {
+    transform: translateX(0);
+  }
+}
+
+/* Mobile overlay backdrop */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.sidebar-backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Hide backdrop on desktop */
+@media (min-width: 1024px) {
+  .sidebar-backdrop {
+    display: none;
+  }
+}
+
+/* ========================================
+   MAIN CONTENT LAYOUT
+======================================== */
+
+/* Main content should always take full width */
+.main-content {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header improvements */
+.header-container {
+  flex-shrink: 0;
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+  z-index: 30;
+}
+
+.dark .header-container {
+  background: rgba(17, 24, 39, 0.8);
+  border-bottom-color: rgba(75, 85, 99, 0.3);
+}
+
+:not(.dark) .header-container {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom-color: rgba(229, 231, 235, 0.5);
+}
+
+/* ========================================
+   BURGER MENU IMPROVEMENTS
+======================================== */
+
+/* Enhanced burger menu button */
+.burger-menu {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.burger-menu:hover {
+  transform: scale(1.05);
+}
+
+.burger-menu:active {
+  transform: scale(0.95);
+}
+
+/* Animated menu icon */
+.menu-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-icon.open {
+  transform: rotate(90deg);
+}
+
+/* ========================================
+   RESPONSIVE HEADER CONTENT
+======================================== */
+
+/* Logo visibility for mobile */
+.mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+}
+
+.mobile-logo.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (min-width: 1024px) {
+  .mobile-logo {
+    display: none;
+  }
+}
+
+/* Header button spacing */
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .header-buttons {
+    gap: 12px;
+  }
+}
+
+/* ========================================
+   CONTENT AREA ADJUSTMENTS
+======================================== */
+
+/* Ensure content doesn't get hidden behind sidebar */
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for flex scrolling */
+  overflow: hidden;
+}
+
+/* Search and chat views */
+.view-container {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+/* ========================================
+   MOBILE OPTIMIZATIONS
+======================================== */
+
+/* Better touch targets on mobile */
+@media (max-width: 1023px) {
+  .header-button {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Adjust header padding for mobile */
+  .header-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* ========================================
+   ANIMATION PERFORMANCE
+======================================== */
+
+/* Hardware acceleration for smooth animations */
+.sidebar-container,
+.sidebar-backdrop,
+.burger-menu,
+.mobile-logo {
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-container,
+  .sidebar-backdrop,
+  .burger-menu,
+  .mobile-logo {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ========================================
+   FOCUS STATES
+======================================== */
+
+/* Better focus indicators for accessibility */
+.burger-menu:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.header-button:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ========================================
+   Z-INDEX MANAGEMENT
+======================================== */
+
+/* Proper layering */
+.sidebar-backdrop {
+  z-index: 40;
+}
+
+.sidebar-container {
+  z-index: 50;
+}
+
+.header-container {
+  z-index: 30;
+}
+
+.modal-overlay {
+  z-index: 60;
+}
+
+/* ========================================
+   SIDEBAR CONTENT SCROLLING
+======================================== */
+
+/* Ensure sidebar content scrolls properly */
+.sidebar-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(75, 85, 99, 0.3) transparent;
+}
+
+.sidebar-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.3);
+  border-radius: 3px;
+}
+
+.sidebar-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.5);
+}
